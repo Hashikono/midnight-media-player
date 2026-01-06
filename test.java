@@ -1,7 +1,8 @@
 import javax.swing.*;
 
-//merely 
-public class SimpleWindow {
+//This is JUST a reference to how java windows are displayed
+
+public class Test {
     public static void main(String[] args) {
         // Use SwingUtilities to ensure thread safety
         SwingUtilities.invokeLater(() -> {
