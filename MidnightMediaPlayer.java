@@ -158,7 +158,7 @@ public class MidnightMediaPlayer extends JFrame {
         playlistList.setForeground(TEXT_COLOR);
         playlistList.setBackground(LIGHT_BG);
         playlistList.setSelectionBackground(HIGHLIGHT_COLOR);
-        playlistList.setSelectionForeground(Color.WHITE);
+        playlistList.setSelectionForeground(TEXT_COLOR);
         playlistList.setFixedCellHeight(40);
             
         // Initialize settings panel components (simplified for now)
