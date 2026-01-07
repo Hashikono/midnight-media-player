@@ -147,7 +147,7 @@ public class MidnightMediaPlayer extends JFrame {
         sectionLabel.setFont(titleFont);
         sectionLabel.setForeground(TEXT_COLOR);
         
-        home_addFolderButton = createStyledButton("+ ADD FOLDER", ACCENT_COLOR);
+        home_addFolderButton = createStyledButton("+ ADD FOLDER", TEXT_COLOR);
         settingsButton = createStyledButton("SETTINGS", DARKER_BG);
         
         // Playlist
@@ -194,9 +194,9 @@ public class MidnightMediaPlayer extends JFrame {
         sidePanel.add(Box.createRigidArea(new Dimension(0, 10)));
         sidePanel.add(musicListButton);
         sidePanel.add(Box.createRigidArea(new Dimension(0, 10)));
-        sidePanel.add(playlistButton);
-        sidePanel.add(Box.createRigidArea(new Dimension(0, 10)));
         sidePanel.add(videoListButton);
+        sidePanel.add(Box.createRigidArea(new Dimension(0, 10)));
+        sidePanel.add(playlistButton);
         sidePanel.add(Box.createRigidArea(new Dimension(0, 30)));
         
         // Add expand button at bottom
@@ -355,10 +355,10 @@ public class MidnightMediaPlayer extends JFrame {
     private void updateButtonStates() {
         // Update button text based on states
         playButton.setText(isPlaying ? "⏸" : "▶");
-        shuffleButton.setForeground(isShuffled ? ACCENT_COLOR : TEXT_COLOR);
-        loopButton.setForeground(isLooped ? ACCENT_COLOR : TEXT_COLOR);
+        shuffleButton.setForeground(isShuffled ? ACCENT_COLOR : DARKER_BG);
+        loopButton.setForeground(isLooped ? ACCENT_COLOR : DARKER_BG);
         muteButton.setText(isMuted ? "🔇" : "🔊");
-        muteButton.setForeground(isMuted ? PRIMARY_COLOR : TEXT_COLOR);
+        muteButton.setForeground(isMuted ? PRIMARY_COLOR : DARKER_BG);
     }
     
     // UI Helper Methods
@@ -369,6 +369,7 @@ public class MidnightMediaPlayer extends JFrame {
         button.setBackground(DARKER_BG);
         button.setBorder(BorderFactory.createEmptyBorder(15, 20, 15, 20));
         button.setHorizontalAlignment(SwingConstants.LEFT);
+        button.setAlignmentX(Component.CENTER_ALIGNMENT);
         button.setFocusPainted(false);
         button.setCursor(new Cursor(Cursor.HAND_CURSOR));
         
