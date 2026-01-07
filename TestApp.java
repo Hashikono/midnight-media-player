@@ -10,7 +10,7 @@ import java.util.ArrayList;  // For dynamic array list
 import java.util.List;  // For List interface
 
 // Main class extending JFrame (main application window)
-public class ModernMediaPlayer extends JFrame {
+public class TestApp extends JFrame {
     // ========== GUI COMPONENT DECLARATIONS ==========
     
     // Media control buttons
@@ -66,7 +66,7 @@ public class ModernMediaPlayer extends JFrame {
     private final Color HIGHLIGHT_COLOR = new Color(155, 89, 182);  // Purple highlight
     
     // ========== CONSTRUCTOR ==========
-    public ModernMediaPlayer() {
+    public TestApp() {
         // Set window title
         setTitle("Harmony Player");
         
@@ -976,7 +976,7 @@ public class ModernMediaPlayer extends JFrame {
             }
             
             // Create and display the media player
-            ModernMediaPlayer player = new ModernMediaPlayer();
+            TestApp player = new TestApp();
             player.setVisible(true);  // Make window visible
         });
     }
