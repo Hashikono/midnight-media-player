@@ -33,10 +33,12 @@ public class Database {
         // insertToPlaylist(1, 1);;
         // System.out.println(getMediaCount(1));
 
-        for(Media data : getAllMedia())
-        {
-            System.out.println(data.name);
-        }
+        // for(Media data : getMediaInPlaylist(1))
+        // {
+        //     System.out.println(data.name);
+        // }
+
+        System.out.println(findPlaylistById(1));
 
     }
 
@@ -162,6 +164,65 @@ public class Database {
         return mediaList;
     }
 
+    public static List<Media> getMediaInPlaylist(int playlist) throws Exception {
+        List<Media> mediaList = new ArrayList<Media>();
+        String sql1 = "SELECT * FROM playlist_media WHERE playlist_id = ?";
+
+        try(PreparedStatement ps1 = Database.getConnection().prepareStatement(sql1)) {
+            ps1.setInt(1, playlist);
+
+            try(ResultSet rs1 = ps1.executeQuery()) {
+                while(rs1.next()) {
+                    String sql2 = "SELECT * FROM media WHERE id = ?";
+
+                    try(PreparedStatement ps2 = Database.getConnection().prepareStatement(sql2)) {
+                        ps2.setInt(1, rs1.getInt("media_id"));
+
+                        try(ResultSet rs2 = ps2.executeQuery()) {
+                            while(rs2.next())
+                            {
+                                Media data = new Media(
+                                    rs2.getString("path"),
+                                    rs2.getString("name"),
+                                    rs2.getString("format"),
+                                    rs2.getString("author"),
+                                    rs2.getString("album")
+                                );
+
+                                mediaList.add(data);
+                            }
+                        }   
+                    }
+                }
+            }
+        }
+
+        return mediaList;
+    }
+
+    public static Media findMediaById(int id) throws Exception {
+        String sql = "SELECT * FROM media WHERE id = ?";
+
+        try(PreparedStatement ps = Database.getConnection().prepareStatement(sql)) {
+            ps.setInt(1, id);
+
+            try(ResultSet rs = ps.executeQuery()) {
+                if(rs.next())
+                {
+                    return new Media(
+                        rs.getString("path"),
+                        rs.getString("name"),
+                        rs.getString("format"),
+                        rs.getString("author"),
+                        rs.getString("album")
+                    );
+                }
+            }   
+        }
+
+        throw new RuntimeException("Failed find media");
+    }
+
 
 //#endregion MediaFiles
 
@@ -224,6 +285,43 @@ public class Database {
         }
 
         return 0;
+    }
+
+    public static List<Playlist> getAllPlaylists() throws Exception {
+        List<Playlist> mediaList = new ArrayList<Playlist>();
+        String sql = "SELECT * FROM playlist";
+
+        try(PreparedStatement ps = Database.getConnection().prepareStatement(sql); ResultSet rs = ps.executeQuery()) {
+            while(rs.next()) {
+                Playlist data = new Playlist(
+                    rs.getString("name")
+                );
+
+                mediaList.add(data);
+            }
+        }
+
+
+        return mediaList;
+    }
+
+    public static Playlist findPlaylistById(int id) throws Exception {
+        String sql = "SELECT * FROM playlist WHERE id = ?";
+
+        try(PreparedStatement ps = Database.getConnection().prepareStatement(sql)) {
+            ps.setInt(1, id);
+
+            try(ResultSet rs = ps.executeQuery()) {
+                if(rs.next())
+                {
+                    return new Playlist(
+                        rs.getString("name")
+                    );
+                }
+            }   
+        }
+
+        throw new RuntimeException("Failed find playlist");
     }
 //#endregion Playlists
 }
