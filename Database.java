@@ -1,3 +1,5 @@
+import java.util.ArrayList;
+import java.util.List;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -6,19 +8,36 @@ import java.sql.DriverManager;
 import java.sql.SQLException;
 import java.sql.PreparedStatement;
 import java.sql.Statement;
+import java.sql.ResultSet;
+import models.Media;
+import models.Playlist;
 
 public class Database {
 
     private static Connection connection;
     public static void main(String[] args) throws Exception {
         Class.forName("org.sqlite.JDBC");
-
-        // Connection conn = DriverManager.getConnection("jdbc:sqlite:midnightmedia.db");
-
-        // System.out.println("Connected to SQLite");
-        // conn.close();
-
         initialize();
+
+        // Playlist temp = new Playlist();
+
+        // temp.path = "C:/temp/path.mp3";
+        // temp.name = "cool&awesome";
+        // temp.format = "mp3";
+        // temp.path = "imagine dragons";
+
+        // int mediaID = createPlaylist(temp);
+        // System.out.println(mediaID);
+
+        // System.out.println(getMediaCount(1));
+        // insertToPlaylist(1, 1);;
+        // System.out.println(getMediaCount(1));
+
+        for(Media data : getAllMedia())
+        {
+            System.out.println(data.name);
+        }
+
     }
 
     private static String getDatabaseUrl() throws Exception {
@@ -94,4 +113,117 @@ public class Database {
             ps.executeUpdate();
         }
     }
+
+//#region MediaFiles
+    public static int insertMedia(Media data) throws Exception {
+        String sql = """
+            INSERT INTO media (path, name, format, author, album)
+            VALUES (?, ?, ?, ?, ?)
+        """;
+
+        try(PreparedStatement ps = Database.getConnection().prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
+            ps.setString(1, data.path);
+            ps.setString(2, data.name);
+            ps.setString(3, data.format);
+            ps.setString(4, data.author);
+            ps.setString(5, data.album);
+
+            ps.executeUpdate();
+
+            try(ResultSet keys = ps.getGeneratedKeys()) {
+                if(keys.next()) {
+                    return keys.getInt(1);
+                }
+            }
+
+            throw new RuntimeException("Failed to insert media");
+        }
+    }
+
+    public static List<Media> getAllMedia() throws Exception {
+        List<Media> mediaList = new ArrayList<Media>();
+        String sql = "SELECT * FROM media";
+
+        try(PreparedStatement ps = Database.getConnection().prepareStatement(sql); ResultSet rs = ps.executeQuery()) {
+            while(rs.next()) {
+                Media data = new Media(
+                    rs.getString("path"),
+                    rs.getString("name"),
+                    rs.getString("format"),
+                    rs.getString("author"),
+                    rs.getString("album")
+                );
+
+                mediaList.add(data);
+            }
+        }
+
+
+        return mediaList;
+    }
+
+
+//#endregion MediaFiles
+
+//#region Playlists
+    public static int createPlaylist(Playlist data) throws Exception {
+        String sql = """
+            INSERT INTO playlist (name)
+            VALUES (?)
+        """;
+
+        try(PreparedStatement ps = Database.getConnection().prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
+            ps.setString(1, data.name);
+
+            ps.executeUpdate();
+
+            try(ResultSet keys = ps.getGeneratedKeys()) {
+                if(keys.next()) {
+                    return keys.getInt(1);
+                }
+            }
+
+            throw new RuntimeException("Failed to create playlist");
+        }
+    }
+
+    public static void insertToPlaylist(int playlist, int media) throws Exception {
+        String sql = """
+            INSERT INTO playlist_media (playlist_id, media_id, position)
+            VALUES (?, ?, ?)
+        """;
+
+        int playlistMediaCount = getMediaCount(playlist);
+        try(PreparedStatement ps = Database.getConnection().prepareStatement(sql)) {
+            ps.setInt(1, playlist);
+            ps.setInt(2, media);
+            ps.setInt(3, playlistMediaCount);
+
+            ps.executeUpdate();
+        }
+    }
+
+    public static int getMediaCount(int playlistId) throws Exception {
+
+        String sql = """
+            SELECT COUNT(*)
+            FROM playlist_media
+            WHERE playlist_id = ?
+        """;
+
+        try (PreparedStatement ps =
+                 Database.getConnection().prepareStatement(sql)) {
+
+            ps.setInt(1, playlistId);
+
+            try (ResultSet rs = ps.executeQuery()) {
+                if (rs.next()) {
+                    return rs.getInt(1);
+                }
+            }
+        }
+
+        return 0;
+    }
+//#endregion Playlists
 }
