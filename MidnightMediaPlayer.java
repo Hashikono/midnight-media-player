@@ -70,16 +70,16 @@ public class MidnightMediaPlayer extends JFrame {
     private final Color DARK_BG = new Color(133, 131, 131);            // Dark background
     private final Color DARKER_BG = new Color(125, 123, 123);          // Even darker
     private final Color LIGHT_BG = new Color(60, 60, 60);           // Light background for panels
-    private final Color TEXT_COLOR = new Color(220, 220, 220);      // Text color
+    private final Color TEXT_COLOR = new Color(242, 75, 75);      // Text color
     private final Color HIGHLIGHT_COLOR = new Color(155, 89, 182);  // Purple highlight
     private final Color SLIDER_COLOR = new Color(80, 80, 80);
     private final Color SLIDER_THUMB = new Color(242, 75, 75);
     
     // Fonts
-    private Font titleFont = new Font("Arial", Font.BOLD, 24);
-    private Font subtitleFont = new Font("Arial", Font.PLAIN, 16);
-    private Font normalFont = new Font("Arial", Font.PLAIN, 14);
-    private Font smallFont = new Font("Arial", Font.PLAIN, 12);
+    private Font titleFont = new Font("Moga", Font.BOLD, 24);
+    private Font subtitleFont = new Font("Moga", Font.PLAIN, 16);
+    private Font normalFont = new Font("Moga", Font.PLAIN, 14);
+    private Font smallFont = new Font("Moga", Font.PLAIN, 12);
     
     // Constructor
     public MidnightMediaPlayer() {
@@ -148,7 +148,7 @@ public class MidnightMediaPlayer extends JFrame {
         sectionLabel.setForeground(TEXT_COLOR);
         
         home_addFolderButton = createStyledButton("+ ADD FOLDER", ACCENT_COLOR);
-        settingsButton = createStyledButton("SETTINGS", LIGHT_BG);
+        settingsButton = createStyledButton("SETTINGS", DARKER_BG);
         
         // Playlist
         playlistModel = new DefaultListModel<>();
@@ -483,17 +483,17 @@ public class MidnightMediaPlayer extends JFrame {
     private void switchToHomeView() {
         sectionLabel.setText("RECENTLY PLAYED");
         homeButton.setForeground(PRIMARY_COLOR);
-        musicListButton.setForeground(TEXT_COLOR);
-        playlistButton.setForeground(TEXT_COLOR);
-        videoListButton.setForeground(TEXT_COLOR);
+        musicListButton.setForeground(DARKER_BG);
+        playlistButton.setForeground(DARKER_BG);
+        videoListButton.setForeground(DARKER_BG);
     }
     
     private void switchToSettingsView() {
         sectionLabel.setText("SETTINGS");
-        homeButton.setForeground(TEXT_COLOR);
-        musicListButton.setForeground(TEXT_COLOR);
-        playlistButton.setForeground(TEXT_COLOR);
-        videoListButton.setForeground(TEXT_COLOR);
+        homeButton.setForeground(DARKER_BG);
+        musicListButton.setForeground(DARKER_BG);
+        playlistButton.setForeground(DARKER_BG);
+        videoListButton.setForeground(DARKER_BG);
     }
     
     // State toggle methods (visual only)
