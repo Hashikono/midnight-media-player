@@ -14,5 +14,13 @@ public class Media {
         this.format = format;
         this.author = author;
         this.album = album;
+    }
+
+    public Media() {
+        this.path = null;
+        this.name = null;
+        this.format = null;
+        this.author = null;
+        this.album = null;
     };
 }
