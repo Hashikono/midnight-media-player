@@ -76,10 +76,10 @@ public class MidnightMediaPlayer extends JFrame {
     private final Color SLIDER_THUMB = new Color(242, 75, 75);
     
     // Fonts
-    private Font titleFont = new Font("Moga", Font.BOLD, 24);
-    private Font subtitleFont = new Font("Moga", Font.PLAIN, 16);
-    private Font normalFont = new Font("Moga", Font.PLAIN, 14);
-    private Font smallFont = new Font("Moga", Font.PLAIN, 12);
+    private Font titleFont = new Font("Ariel", Font.BOLD, 24);
+    private Font subtitleFont = new Font("Ariel", Font.PLAIN, 16);
+    private Font normalFont = new Font("Ariel", Font.PLAIN, 14);
+    private Font smallFont = new Font("Ariel", Font.PLAIN, 12);
     
     // Constructor
     public MidnightMediaPlayer() {
@@ -148,7 +148,7 @@ public class MidnightMediaPlayer extends JFrame {
         sectionLabel.setForeground(TEXT_COLOR);
         
         home_addFolderButton = createStyledButton("+ ADD FOLDER", TEXT_COLOR);
-        settingsButton = createStyledButton("SETTINGS", DARKER_BG);
+        settingsButton = createStyledButton("SETTINGS", TEXT_COLOR);
         
         // Playlist
         playlistModel = new DefaultListModel<>();
@@ -392,7 +392,7 @@ public class MidnightMediaPlayer extends JFrame {
     private JButton createControlButton(String text, String tooltip, Color color) {
         JButton button = new JButton(text);
         button.setFont(new Font("Segoe UI", Font.PLAIN, 24));
-        button.setForeground(color);
+        button.setForeground(TEXT_COLOR);
         button.setBackground(DARKER_BG);
         button.setBorder(BorderFactory.createEmptyBorder(10, 15, 10, 15));
         button.setFocusPainted(false);
@@ -418,7 +418,7 @@ public class MidnightMediaPlayer extends JFrame {
     private JButton createStyledButton(String text, Color bgColor) {
         JButton button = new JButton(text);
         button.setFont(normalFont);
-        button.setForeground(Color.WHITE);
+        button.setForeground(TEXT_COLOR);
         button.setBackground(bgColor);
         button.setBorder(BorderFactory.createCompoundBorder(
             BorderFactory.createLineBorder(bgColor.darker(), 1),
@@ -483,7 +483,7 @@ public class MidnightMediaPlayer extends JFrame {
     // View switching methods (visual only)
     private void switchToHomeView() {
         sectionLabel.setText("RECENTLY PLAYED");
-        homeButton.setForeground(PRIMARY_COLOR);
+        homeButton.setForeground(DARKER_BG);
         musicListButton.setForeground(DARKER_BG);
         playlistButton.setForeground(DARKER_BG);
         videoListButton.setForeground(DARKER_BG);
@@ -491,7 +491,7 @@ public class MidnightMediaPlayer extends JFrame {
     
     private void switchToSettingsView() {
         sectionLabel.setText("SETTINGS");
-        homeButton.setForeground(DARKER_BG);
+        homeButton.setForeground(TEXT_COLOR);
         musicListButton.setForeground(DARKER_BG);
         playlistButton.setForeground(DARKER_BG);
         videoListButton.setForeground(DARKER_BG);
