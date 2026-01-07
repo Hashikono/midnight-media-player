@@ -7,7 +7,7 @@ public class Test {
         // Use SwingUtilities to ensure thread safety
         SwingUtilities.invokeLater(() -> {
             // Create the main window
-            JFrame frame = new JFrame("Simple Window");
+            JFrame frame = new JFrame("Midnight Media");
             frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
             frame.setSize(300, 200);
             
