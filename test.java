@@ -17,7 +17,19 @@ public class Test {
             // Create a label and button
             JLabel label = new JLabel("Hello! Click OK to close.", SwingConstants.CENTER);
             JButton okButton = new JButton("OK");
-            
+            JFileChooser getFiles = new JFileChooser();
+            // FileNameExtensionFilter filter = new FileNameExtensionFilter(
+            //     "JPG & GIF Images", "jpg", "gif"
+            // );
+
+            // getFiles.setFileFilter(filter);
+
+            // int returnVal = getFiles.showOpenDialog(parent);
+            // if(returnVal == JFileChooser.APPROVE_OPTION) {
+            // System.out.println("You chose to open this file: " +
+            //         getFiles.getSelectedFile().getName());
+            // }
+    
             // Set button action
             okButton.addActionListener(e -> {
                 JOptionPane.showMessageDialog(frame, "Goodbye!");
