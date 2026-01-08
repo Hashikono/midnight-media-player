@@ -98,6 +98,9 @@ public class MidnightMediaPlayer extends JFrame {
         // Set application icon (placeholder)
         setIconImage(new ImageIcon("icon.png").getImage());
         
+        // Initialize track index
+        currentTrackIndex = -1;
+        
         initializeComponents();
         setupLayout();
         setupEventListeners();
@@ -111,6 +114,7 @@ public class MidnightMediaPlayer extends JFrame {
     }
     
     private void initializeComponents() {
+        playlistModel = new DefaultListModel<>();
         // Initialize side panel buttons
         homeButton = createSideButton("Home", "🏠");
         musicListButton = createSideButton("Music", "📁");
@@ -699,11 +703,20 @@ public class MidnightMediaPlayer extends JFrame {
 
     // State toggle methods (visual only)
     private void togglePlayPause() {
+        if (playlistModel == null || playlistModel.isEmpty()) {
+            mediaNameLabel.setText("No media available");
+            return;
+        }
+        
         isPlaying = !isPlaying;
         updateButtonStates();
         
         if (isPlaying) {
-            mediaNameLabel.setText("Now Playing: " + playlistModel.get(currentTrackIndex >= 0 ? currentTrackIndex : 0));
+            // Ensure currentTrackIndex is valid
+            if (currentTrackIndex < 0 || currentTrackIndex >= playlistModel.size()) {
+                currentTrackIndex = 0;
+            }
+            mediaNameLabel.setText("Now Playing: " + playlistModel.get(currentTrackIndex));
         }
     }
     
