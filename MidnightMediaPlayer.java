@@ -102,6 +102,8 @@ public class MidnightMediaPlayer extends JFrame {
         pack();
         setLocationRelativeTo(null);
         setVisible(true);
+
+        switchToHomeView();
     }
     
     private void initializeComponents() {
@@ -538,13 +540,10 @@ public class MidnightMediaPlayer extends JFrame {
 
     private void switchToSettingsView() {
         sectionLabel.setText("SETTINGS");
-        homeButton.setForeground(TEXT_COLOR);
+        homeButton.setForeground(DARKER_BG);
         musicListButton.setForeground(DARKER_BG);
         playlistButton.setForeground(DARKER_BG);
         logMenuButton.setForeground(DARKER_BG);
-        musicListButton.setForeground(TEXT_COLOR);
-        playlistButton.setForeground(TEXT_COLOR);
-        logMenuButton.setForeground(TEXT_COLOR);
     }
 
     // State toggle methods (visual only)
