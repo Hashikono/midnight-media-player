@@ -31,14 +31,13 @@ public class MediaAddingMenu {
 
 
     public static JDialog OpenMediaAddingMenu(JFrame parent) {
+        try {Database.initialize();} catch (Exception e) {e.printStackTrace();}
 
         pathField.setText("");
         nameField.setText("");
         extField.setText("");
         authorField.setText("");
         albumField.setText("");
-
-
 
 
         mediaAddingDialog = new JDialog(parent, "Add Media", true);
@@ -112,7 +111,13 @@ public class MediaAddingMenu {
         );
         
 
-        result = info;
+        // result = info;
+        try {
+            Database.insertMedia(info);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
         mediaAddingDialog.dispose();
     }
 

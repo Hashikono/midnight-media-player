@@ -18,28 +18,6 @@ public class Database {
     public static void main(String[] args) throws Exception {
         Class.forName("org.sqlite.JDBC");
         initialize();
-
-        // Playlist temp = new Playlist();
-
-        // temp.path = "C:/temp/path.mp3";
-        // temp.name = "cool&awesome";
-        // temp.format = "mp3";
-        // temp.path = "imagine dragons";
-
-        // int mediaID = createPlaylist(temp);
-        // System.out.println(mediaID);
-
-        // System.out.println(getMediaCount(1));
-        // insertToPlaylist(1, 1);;
-        // System.out.println(getMediaCount(1));
-
-        // for(Media data : getMediaInPlaylist(1))
-        // {
-        //     System.out.println(data.name);
-        // }
-
-        System.out.println(findPlaylistById(1));
-
     }
 
     private static String getDatabaseUrl() throws Exception {
@@ -77,7 +55,8 @@ public class Database {
             statement.execute("""
                 CREATE TABLE IF NOT EXISTS playlist (
                 id INTEGER PRIMARY KEY AUTOINCREMENT,
-                name TEXT NOT NULL
+                name TEXT NOT NULL,
+                thumbnail BLOB
                 )"""
             );
 
