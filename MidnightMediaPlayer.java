@@ -9,7 +9,7 @@ import java.awt.event.*;
 import java.util.List;
 
 public class MidnightMediaPlayer extends JFrame {
-    
+    private static MidnightMediaPlayer player;
     //---------------- GUI components ---------------
     // Main screen
     // Side Panel
@@ -38,7 +38,7 @@ public class MidnightMediaPlayer extends JFrame {
     // Main content area
     private JPanel mainContentPanel;
     private JLabel sectionLabel;
-    private JButton home_addFolderButton;
+    private JButton newMediaButton;
     private JButton settingsButton;
     private JPanel selectedMenuPanel;
     private JScrollPane playlistScrollPane;
@@ -153,7 +153,8 @@ public class MidnightMediaPlayer extends JFrame {
         sectionLabel.setFont(titleFont);
         sectionLabel.setForeground(TEXT_COLOR);
         
-        home_addFolderButton = createStyledButton("+ ADD FOLDER", TEXT_COLOR);
+        newMediaButton = createStyledButton("+ Add Media", TEXT_COLOR);
+        newMediaButton.addActionListener(e -> OpenMediaAddingMenu());
         settingsButton = createStyledButton("Settings", TEXT_COLOR);
         
         // Playlist
@@ -238,7 +239,7 @@ public class MidnightMediaPlayer extends JFrame {
         JPanel topButtons = new JPanel(new FlowLayout(FlowLayout.RIGHT, 10, 0));
         topButtons.setBackground(DARK_BG);
         topButtons.setOpaque(false);
-        topButtons.add(home_addFolderButton);
+        topButtons.add(newMediaButton);
         topButtons.add(settingsButton);
         topBar.add(topButtons, BorderLayout.EAST);
         
@@ -257,14 +258,6 @@ public class MidnightMediaPlayer extends JFrame {
         // Playlist panel
         selectedMenuPanel = new JPanel(new BorderLayout());
         selectedMenuPanel.setBackground(DARKER_BG);
-        selectedMenuPanel.setBorder(BorderFactory.createTitledBorder(
-            BorderFactory.createLineBorder(HIGHLIGHT_COLOR, 1),
-            "PLAYLIST",
-            TitledBorder.LEFT,
-            TitledBorder.TOP,
-            subtitleFont,
-            TEXT_COLOR
-        ));
         
         gbc.gridx = 1;
         gbc.gridy = 0;
@@ -342,6 +335,12 @@ public class MidnightMediaPlayer extends JFrame {
         // Add panels to frame
         add(sidePanel, BorderLayout.WEST);
         add(mainContentPanel, BorderLayout.CENTER);
+    }
+
+    private void OpenMediaAddingMenu() {
+        JDialog dialog = MediaAddingMenu.OpenMediaAddingMenu(player);
+        dialog.setLocationRelativeTo(player);
+        dialog.setVisible(true); // BLOCKS until dialog is closed
     }
     
     private void setupEventListeners() {
@@ -509,6 +508,19 @@ public class MidnightMediaPlayer extends JFrame {
         logMenuButton.setForeground(DARKER_BG);
 
         ClearOldPanel();
+
+
+        //Panel goes here
+
+
+        selectedMenuPanel.setBorder(BorderFactory.createTitledBorder(
+            BorderFactory.createLineBorder(HIGHLIGHT_COLOR, 1),
+            "",
+            TitledBorder.LEFT,
+            TitledBorder.TOP,
+            subtitleFont,
+            TEXT_COLOR
+        ));
     }
 
     private void switchToMediaView() {
@@ -524,6 +536,15 @@ public class MidnightMediaPlayer extends JFrame {
         playlistScrollPane.setBorder(null);
         playlistScrollPane.getViewport().setBackground(DARKER_BG);
         selectedMenuPanel.add(playlistScrollPane, BorderLayout.CENTER);
+
+        selectedMenuPanel.setBorder(BorderFactory.createTitledBorder(
+            BorderFactory.createLineBorder(HIGHLIGHT_COLOR, 1),
+            "Files",
+            TitledBorder.LEFT,
+            TitledBorder.TOP,
+            subtitleFont,
+            TEXT_COLOR
+        ));
     }
 
     private void switchToPlaylistView() {
@@ -534,6 +555,19 @@ public class MidnightMediaPlayer extends JFrame {
         logMenuButton.setForeground(DARKER_BG);
 
         ClearOldPanel();
+
+
+        //Panel goes here
+
+
+        selectedMenuPanel.setBorder(BorderFactory.createTitledBorder(
+            BorderFactory.createLineBorder(HIGHLIGHT_COLOR, 1),
+            "Playlist",
+            TitledBorder.LEFT,
+            TitledBorder.TOP,
+            subtitleFont,
+            TEXT_COLOR
+        ));
     }
     
     private void switchToLogsView() {
@@ -544,6 +578,19 @@ public class MidnightMediaPlayer extends JFrame {
         logMenuButton.setForeground(TEXT_COLOR);
 
         ClearOldPanel();
+
+
+        //Panel goes here
+
+
+        selectedMenuPanel.setBorder(BorderFactory.createTitledBorder(
+            BorderFactory.createLineBorder(HIGHLIGHT_COLOR, 1),
+            "",
+            TitledBorder.LEFT,
+            TitledBorder.TOP,
+            subtitleFont,
+            TEXT_COLOR
+        ));
     }
 
     private void switchToSettingsView() {
@@ -554,6 +601,19 @@ public class MidnightMediaPlayer extends JFrame {
         logMenuButton.setForeground(DARKER_BG);
 
         ClearOldPanel();
+
+
+        //Panel goes here
+
+
+        selectedMenuPanel.setBorder(BorderFactory.createTitledBorder(
+            BorderFactory.createLineBorder(HIGHLIGHT_COLOR, 1),
+            "Playlist",
+            TitledBorder.LEFT,
+            TitledBorder.TOP,
+            subtitleFont,
+            TEXT_COLOR
+        ));
     }
 
     private void ClearOldPanel() {
@@ -630,7 +690,7 @@ public class MidnightMediaPlayer extends JFrame {
             } catch (Exception e) {
                 e.printStackTrace();
             }
-            new MidnightMediaPlayer();
+            player = new MidnightMediaPlayer();
         });
     }
 }
