@@ -97,6 +97,11 @@ public class MidnightMediaPlayer extends JFrame {
     
     // Constructor
     public MidnightMediaPlayer() {
+        try {
+            Database.initialize();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
         setTitle("Midnight Media Player");
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setMinimumSize(new Dimension(1200, 800));
@@ -121,6 +126,7 @@ public class MidnightMediaPlayer extends JFrame {
 
         switchToHomeView();
     }
+    
     
     private void loadCustomFonts() {
         try {
