@@ -69,7 +69,6 @@ public class MidnightMediaPlayer extends JFrame {
     private final Color ACCENT_COLOR = new Color(46, 204, 113);     // Green accent
     private final Color DARK_BG = new Color(133, 131, 131);            // Dark background
     private final Color DARKER_BG = new Color(125, 123, 123);          // Even darker
-    private final Color LIGHT_BG = new Color(60, 60, 60);           // Light background for panels
     private final Color TEXT_COLOR = new Color(242, 75, 75);      // Text color
     private final Color HIGHLIGHT_COLOR = new Color(155, 89, 182);  // Purple highlight
     private final Color SLIDER_COLOR = new Color(80, 80, 80);
@@ -152,11 +151,12 @@ public class MidnightMediaPlayer extends JFrame {
         
         // Playlist
         playlistModel = new DefaultListModel<>();
-        
+        playlistModel.addElement("01. Midnight City - M83");
+
         playlistList = new JList<>(playlistModel);
         playlistList.setFont(normalFont);
         playlistList.setForeground(TEXT_COLOR);
-        playlistList.setBackground(LIGHT_BG);
+        playlistList.setBackground(HIGHLIGHT_COLOR);
         playlistList.setSelectionBackground(HIGHLIGHT_COLOR);
         playlistList.setSelectionForeground(TEXT_COLOR);
         playlistList.setFixedCellHeight(40);
@@ -237,7 +237,7 @@ public class MidnightMediaPlayer extends JFrame {
         JPanel playlistPanel = new JPanel(new BorderLayout());
         playlistPanel.setBackground(DARKER_BG);
         playlistPanel.setBorder(BorderFactory.createTitledBorder(
-            BorderFactory.createLineBorder(LIGHT_BG, 1),
+            BorderFactory.createLineBorder(HIGHLIGHT_COLOR, 1),
             "PLAYLIST",
             TitledBorder.LEFT,
             TitledBorder.TOP,
@@ -378,7 +378,7 @@ public class MidnightMediaPlayer extends JFrame {
         button.addMouseListener(new MouseAdapter() {
             @Override
             public void mouseEntered(MouseEvent e) {
-                button.setBackground(LIGHT_BG);
+                button.setBackground(HIGHLIGHT_COLOR);
             }
             
             @Override
@@ -404,7 +404,7 @@ public class MidnightMediaPlayer extends JFrame {
         button.addMouseListener(new MouseAdapter() {
             @Override
             public void mouseEntered(MouseEvent e) {
-                button.setBackground(LIGHT_BG);
+                button.setBackground(HIGHLIGHT_COLOR);
             }
             
             @Override
@@ -496,7 +496,11 @@ public class MidnightMediaPlayer extends JFrame {
         musicListButton.setForeground(DARKER_BG);
         playlistButton.setForeground(DARKER_BG);
         videoListButton.setForeground(DARKER_BG);
+        musicListButton.setForeground(TEXT_COLOR);
+        playlistButton.setForeground(TEXT_COLOR);
+        videoListButton.setForeground(TEXT_COLOR);
     }
+
     
     // State toggle methods (visual only)
     private void togglePlayPause() {
