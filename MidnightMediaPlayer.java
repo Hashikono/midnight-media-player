@@ -18,7 +18,7 @@ public class MidnightMediaPlayer extends JFrame {
     private JButton homeButton; 
     private JButton musicListButton; 
     private JButton playlistButton; 
-    private JButton videoListButton; 
+    private JButton logMenuButton; 
     private JButton mainExpandButton;
     
     // Media control panel
@@ -106,10 +106,10 @@ public class MidnightMediaPlayer extends JFrame {
     
     private void initializeComponents() {
         // Initialize side panel buttons
-        homeButton = createSideButton("HOME", "🏠");
-        musicListButton = createSideButton("MUSIC", "🎵");
-        playlistButton = createSideButton("PLAYLISTS", "📋");
-        videoListButton = createSideButton("VIDEOS", "🎬");
+        homeButton = createSideButton("Home", "🏠");
+        musicListButton = createSideButton("Music", "📁");
+        playlistButton = createSideButton("Playlists", "🎵");
+        logMenuButton = createSideButton("Logs", "📋");
         mainExpandButton = createSideButton("", "❯");
         
         // Initialize control buttons
@@ -213,9 +213,9 @@ public class MidnightMediaPlayer extends JFrame {
         sidePanel.add(Box.createRigidArea(new Dimension(0, 10)));
         sidePanel.add(musicListButton);
         sidePanel.add(Box.createRigidArea(new Dimension(0, 10)));
-        sidePanel.add(videoListButton);
-        sidePanel.add(Box.createRigidArea(new Dimension(0, 10)));
         sidePanel.add(playlistButton);
+        sidePanel.add(Box.createRigidArea(new Dimension(0, 10)));
+        sidePanel.add(logMenuButton);
         sidePanel.add(Box.createRigidArea(new Dimension(0, 30)));
         
         // Add expand button at bottom
@@ -353,6 +353,7 @@ public class MidnightMediaPlayer extends JFrame {
         musicListButton.addActionListener(e -> switchToMediaView());
         playlistButton.addActionListener(e -> switchToPlaylistView());
         settingsButton.addActionListener(e -> switchToSettingsView());
+        logMenuButton.addActionListener(e -> switchToLogsView());
         
         // Control buttons (visual feedback only)
         playButton.addActionListener(e -> togglePlayPause());
@@ -504,41 +505,48 @@ public class MidnightMediaPlayer extends JFrame {
     
     // View switching methods (visual only)
     private void switchToHomeView() {
-        sectionLabel.setText("RECENTLY PLAYED");
+        sectionLabel.setText("Recently Played");
         homeButton.setForeground(TEXT_COLOR);
         musicListButton.setForeground(DARKER_BG);
         playlistButton.setForeground(DARKER_BG);
-        videoListButton.setForeground(DARKER_BG);
+        logMenuButton.setForeground(DARKER_BG);
     }
 
     private void switchToMediaView() {
-        sectionLabel.setText("RECENTLY PLAYED");
+        sectionLabel.setText("All Media");
         homeButton.setForeground(DARKER_BG);
         musicListButton.setForeground(TEXT_COLOR);
         playlistButton.setForeground(DARKER_BG);
-        videoListButton.setForeground(DARKER_BG);
+        logMenuButton.setForeground(DARKER_BG);
     }
 
     private void switchToPlaylistView() {
-        sectionLabel.setText("RECENTLY PLAYED");
+        sectionLabel.setText("Playlists");
         homeButton.setForeground(DARKER_BG);
         musicListButton.setForeground(DARKER_BG);
         playlistButton.setForeground(TEXT_COLOR);
-        videoListButton.setForeground(DARKER_BG);
+        logMenuButton.setForeground(DARKER_BG);
     }
     
+    private void switchToLogsView() {
+        sectionLabel.setText("Logs");
+        homeButton.setForeground(DARKER_BG);
+        musicListButton.setForeground(DARKER_BG);
+        playlistButton.setForeground(DARKER_BG);
+        logMenuButton.setForeground(TEXT_COLOR);
+    }
+
     private void switchToSettingsView() {
         sectionLabel.setText("SETTINGS");
         homeButton.setForeground(TEXT_COLOR);
         musicListButton.setForeground(DARKER_BG);
         playlistButton.setForeground(DARKER_BG);
-        videoListButton.setForeground(DARKER_BG);
+        logMenuButton.setForeground(DARKER_BG);
         musicListButton.setForeground(TEXT_COLOR);
         playlistButton.setForeground(TEXT_COLOR);
-        videoListButton.setForeground(TEXT_COLOR);
+        logMenuButton.setForeground(TEXT_COLOR);
     }
 
-    
     // State toggle methods (visual only)
     private void togglePlayPause() {
         isPlaying = !isPlaying;
