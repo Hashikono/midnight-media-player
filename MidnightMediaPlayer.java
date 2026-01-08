@@ -1,11 +1,16 @@
 // Package imports
 import javax.swing.*;
 import javax.swing.border.*;
+
+import models.Media;
+import models.Playlist;
+
 import java.awt.*;
 import java.awt.event.*;
+import java.util.List;
 
 public class MidnightMediaPlayer extends JFrame {
-    
+    private static MidnightMediaPlayer player;
     //---------------- GUI components ---------------
     // Main screen
     // Side Panel
@@ -13,7 +18,7 @@ public class MidnightMediaPlayer extends JFrame {
     private JButton homeButton; 
     private JButton musicListButton; 
     private JButton playlistButton; 
-    private JButton videoListButton; 
+    private JButton logMenuButton; 
     private JButton mainExpandButton;
     
     // Media control panel
@@ -34,8 +39,9 @@ public class MidnightMediaPlayer extends JFrame {
     // Main content area
     private JPanel mainContentPanel;
     private JLabel sectionLabel;
-    private JButton home_addFolderButton;
+    private JButton newMediaButton;
     private JButton settingsButton;
+    private JPanel selectedMenuPanel;
     private JScrollPane playlistScrollPane;
     private JList<String> playlistList;   
     private DefaultListModel<String> playlistModel;
@@ -63,6 +69,9 @@ public class MidnightMediaPlayer extends JFrame {
     private boolean isFullscreen = false;
     private boolean isSidePanelExpanded = false;
     private int currentTrackIndex = -1;
+
+    private enum tab {Home, Media, Playlist, Log};
+    private tab currentTab = tab.Home;
     
     //---------------- Appearance ----------------------------
     private final Color PRIMARY_COLOR = new Color(242, 75, 75);     // Midnight red
@@ -107,15 +116,17 @@ public class MidnightMediaPlayer extends JFrame {
         pack();
         setLocationRelativeTo(null);
         setVisible(true);
+
+        switchToHomeView();
     }
     
     private void initializeComponents() {
-        // Initialize side panel buttons - start with expanded view
-        homeButton = createSideButton("🏠 HOME", "HOME");
-        musicListButton = createSideButton("🎵 MUSIC", "MUSIC");
-        playlistButton = createSideButton("📋 PLAYLISTS", "PLAYLISTS");
-        videoListButton = createSideButton("🎬 VIDEOS", "VIDEOS");
-        mainExpandButton = createSideButton("◀ COLLAPSE", "Expand/Collapse");
+        // Initialize side panel buttons
+        homeButton = createSideButton("Home", "🏠");
+        musicListButton = createSideButton("Music", "📁");
+        playlistButton = createSideButton("Playlists", "🎵");
+        logMenuButton = createSideButton("Logs", "📋");
+        mainExpandButton = createSideButton("", "❯");
         
         // Initialize control buttons
         playButton = createControlButton("▶", "Play/Pause", TEXT_COLOR);
@@ -152,31 +163,13 @@ public class MidnightMediaPlayer extends JFrame {
         volumeSlider.setPreferredSize(new Dimension(100, 20));
         
         // Main content area
-        sectionLabel = new JLabel("RECENTLY PLAYED");
+        sectionLabel = new JLabel("Recently Played");
         sectionLabel.setFont(titleFont);
         sectionLabel.setForeground(TEXT_COLOR);
         
-        home_addFolderButton = createStyledButton("+ ADD FOLDER", TEXT_COLOR);
-        settingsButton = createStyledButton("SETTINGS", TEXT_COLOR);
-        
-        // Playlist
-        playlistModel = new DefaultListModel<>();
-        playlistModel.addElement("01. Midnight City - M83");
-        playlistModel.addElement("02. Blinding Lights - The Weeknd");
-        playlistModel.addElement("03. Take On Me - a-ha");
-        playlistModel.addElement("04. Sweet Dreams - Eurythmics");
-        playlistModel.addElement("05. Running Up That Hill - Kate Bush");
-        playlistModel.addElement("06. Africa - Toto");
-        playlistModel.addElement("07. Bohemian Rhapsody - Queen");
-        playlistModel.addElement("08. Hotel California - Eagles");
-        
-        playlistList = new JList<>(playlistModel);
-        playlistList.setFont(normalFont);
-        playlistList.setForeground(TEXT_COLOR);
-        playlistList.setBackground(HIGHLIGHT_COLOR);
-        playlistList.setSelectionBackground(DARKER_BG);
-        playlistList.setSelectionForeground(TEXT_COLOR);
-        playlistList.setFixedCellHeight(40);
+        newMediaButton = createStyledButton("+ Add Media", TEXT_COLOR);
+        newMediaButton.addActionListener(e -> OpenMediaAddingMenu());
+        settingsButton = createStyledButton("Settings", TEXT_COLOR);
             
         // Initialize settings panel components (simplified for now)
         settingsBackButton = createSideButton("← BACK", "BACK");
@@ -220,13 +213,9 @@ public class MidnightMediaPlayer extends JFrame {
         musicListButton.setAlignmentX(Component.LEFT_ALIGNMENT);
         sidePanel.add(musicListButton);
         sidePanel.add(Box.createRigidArea(new Dimension(0, 10)));
-        
-        videoListButton.setAlignmentX(Component.LEFT_ALIGNMENT);
-        sidePanel.add(videoListButton);
-        sidePanel.add(Box.createRigidArea(new Dimension(0, 10)));
-        
-        playlistButton.setAlignmentX(Component.LEFT_ALIGNMENT);
         sidePanel.add(playlistButton);
+        sidePanel.add(Box.createRigidArea(new Dimension(0, 10)));
+        sidePanel.add(logMenuButton);
         sidePanel.add(Box.createRigidArea(new Dimension(0, 30)));
         
         // Add expand button at bottom
@@ -248,32 +237,13 @@ public class MidnightMediaPlayer extends JFrame {
         JPanel topButtons = new JPanel(new FlowLayout(FlowLayout.RIGHT, 10, 0));
         topButtons.setBackground(DARK_BG);
         topButtons.setOpaque(false);
-        topButtons.add(home_addFolderButton);
+        topButtons.add(newMediaButton);
         topButtons.add(settingsButton);
         topBar.add(topButtons, BorderLayout.EAST);
         
         // Center content with playlist
         JPanel centerPanel = new JPanel(new BorderLayout());
         centerPanel.setBackground(DARK_BG);
-        
-        // Playlist panel
-        JPanel playlistPanel = new JPanel(new BorderLayout());
-        playlistPanel.setBackground(DARKER_BG);
-        playlistPanel.setBorder(BorderFactory.createTitledBorder(
-            BorderFactory.createLineBorder(HIGHLIGHT_COLOR, 2),
-            "PLAYLIST",
-            TitledBorder.LEFT,
-            TitledBorder.TOP,
-            subtitleFont,
-            TEXT_COLOR
-        ));
-        
-        playlistScrollPane = new JScrollPane(playlistList);
-        playlistScrollPane.setBorder(null);
-        playlistScrollPane.getViewport().setBackground(DARKER_BG);
-        playlistPanel.add(playlistScrollPane, BorderLayout.CENTER);
-        
-        centerPanel.add(playlistPanel, BorderLayout.CENTER);
         
         // Control panel at bottom
         controlPanel = new JPanel(new BorderLayout(10, 10));
@@ -282,7 +252,6 @@ public class MidnightMediaPlayer extends JFrame {
         
         // Top section of control panel (track info)
         JPanel trackInfoPanel = new JPanel(new BorderLayout());
-        trackInfoPanel.setBackground(DARKER_BG);
         trackInfoPanel.setOpaque(false);
         
         JPanel titlePanel = new JPanel(new FlowLayout(FlowLayout.LEFT, 0, 0));
@@ -346,14 +315,26 @@ public class MidnightMediaPlayer extends JFrame {
         add(sidePanel, BorderLayout.WEST);
         add(mainContentPanel, BorderLayout.CENTER);
     }
+
+    private void OpenMediaAddingMenu() {
+        JDialog dialog = MediaAddingMenu.OpenMediaAddingMenu(player);
+        dialog.setLocationRelativeTo(player);
+        dialog.setVisible(true); // BLOCKS until dialog is closed
+    }
+
+    private void OpenPlaylistCreator() {
+        JDialog dialog = PlaylistAddingMenu.OpenPlaylistCreationMenu(player);
+        dialog.setLocationRelativeTo(player);
+        dialog.setVisible(true); // BLOCKS until dialog is closed
+    }
     
     private void setupEventListeners() {
         // Side panel buttons
         homeButton.addActionListener(e -> switchToHomeView());
+        musicListButton.addActionListener(e -> switchToMediaView());
+        playlistButton.addActionListener(e -> switchToPlaylistView());
         settingsButton.addActionListener(e -> switchToSettingsView());
-        
-        // Expand/Collapse button
-        mainExpandButton.addActionListener(e -> toggleSidePanel());
+        logMenuButton.addActionListener(e -> switchToLogsView());
         
         // Control buttons (visual feedback only)
         playButton.addActionListener(e -> togglePlayPause());
@@ -361,49 +342,6 @@ public class MidnightMediaPlayer extends JFrame {
         loopButton.addActionListener(e -> toggleLoop());
         muteButton.addActionListener(e -> toggleMute());
         fullscreenButton.addActionListener(e -> toggleFullscreen());
-        
-        // Playlist selection
-        playlistList.addListSelectionListener(e -> {
-            if (!e.getValueIsAdjusting()) {
-                int index = playlistList.getSelectedIndex();
-                if (index >= 0) {
-                    currentTrackIndex = index;
-                    updateNowPlaying();
-                }
-            }
-        });
-    }
-    
-    private void toggleSidePanel() {
-        isSidePanelExpanded = !isSidePanelExpanded;
-        
-        if (isSidePanelExpanded) {
-            // Expand the panel
-            sidePanel.setPreferredSize(new Dimension(EXPANDED_WIDTH, getHeight()));
-            mainExpandButton.setText("◀ COLLAPSE");
-            
-            // Update button texts to show labels
-            homeButton.setText("🏠 HOME");
-            musicListButton.setText("🎵 MUSIC");
-            playlistButton.setText("📋 PLAYLISTS");
-            videoListButton.setText("🎬 VIDEOS");
-        } else {
-            // Collapse the panel
-            sidePanel.setPreferredSize(new Dimension(COLLAPSED_WIDTH, getHeight()));
-            mainExpandButton.setText("▶");
-            
-            // Update button texts to show only icons
-            homeButton.setText("🏠");
-            musicListButton.setText("🎵");
-            playlistButton.setText("📋");
-            videoListButton.setText("🎬");
-        }
-        
-        // Revalidate and repaint to update the layout
-        sidePanel.revalidate();
-        sidePanel.repaint();
-        revalidate();
-        repaint();
     }
     
     private void updateButtonStates() {
@@ -543,26 +481,232 @@ public class MidnightMediaPlayer extends JFrame {
         });
     }
     
+    private void RecyclePlaylistSelection() {
+        playlistModel = new DefaultListModel<>();
+
+        List<Playlist> allSongs;
+        try {
+            allSongs = Database.getAllPlaylists();
+
+            for(Playlist song : allSongs)
+            {
+                playlistModel.addElement(song.name);
+            }
+        
+        playlistList = new JList<>(playlistModel);
+        playlistList.setFont(normalFont);
+        playlistList.setForeground(TEXT_COLOR);
+        playlistList.setBackground(HIGHLIGHT_COLOR);
+        playlistList.setSelectionBackground(HIGHLIGHT_COLOR);
+        playlistList.setSelectionForeground(TEXT_COLOR);
+        playlistList.setFixedCellHeight(40);
+
+        // Playlist selection
+        playlistList.addListSelectionListener(e -> {
+            if (!e.getValueIsAdjusting()) {
+                int index = playlistList.getSelectedIndex();
+                if (index >= 0) {
+                    currentTrackIndex = index;
+                    updateNowPlaying();
+                }
+            }
+        });
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    // DB connections
+    private void RecycleMediaSelection() {
+        playlistModel = new DefaultListModel<>();
+
+        List<Media> allSongs;
+        try {
+            allSongs = Database.getAllMedia();
+
+            for(Media song : allSongs)
+            {
+                playlistModel.addElement(song.name);
+            }
+        
+        // Playlist
+        playlistList = new JList<>(playlistModel);
+        playlistList.setFont(normalFont);
+        playlistList.setForeground(TEXT_COLOR);
+        playlistList.setBackground(HIGHLIGHT_COLOR);
+        playlistList.setSelectionBackground(HIGHLIGHT_COLOR);
+        playlistList.setSelectionForeground(TEXT_COLOR);
+        playlistList.setFixedCellHeight(40);
+
+        // Playlist selection
+        playlistList.addListSelectionListener(e -> {
+            if (!e.getValueIsAdjusting()) {
+                int index = playlistList.getSelectedIndex();
+                if (index >= 0) {
+                    currentTrackIndex = index;
+                    updateNowPlaying();
+                }
+            }
+        });
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+    
     // View switching methods (visual only)
     private void switchToHomeView() {
-        sectionLabel.setText("RECENTLY PLAYED");
-        resetSideButtonColors();
-        homeButton.setBackground(HIGHLIGHT_COLOR);
+        currentTab = tab.Home;
+        sectionLabel.setText("Recently Played");
+        homeButton.setForeground(TEXT_COLOR);
+        musicListButton.setForeground(DARKER_BG);
+        playlistButton.setForeground(DARKER_BG);
+        logMenuButton.setForeground(DARKER_BG);
+
+        UpdatePerMenuUI();
+
+
+        //Panel goes here
+
+
+        selectedMenuPanel.setBorder(BorderFactory.createTitledBorder(
+            BorderFactory.createLineBorder(HIGHLIGHT_COLOR, 1),
+            "",
+            TitledBorder.LEFT,
+            TitledBorder.TOP,
+            subtitleFont,
+            TEXT_COLOR
+        ));
+    }
+
+    private void switchToMediaView() {
+        currentTab = tab.Media;
+        sectionLabel.setText("All Media");
+        homeButton.setForeground(DARKER_BG);
+        musicListButton.setForeground(TEXT_COLOR);
+        playlistButton.setForeground(DARKER_BG);
+        logMenuButton.setForeground(DARKER_BG);
+
+        UpdatePerMenuUI();
+        RecycleMediaSelection();
+        
+        playlistScrollPane = new JScrollPane(playlistList);
+        playlistScrollPane.setBorder(null);
+        playlistScrollPane.getViewport().setBackground(DARKER_BG);
+        selectedMenuPanel.add(playlistScrollPane, BorderLayout.CENTER);
+
+        selectedMenuPanel.setBorder(BorderFactory.createTitledBorder(
+            BorderFactory.createLineBorder(HIGHLIGHT_COLOR, 1),
+            "Files",
+            TitledBorder.LEFT,
+            TitledBorder.TOP,
+            subtitleFont,
+            TEXT_COLOR
+        ));
+    }
+
+    private void switchToPlaylistView() {
+        currentTab = tab.Playlist;
+        sectionLabel.setText("Playlists");
+        homeButton.setForeground(DARKER_BG);
+        musicListButton.setForeground(DARKER_BG);
+        playlistButton.setForeground(TEXT_COLOR);
+        logMenuButton.setForeground(DARKER_BG);
+
+        UpdatePerMenuUI();
+        RecyclePlaylistSelection();
+
+        playlistScrollPane = new JScrollPane(playlistList);
+        playlistScrollPane.setBorder(null);
+        playlistScrollPane.getViewport().setBackground(DARKER_BG);
+        selectedMenuPanel.add(playlistScrollPane, BorderLayout.CENTER);
+
+
+        selectedMenuPanel.setBorder(BorderFactory.createTitledBorder(
+            BorderFactory.createLineBorder(HIGHLIGHT_COLOR, 1),
+            "Playlist",
+            TitledBorder.LEFT,
+            TitledBorder.TOP,
+            subtitleFont,
+            TEXT_COLOR
+        ));
     }
     
+    private void switchToLogsView() {
+        currentTab = tab.Log;
+        sectionLabel.setText("Logs");
+        homeButton.setForeground(DARKER_BG);
+        musicListButton.setForeground(DARKER_BG);
+        playlistButton.setForeground(DARKER_BG);
+        logMenuButton.setForeground(TEXT_COLOR);
+
+        UpdatePerMenuUI();
+
+
+        //Panel goes here
+
+
+        selectedMenuPanel.setBorder(BorderFactory.createTitledBorder(
+            BorderFactory.createLineBorder(HIGHLIGHT_COLOR, 1),
+            "",
+            TitledBorder.LEFT,
+            TitledBorder.TOP,
+            subtitleFont,
+            TEXT_COLOR
+        ));
+    }
+
     private void switchToSettingsView() {
         sectionLabel.setText("SETTINGS");
-        resetSideButtonColors();
-        // In a real app, you would switch to a different view here
+        homeButton.setForeground(DARKER_BG);
+        musicListButton.setForeground(DARKER_BG);
+        playlistButton.setForeground(DARKER_BG);
+        logMenuButton.setForeground(DARKER_BG);
+
+        UpdatePerMenuUI();
+
+
+        //Panel goes here
+
+
+        selectedMenuPanel.setBorder(BorderFactory.createTitledBorder(
+            BorderFactory.createLineBorder(HIGHLIGHT_COLOR, 1),
+            "Playlist",
+            TitledBorder.LEFT,
+            TitledBorder.TOP,
+            subtitleFont,
+            TEXT_COLOR
+        ));
     }
-    
-    private void resetSideButtonColors() {
-        homeButton.setBackground(DARKER_BG);
-        musicListButton.setBackground(DARKER_BG);
-        playlistButton.setBackground(DARKER_BG);
-        videoListButton.setBackground(DARKER_BG);
+
+    private void UpdatePerMenuUI()
+    {
+        ClearOldPanel();
+        for(ActionListener command : newMediaButton.getActionListeners())
+        {
+            newMediaButton.removeActionListener(command);
+        }
+        newMediaButton.setVisible(true);
+
+        if(currentTab == tab.Media)
+        {
+            newMediaButton.addActionListener(e -> OpenMediaAddingMenu());
+            newMediaButton.setText("+ Add Media");
+        }
+        else if(currentTab == tab.Playlist)
+        {
+            newMediaButton.addActionListener(e -> OpenPlaylistCreator());
+            newMediaButton.setText("+ New Playlist");
+        }
+        else
+            newMediaButton.setVisible(false);
     }
-    
+
+    private void ClearOldPanel() {
+        selectedMenuPanel.removeAll();
+        selectedMenuPanel.revalidate();
+        selectedMenuPanel.repaint();
+    }
+
     // State toggle methods (visual only)
     private void togglePlayPause() {
         isPlaying = !isPlaying;
@@ -574,7 +718,7 @@ public class MidnightMediaPlayer extends JFrame {
             }
             mediaNameLabel.setText("Now Playing: " + playlistModel.get(currentTrackIndex));
             folderOriginLabel.setText("From: Midnight Playlist");
-            startProgressSimulation();
+            // startProgressSimulation();
         } else if (!isPlaying) {
             mediaNameLabel.setText("Paused: " + playlistModel.get(currentTrackIndex >= 0 ? currentTrackIndex : 0));
         }
@@ -619,38 +763,38 @@ public class MidnightMediaPlayer extends JFrame {
             // If playing, update the playing text
             if (isPlaying) {
                 mediaNameLabel.setText("Now Playing: " + playlistModel.get(currentTrackIndex));
-                startProgressSimulation();
+                // startProgressSimulation();
             }
         }
     }
     
-    private void startProgressSimulation() {
-        // Stop any existing timer
-        Timer[] timers = mediaProgressSlider.getListeners(Timer.class);
-        for (Timer timer : timers) {
-            timer.stop();
-        }
+    // private void startProgressSimulation() {
+    //     // Stop any existing timer
+    //     Timer[] timers = mediaProgressSlider.getListeners(Timer.class);
+    //     for (Timer timer : timers) {
+    //         timer.stop();
+    //     }
         
-        // Reset progress
-        mediaProgressSlider.setValue(0);
-        updateTimeLabels(0);
+    //     // Reset progress
+    //     mediaProgressSlider.setValue(0);
+    //     updateTimeLabels(0);
         
-        // Start new simulation if playing
-        if (isPlaying) {
-            Timer progressTimer = new Timer(1000, e -> {
-                if (isPlaying) {
-                    int current = mediaProgressSlider.getValue();
-                    if (current < 100) {
-                        mediaProgressSlider.setValue(current + 1);
-                        updateTimeLabels(current + 1);
-                    } else {
-                        ((Timer)e.getSource()).stop();
-                    }
-                }
-            });
-            progressTimer.start();
-        }
-    }
+    //     // Start new simulation if playing
+    //     if (isPlaying) {
+    //         Timer progressTimer = new Timer(1000, e -> {
+    //             if (isPlaying) {
+    //                 int current = mediaProgressSlider.getValue();
+    //                 if (current < 100) {
+    //                     mediaProgressSlider.setValue(current + 1);
+    //                     updateTimeLabels(current + 1);
+    //                 } else {
+    //                     ((Timer)e.getSource()).stop();
+    //                 }
+    //             }
+    //         });
+    //         progressTimer.start();
+    //     }
+    // }
     
     private void updateTimeLabels(int progress) {
         int totalSeconds = 180; // 3 minutes
@@ -669,7 +813,7 @@ public class MidnightMediaPlayer extends JFrame {
             } catch (Exception e) {
                 e.printStackTrace();
             }
-            new MidnightMediaPlayer();
+            player = new MidnightMediaPlayer();
         });
     }
 }
