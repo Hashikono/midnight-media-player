@@ -127,6 +127,7 @@ public class Database {
         try(PreparedStatement ps = Database.getConnection().prepareStatement(sql); ResultSet rs = ps.executeQuery()) {
             while(rs.next()) {
                 Media data = new Media(
+                    rs.getInt("id"),
                     rs.getString("path"),
                     rs.getString("name"),
                     rs.getString("format"),
@@ -160,6 +161,7 @@ public class Database {
                             while(rs2.next())
                             {
                                 Media data = new Media(
+                                    rs2.getInt("id"),
                                     rs2.getString("path"),
                                     rs2.getString("name"),
                                     rs2.getString("format"),
@@ -272,6 +274,7 @@ public class Database {
         try(PreparedStatement ps = Database.getConnection().prepareStatement(sql); ResultSet rs = ps.executeQuery()) {
             while(rs.next()) {
                 Playlist data = new Playlist(
+                    rs.getInt("id"),
                     rs.getString("name")
                 );
 
