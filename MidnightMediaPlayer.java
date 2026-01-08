@@ -1,9 +1,8 @@
 // Package imports
-import javax.sound.sampled.AudioInputStream;
-import javax.sound.sampled.AudioSystem;
-import javax.sound.sampled.Clip;
+import javax.sound.sampled.*;
 import javax.swing.*;
 import javax.swing.border.*;
+import javax.swing.Timer;
 
 import models.Media;
 import models.Playlist;
@@ -11,13 +10,15 @@ import models.Playlist;
 import java.awt.*;
 import java.awt.event.*;
 import java.io.File;
+import java.io.IOException;
 import java.util.List;
+import java.util.ArrayList;
 
 public class MidnightMediaPlayer extends JFrame {
     private static MidnightMediaPlayer player;
+    
     //---------------- GUI components ---------------
-    // Main screen
-    // Side Panel
+    // ... (all your existing GUI component declarations remain the same)
     private JPanel sidePanel;
     private JButton homeButton; 
     private JButton musicListButton; 
@@ -25,7 +26,6 @@ public class MidnightMediaPlayer extends JFrame {
     private JButton logMenuButton; 
     private JButton mainExpandButton;
     
-    // Media control panel
     private JPanel controlPanel;
     private JButton playButton;
     private JButton nextButton;
@@ -40,7 +40,6 @@ public class MidnightMediaPlayer extends JFrame {
     private JLabel currentTimeLabel;
     private JLabel totalTimeLabel;
 
-    // Main content area
     private JPanel mainContentPanel;
     private JLabel sectionLabel;
     private JButton newMediaButton;
@@ -50,10 +49,8 @@ public class MidnightMediaPlayer extends JFrame {
     private JList<String> playlistList;   
     private DefaultListModel<String> playlistModel;
     
-    // Volume control
     private JSlider volumeSlider;
     
-    // Settings screen components
     private JPanel settingsPanel;
     private JButton settingsBackButton;
     private JButton manageDirectoriesButton;
@@ -64,6 +61,14 @@ public class MidnightMediaPlayer extends JFrame {
     private JButton multiselectFoldersButton;
     private JButton removeSelectedFolderButton;
     private JButton appearanceModeToggleButton;
+    
+    //---------------- Audio Playback Fields ---------------
+    private Clip currentClip;
+    private AudioInputStream audioStream;
+    private Timer playbackTimer;
+    private boolean isSeeking = false;
+    private List<Media> mediaList = new ArrayList<>();
+    private List<Media> currentPlaylist = new ArrayList<>();
     
     //---------------- Application States ---------------
     private boolean isPlaying = false;
@@ -77,18 +82,16 @@ public class MidnightMediaPlayer extends JFrame {
     private tab currentTab = tab.Home;
     
     //---------------- Appearance ----------------------------
-    // Dark theme colors - based on typical midnight/dark themes
-    private final Color PRIMARY_COLOR = new Color(220, 20, 60);     // Crimson red - for accents
-    private final Color SECONDARY_COLOR = new Color(30, 144, 255);  // Dodger blue - for secondary elements
-    private final Color ACCENT_COLOR = new Color(50, 205, 50);      // Lime green - for active states
-    private final Color DARK_BG = new Color(40, 40, 40);            // Near black background
-    private final Color DARKER_BG = new Color(30, 30, 30);          // Even darker for panels
-    private final Color TEXT_COLOR = new Color(180, 180, 180);      // Light gray text
-    private final Color HIGHLIGHT_COLOR = new Color(138, 43, 226);  // Blue violet - for hover states
-    private final Color SLIDER_COLOR = new Color(70, 70, 70);       // Dark gray for slider tracks
-    private final Color SLIDER_THUMB = new Color(220, 20, 60);      // Red for slider thumb
+    private final Color PRIMARY_COLOR = new Color(220, 20, 60);
+    private final Color SECONDARY_COLOR = new Color(30, 144, 255);
+    private final Color ACCENT_COLOR = new Color(50, 205, 50);
+    private final Color DARK_BG = new Color(40, 40, 40);
+    private final Color DARKER_BG = new Color(30, 30, 30);
+    private final Color TEXT_COLOR = new Color(180, 180, 180);
+    private final Color HIGHLIGHT_COLOR = new Color(138, 43, 226);
+    private final Color SLIDER_COLOR = new Color(70, 70, 70);
+    private final Color SLIDER_THUMB = new Color(220, 20, 60);
     
-    // Fonts - trying to match your CSS fonts
     private Font mogaFont;
     private Font ptSansFont;
     private Font ptSerifFont;
@@ -106,33 +109,58 @@ public class MidnightMediaPlayer extends JFrame {
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setMinimumSize(new Dimension(1200, 800));
         
-        // Set application icon (placeholder)
-        setIconImage(new ImageIcon("icon.png").getImage());
+        // Set application icon
+        try {
+            setIconImage(new ImageIcon("icon.png").getImage());
+        } catch (Exception e) {
+            // Ignore if icon not found
+        }
         
-        // Initialize track index
         currentTrackIndex = -1;
-        
-        // Load custom fonts
         loadCustomFonts();
-        
         initializeComponents();
         setupLayout();
         setupEventListeners();
         updateButtonStates();
         
+        // Initialize playback timer
+        playbackTimer = new Timer(100, e -> updatePlaybackProgress());
+        
         pack();
         setLocationRelativeTo(null);
         setVisible(true);
-
+        loadMedia();
         switchToHomeView();
     }
     
+    private void loadMedia() {
+        try {
+            mediaList = Database.getAllMedia();
+            currentPlaylist = mediaList;
+            updateMediaListUI();
+        } catch (Exception e) {
+            e.printStackTrace();
+            JOptionPane.showMessageDialog(this, 
+                "Error loading media: " + e.getMessage(),
+                "Database Error",
+                JOptionPane.ERROR_MESSAGE);
+        }
+    }
     
+    private void updateMediaListUI() {
+        playlistModel.clear();
+        for (Media media : mediaList) {
+            playlistModel.addElement(media.name);
+        }
+        if (playlistList != null) {
+            playlistList.setModel(playlistModel);
+        }
+    }
+    
+    // ... (loadCustomFonts method remains the same)
     private void loadCustomFonts() {
         try {
-            // Try to load custom fonts if they exist
-            mogaFont = Font.createFont(Font.TRUETYPE_FONT, 
-                new java.io.File("font/Moga.ttf")).deriveFont(Font.PLAIN, 14);
+            mogaFont = Font.createFont(Font.TRUETYPE_FONT, new File("font/Moga.ttf")).deriveFont(Font.PLAIN, 14);
             GraphicsEnvironment ge = GraphicsEnvironment.getLocalGraphicsEnvironment();
             ge.registerFont(mogaFont);
         } catch (Exception e) {
@@ -140,8 +168,7 @@ public class MidnightMediaPlayer extends JFrame {
         }
         
         try {
-            ptSansFont = Font.createFont(Font.TRUETYPE_FONT, 
-                new java.io.File("font/PTSans-Regular.ttf")).deriveFont(Font.PLAIN, 14);
+            ptSansFont = Font.createFont(Font.TRUETYPE_FONT, new File("font/PTSans-Regular.ttf")).deriveFont(Font.PLAIN, 14);
             GraphicsEnvironment ge = GraphicsEnvironment.getLocalGraphicsEnvironment();
             ge.registerFont(ptSansFont);
         } catch (Exception e) {
@@ -149,8 +176,7 @@ public class MidnightMediaPlayer extends JFrame {
         }
         
         try {
-            ptSerifFont = Font.createFont(Font.TRUETYPE_FONT, 
-                new java.io.File("font/PTSerif-Regular.ttf")).deriveFont(Font.PLAIN, 14);
+            ptSerifFont = Font.createFont(Font.TRUETYPE_FONT, new File("font/PTSerif-Regular.ttf")).deriveFont(Font.PLAIN, 14);
             GraphicsEnvironment ge = GraphicsEnvironment.getLocalGraphicsEnvironment();
             ge.registerFont(ptSerifFont);
         } catch (Exception e) {
@@ -158,8 +184,7 @@ public class MidnightMediaPlayer extends JFrame {
         }
         
         try {
-            wsParadoseFont = Font.createFont(Font.TRUETYPE_FONT, 
-                new java.io.File("font/Ws Paradose.ttf")).deriveFont(Font.PLAIN, 14);
+            wsParadoseFont = Font.createFont(Font.TRUETYPE_FONT, new File("font/Ws Paradose.ttf")).deriveFont(Font.PLAIN, 14);
             GraphicsEnvironment ge = GraphicsEnvironment.getLocalGraphicsEnvironment();
             ge.registerFont(wsParadoseFont);
         } catch (Exception e) {
@@ -167,8 +192,7 @@ public class MidnightMediaPlayer extends JFrame {
         }
         
         try {
-            wsParadoseItalicFont = Font.createFont(Font.TRUETYPE_FONT, 
-                new java.io.File("font/Ws Paradose Italic.ttf")).deriveFont(Font.ITALIC, 14);
+            wsParadoseItalicFont = Font.createFont(Font.TRUETYPE_FONT, new File("font/Ws Paradose Italic.ttf")).deriveFont(Font.ITALIC, 14);
             GraphicsEnvironment ge = GraphicsEnvironment.getLocalGraphicsEnvironment();
             ge.registerFont(wsParadoseItalicFont);
         } catch (Exception e) {
@@ -212,7 +236,7 @@ public class MidnightMediaPlayer extends JFrame {
         totalTimeLabel.setFont(ptSansFont.deriveFont(Font.PLAIN, 12));
         
         // Progress slider
-        mediaProgressSlider = new JSlider(0, 100, 0);
+        mediaProgressSlider = new JSlider(0, 1000, 0);
         styleSlider(mediaProgressSlider);
         
         // Volume slider
@@ -229,7 +253,7 @@ public class MidnightMediaPlayer extends JFrame {
         newMediaButton.addActionListener(e -> OpenMediaAddingMenu());
         settingsButton = createStyledButton("Settings", PRIMARY_COLOR);
             
-        // Initialize settings panel components (simplified for now)
+        // Initialize settings panel components
         settingsBackButton = createSideButton("BACK", "←");
         manageDirectoriesButton = createSideButton("FOLDERS", "📁");
         appearanceButton = createSideButton("APPEARANCE", "🎨");
@@ -238,7 +262,6 @@ public class MidnightMediaPlayer extends JFrame {
     }
     
     private void setupLayout() {
-        // Main container with BorderLayout
         setLayout(new BorderLayout());
         getContentPane().setBackground(DARK_BG);
         
@@ -251,9 +274,7 @@ public class MidnightMediaPlayer extends JFrame {
         
         // Add logo/header
         try {
-            // Load the icon image
             ImageIcon icon = new ImageIcon("icon.png");
-            // Resize if needed (adjust 40, 40 to your desired dimensions)
             Image scaledImage = icon.getImage().getScaledInstance(40, 40, Image.SCALE_SMOOTH);
             JLabel logoLabel = new JLabel(new ImageIcon(scaledImage));
             logoLabel.setToolTipText("Midnight Media Player");
@@ -261,7 +282,6 @@ public class MidnightMediaPlayer extends JFrame {
             sidePanel.add(logoLabel);
             sidePanel.add(Box.createRigidArea(new Dimension(0, 30)));
         } catch (Exception e) {
-            // If icon fails to load, skip adding anything or add text fallback
             JLabel logoLabel = new JLabel("Midnight");
             logoLabel.setFont(mogaFont.deriveFont(Font.BOLD, 20));
             logoLabel.setForeground(PRIMARY_COLOR);
@@ -302,27 +322,20 @@ public class MidnightMediaPlayer extends JFrame {
         topButtons.add(settingsButton);
         topBar.add(topButtons, BorderLayout.EAST);
         
-        // Center content with album art and playlist
+        // Center content
         JPanel centerPanel = new JPanel(new GridBagLayout());
         centerPanel.setBackground(DARK_BG);
         GridBagConstraints gbc = new GridBagConstraints();
         
-        gbc.gridx = 0;
-        gbc.gridy = 0;
-        gbc.weightx = 0.4;
-        gbc.weighty = 1.0;
-        gbc.fill = GridBagConstraints.BOTH;
-        gbc.insets = new Insets(0, 0, 0, 20);
-        
-        // Playlist panel
         selectedMenuPanel = new JPanel(new BorderLayout());
         selectedMenuPanel.setBackground(DARKER_BG);
         selectedMenuPanel.setBorder(BorderFactory.createLineBorder(new Color(40, 40, 40), 1));
         
-        gbc.gridx = 1;
+        gbc.gridx = 0;
         gbc.gridy = 0;
-        gbc.weightx = 0.6;
-        gbc.insets = new Insets(0, 20, 0, 0);
+        gbc.weightx = 1.0;
+        gbc.weighty = 1.0;
+        gbc.fill = GridBagConstraints.BOTH;
         centerPanel.add(selectedMenuPanel, gbc);
         
         // Control panel at bottom
@@ -403,13 +416,14 @@ public class MidnightMediaPlayer extends JFrame {
     private void OpenMediaAddingMenu() {
         JDialog dialog = MediaAddingMenu.OpenMediaAddingMenu(player);
         dialog.setLocationRelativeTo(player);
-        dialog.setVisible(true); // BLOCKS until dialog is closed
+        dialog.setVisible(true);
+        loadMedia(); // Reload media after adding
     }
 
     private void OpenPlaylistCreator() {
         JDialog dialog = PlaylistAddingMenu.OpenPlaylistCreationMenu(player);
         dialog.setLocationRelativeTo(player);
-        dialog.setVisible(true); // BLOCKS until dialog is closed
+        dialog.setVisible(true);
     }
     
     private void setupEventListeners() {
@@ -420,24 +434,221 @@ public class MidnightMediaPlayer extends JFrame {
         settingsButton.addActionListener(e -> switchToSettingsView());
         logMenuButton.addActionListener(e -> switchToLogsView());
         
-        // Control buttons (visual feedback only)
+        // Control buttons
         playButton.addActionListener(e -> togglePlayPause());
+        prevButton.addActionListener(e -> playPreviousTrack());
+        nextButton.addActionListener(e -> playNextTrack());
         shuffleButton.addActionListener(e -> toggleShuffle());
         loopButton.addActionListener(e -> toggleLoop());
         muteButton.addActionListener(e -> toggleMute());
         fullscreenButton.addActionListener(e -> toggleFullscreen());
+        
+        // Progress slider seeking
+        mediaProgressSlider.addMouseListener(new MouseAdapter() {
+            @Override
+            public void mousePressed(MouseEvent e) {
+                isSeeking = true;
+            }
+            
+            @Override
+            public void mouseReleased(MouseEvent e) {
+                if (currentClip != null) {
+                    int value = mediaProgressSlider.getValue();
+                    long microPosition = (long) value * 1000L; // Convert to microseconds
+                    currentClip.setMicrosecondPosition(microPosition);
+                    updateCurrentTimeLabel(microPosition);
+                }
+                isSeeking = false;
+            }
+        });
+        
+        // Volume slider
+        volumeSlider.addChangeListener(e -> {
+            if (!isMuted) {
+                setVolume(volumeSlider.getValue());
+            }
+        });
+    }
+    
+    // AUDIO PLAYBACK METHODS
+    private void togglePlayPause() {
+        if (currentPlaylist.isEmpty()) {
+            mediaNameLabel.setText("No media available");
+            JOptionPane.showMessageDialog(this,
+                "No media files found. Please add media first.",
+                "No Media",
+                JOptionPane.WARNING_MESSAGE);
+            return;
+        }
+        
+        if (currentTrackIndex < 0) {
+            currentTrackIndex = 0;
+        }
+        
+        if (!isPlaying) {
+            playCurrentTrack();
+            isPlaying = true;
+        } else {
+            pausePlayback();
+            isPlaying = false;
+        }
+        updateButtonStates();
+    }
+    
+    private void playCurrentTrack() {
+        if (currentTrackIndex >= 0 && currentTrackIndex < currentPlaylist.size()) {
+            Media currentMedia = currentPlaylist.get(currentTrackIndex);
+            
+            try {
+                stopPlayback();
+                
+                File audioFile = new File(currentMedia.filePath);
+                if (!audioFile.exists()) {
+                    JOptionPane.showMessageDialog(this,
+                        "File not found: " + audioFile.getPath(),
+                        "File Error",
+                        JOptionPane.ERROR_MESSAGE);
+                    return;
+                }
+                
+                audioStream = AudioSystem.getAudioInputStream(audioFile);
+                currentClip = AudioSystem.getClip();
+                currentClip.open(audioStream);
+                
+                currentClip.addLineListener(event -> {
+                    if (event.getType() == LineEvent.Type.STOP) {
+                        SwingUtilities.invokeLater(() -> {
+                            if (!isSeeking && !isLooped && currentClip.getFramePosition() == currentClip.getFrameLength()) {
+                                playNextTrack();
+                            }
+                        });
+                    }
+                });
+                
+                currentClip.start();
+                
+                mediaNameLabel.setText("Now Playing: " + currentMedia.name);
+                folderOriginLabel.setText("From: " + currentMedia.folder);
+                
+                long duration = currentClip.getMicrosecondLength();
+                mediaProgressSlider.setMaximum((int)(duration / 1000));
+                mediaProgressSlider.setValue(0);
+                
+                updateTotalTimeLabel(duration);
+                playbackTimer.start();
+                
+                jumpscareChance();
+                
+            } catch (Exception e) {
+                e.printStackTrace();
+                JOptionPane.showMessageDialog(this,
+                    "Error playing audio: " + e.getMessage(),
+                    "Playback Error",
+                    JOptionPane.ERROR_MESSAGE);
+            }
+        }
+    }
+    
+    private void pausePlayback() {
+        if (currentClip != null && currentClip.isRunning()) {
+            currentClip.stop();
+            playbackTimer.stop();
+        }
+    }
+    
+    private void stopPlayback() {
+        if (currentClip != null) {
+            currentClip.stop();
+            currentClip.close();
+        }
+        if (audioStream != null) {
+            try { audioStream.close(); } catch (IOException e) { e.printStackTrace(); }
+        }
+        playbackTimer.stop();
+    }
+    
+    private void updatePlaybackProgress() {
+        if (currentClip != null && !isSeeking) {
+            long position = currentClip.getMicrosecondPosition();
+            mediaProgressSlider.setValue((int)(position / 1000));
+            updateCurrentTimeLabel(position);
+            
+            if (position >= currentClip.getMicrosecondLength()) {
+                if (isLooped) {
+                    currentClip.setMicrosecondPosition(0);
+                    currentClip.start();
+                } else {
+                    playNextTrack();
+                }
+            }
+        }
+    }
+    
+    private void playNextTrack() {
+        if (currentPlaylist.isEmpty()) return;
+        
+        if (isShuffled) {
+            currentTrackIndex = (int)(Math.random() * currentPlaylist.size());
+        } else {
+            currentTrackIndex = (currentTrackIndex + 1) % currentPlaylist.size();
+        }
+        
+        stopPlayback();
+        playCurrentTrack();
+        isPlaying = true;
+        updateButtonStates();
+    }
+    
+    private void playPreviousTrack() {
+        if (currentPlaylist.isEmpty()) return;
+        
+        if (isShuffled) {
+            currentTrackIndex = (int)(Math.random() * currentPlaylist.size());
+        } else {
+            currentTrackIndex = (currentTrackIndex - 1 + currentPlaylist.size()) % currentPlaylist.size();
+        }
+        
+        stopPlayback();
+        playCurrentTrack();
+        isPlaying = true;
+        updateButtonStates();
+    }
+    
+    private void setVolume(int volume) {
+        if (currentClip != null) {
+            try {
+                FloatControl gainControl = (FloatControl) currentClip.getControl(FloatControl.Type.MASTER_GAIN);
+                float dB = (float) (Math.log(volume / 100.0) / Math.log(10.0) * 20.0);
+                dB = Math.max(gainControl.getMinimum(), Math.min(gainControl.getMaximum(), dB));
+                gainControl.setValue(dB);
+            } catch (Exception e) {
+                // Some formats don't support volume control
+            }
+        }
+    }
+    
+    private void updateCurrentTimeLabel(long microseconds) {
+        long seconds = microseconds / 1000000;
+        long minutes = seconds / 60;
+        seconds = seconds % 60;
+        currentTimeLabel.setText(String.format("%02d:%02d", minutes, seconds));
+    }
+    
+    private void updateTotalTimeLabel(long microseconds) {
+        long seconds = microseconds / 1000000;
+        long minutes = seconds / 60;
+        seconds = seconds % 60;
+        totalTimeLabel.setText(String.format("%02d:%02d", minutes, seconds));
     }
     
     private void updateButtonStates() {
-        // Update button text based on states
         playButton.setText(isPlaying ? "⏸" : "▶");
         shuffleButton.setForeground(isShuffled ? ACCENT_COLOR : TEXT_COLOR);
         loopButton.setForeground(isLooped ? ACCENT_COLOR : TEXT_COLOR);
         muteButton.setText(isMuted ? "🔇" : "🔊");
         muteButton.setForeground(isMuted ? PRIMARY_COLOR : TEXT_COLOR);
         
-        // Update control button backgrounds when active
-        if (isPlaying) {
+        if (isPlaying && currentClip != null && currentClip.isRunning()) {
             playButton.setBackground(ACCENT_COLOR);
         } else {
             playButton.setBackground(DARKER_BG);
@@ -456,7 +667,8 @@ public class MidnightMediaPlayer extends JFrame {
         }
     }
     
-    // UI Helper Methods
+    // ... (All your existing UI helper methods: createSideButton, createControlButton, 
+    // createStyledButton, styleSlider - remain exactly the same)
     private JButton createSideButton(String text, String icon) {
         JButton button = new JButton("<html><div style='text-align: center;'>" + icon + "<br><small>" + text + "</small></div></html>");
         button.setFont(ptSansFont.deriveFont(Font.PLAIN, 11));
@@ -470,7 +682,6 @@ public class MidnightMediaPlayer extends JFrame {
         button.setCursor(new Cursor(Cursor.HAND_CURSOR));
         button.setToolTipText(text);
         
-        // Hover effect
         button.addMouseListener(new MouseAdapter() {
             @Override
             public void mouseEntered(MouseEvent e) {
@@ -501,7 +712,6 @@ public class MidnightMediaPlayer extends JFrame {
         button.setCursor(new Cursor(Cursor.HAND_CURSOR));
         button.setToolTipText(tooltip);
         
-        // Hover effect
         button.addMouseListener(new MouseAdapter() {
             @Override
             public void mouseEntered(MouseEvent e) {
@@ -537,7 +747,6 @@ public class MidnightMediaPlayer extends JFrame {
         button.setFocusPainted(false);
         button.setCursor(new Cursor(Cursor.HAND_CURSOR));
         
-        // Hover effect
         button.addMouseListener(new MouseAdapter() {
             @Override
             public void mouseEntered(MouseEvent e) {
@@ -569,7 +778,6 @@ public class MidnightMediaPlayer extends JFrame {
         slider.setPaintTicks(false);
         slider.setPaintLabels(false);
         
-        // Custom UI for rounded slider
         slider.setUI(new javax.swing.plaf.basic.BasicSliderUI(slider) {
             @Override
             public void paintThumb(Graphics g) {
@@ -577,8 +785,6 @@ public class MidnightMediaPlayer extends JFrame {
                 g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
                 g2d.setColor(SLIDER_THUMB);
                 g2d.fillOval(thumbRect.x, thumbRect.y, thumbRect.width, thumbRect.height);
-                
-                // Add a subtle border to thumb
                 g2d.setColor(SLIDER_THUMB.darker());
                 g2d.drawOval(thumbRect.x, thumbRect.y, thumbRect.width, thumbRect.height);
             }
@@ -587,18 +793,12 @@ public class MidnightMediaPlayer extends JFrame {
             public void paintTrack(Graphics g) {
                 Graphics2D g2d = (Graphics2D) g;
                 g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
-                
-                // Track background
                 g2d.setColor(SLIDER_COLOR);
                 int cy = trackRect.y + trackRect.height / 2 - 2;
                 g2d.fillRoundRect(trackRect.x, cy, trackRect.width, 4, 4, 4);
-                
-                // Progress
                 int progressX = thumbRect.x + thumbRect.width / 2;
                 g2d.setColor(PRIMARY_COLOR);
                 g2d.fillRoundRect(trackRect.x, cy, progressX - trackRect.x, 4, 4, 4);
-                
-                // Track border
                 g2d.setColor(SLIDER_COLOR.darker());
                 g2d.drawRoundRect(trackRect.x, cy, trackRect.width, 4, 4, 4);
             }
@@ -619,80 +819,85 @@ public class MidnightMediaPlayer extends JFrame {
     }
     
     private void RecyclePlaylistSelection() {
-        playlistModel = new DefaultListModel<>();
-
-        List<Playlist> allSongs;
+        playlistModel.clear();
         try {
-            allSongs = Database.getAllPlaylists();
-
-            for(Playlist song : allSongs)
-            {
-                playlistModel.addElement(song.name);
+            List<Playlist> allPlaylists = Database.getAllPlaylists();
+            for(Playlist playlist : allPlaylists) {
+                playlistModel.addElement(playlist.name);
             }
-        
-        playlistList = new JList<>(playlistModel);
-        playlistList.setFont(ptSansFont.deriveFont(Font.PLAIN, 14));
-        playlistList.setForeground(TEXT_COLOR);
-        playlistList.setBackground(DARKER_BG);
-        playlistList.setSelectionBackground(new Color(60, 60, 60));
-        playlistList.setSelectionForeground(PRIMARY_COLOR);
-        playlistList.setFixedCellHeight(40);
-        playlistList.setBorder(BorderFactory.createEmptyBorder(5, 10, 5, 10));
-
-        // Playlist selection
-        playlistList.addListSelectionListener(e -> {
-            if (!e.getValueIsAdjusting()) {
-                int index = playlistList.getSelectedIndex();
-                if (index >= 0) {
-                    currentTrackIndex = index;
-                    updateNowPlaying();
+            
+            playlistList = new JList<>(playlistModel);
+            playlistList.setFont(ptSansFont.deriveFont(Font.PLAIN, 14));
+            playlistList.setForeground(TEXT_COLOR);
+            playlistList.setBackground(DARKER_BG);
+            playlistList.setSelectionBackground(new Color(60, 60, 60));
+            playlistList.setSelectionForeground(PRIMARY_COLOR);
+            playlistList.setFixedCellHeight(40);
+            playlistList.setBorder(BorderFactory.createEmptyBorder(5, 10, 5, 10));
+            
+            playlistList.addListSelectionListener(e -> {
+                if (!e.getValueIsAdjusting()) {
+                    int index = playlistList.getSelectedIndex();
+                    if (index >= 0) {
+                        try {
+                            List<Playlist> playlists = Database.getAllPlaylists();
+                            if (index < playlists.size()) {
+                                currentPlaylist = Database.getPlaylistMedia(playlists.get(index).id);
+                                currentTrackIndex = -1;
+                                stopPlayback();
+                                isPlaying = false;
+                                updateButtonStates();
+                                mediaNameLabel.setText("Playlist: " + playlists.get(index).name);
+                            }
+                        } catch (Exception ex) {
+                            ex.printStackTrace();
+                        }
+                    }
                 }
-            }
-        });
+            });
         } catch (Exception e) {
             e.printStackTrace();
         }
     }
 
-    // DB connections
     private void RecycleMediaSelection() {
-        playlistModel = new DefaultListModel<>();
-
-        List<Media> allSongs;
+        playlistModel.clear();
         try {
-            allSongs = Database.getAllMedia();
-
-            for(Media song : allSongs)
-            {
-                playlistModel.addElement(song.name);
+            mediaList = Database.getAllMedia();
+            currentPlaylist = mediaList;
+            
+            for(Media media : mediaList) {
+                playlistModel.addElement(media.name);
             }
-        
-        // Playlist
-        playlistList = new JList<>(playlistModel);
-        playlistList.setFont(ptSansFont.deriveFont(Font.PLAIN, 14));
-        playlistList.setForeground(TEXT_COLOR);
-        playlistList.setBackground(DARKER_BG);
-        playlistList.setSelectionBackground(new Color(60, 60, 60));
-        playlistList.setSelectionForeground(PRIMARY_COLOR);
-        playlistList.setFixedCellHeight(40);
-        playlistList.setBorder(BorderFactory.createEmptyBorder(5, 10, 5, 10));
-
-        // Playlist selection
-        playlistList.addListSelectionListener(e -> {
-            if (!e.getValueIsAdjusting()) {
-                int index = playlistList.getSelectedIndex();
-                if (index >= 0) {
-                    currentTrackIndex = index;
-                    updateNowPlaying();
+            
+            playlistList = new JList<>(playlistModel);
+            playlistList.setFont(ptSansFont.deriveFont(Font.PLAIN, 14));
+            playlistList.setForeground(TEXT_COLOR);
+            playlistList.setBackground(DARKER_BG);
+            playlistList.setSelectionBackground(new Color(60, 60, 60));
+            playlistList.setSelectionForeground(PRIMARY_COLOR);
+            playlistList.setFixedCellHeight(40);
+            playlistList.setBorder(BorderFactory.createEmptyBorder(5, 10, 5, 10));
+            
+            playlistList.addListSelectionListener(e -> {
+                if (!e.getValueIsAdjusting()) {
+                    int index = playlistList.getSelectedIndex();
+                    if (index >= 0 && index < mediaList.size()) {
+                        currentTrackIndex = index;
+                        stopPlayback();
+                        isPlaying = false;
+                        updateButtonStates();
+                        mediaNameLabel.setText("Selected: " + mediaList.get(index).name);
+                        folderOriginLabel.setText("From: " + mediaList.get(index).folder);
+                    }
                 }
-            }
-        });
+            });
         } catch (Exception e) {
             e.printStackTrace();
         }
     }
     
-    // View switching methods (visual only)
+    // View switching methods
     private void switchToHomeView() {
         currentTab = tab.Home;
         sectionLabel.setText("Recently Played");
@@ -700,13 +905,8 @@ public class MidnightMediaPlayer extends JFrame {
         musicListButton.setForeground(TEXT_COLOR);
         playlistButton.setForeground(TEXT_COLOR);
         logMenuButton.setForeground(TEXT_COLOR);
-
         UpdatePerMenuUI();
-
-
-        //Panel goes here
-
-
+        
         selectedMenuPanel.setBorder(BorderFactory.createTitledBorder(
             BorderFactory.createLineBorder(new Color(60, 60, 60), 1),
             "Welcome",
@@ -724,7 +924,6 @@ public class MidnightMediaPlayer extends JFrame {
         musicListButton.setForeground(PRIMARY_COLOR);
         playlistButton.setForeground(TEXT_COLOR);
         logMenuButton.setForeground(TEXT_COLOR);
-
         UpdatePerMenuUI();
         RecycleMediaSelection();
         
@@ -733,13 +932,12 @@ public class MidnightMediaPlayer extends JFrame {
         playlistScrollPane.getViewport().setBackground(DARKER_BG);
         playlistScrollPane.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED);
         
-        // Style the scrollbar
         JScrollBar verticalScrollBar = playlistScrollPane.getVerticalScrollBar();
         verticalScrollBar.setBackground(DARKER_BG);
         verticalScrollBar.setForeground(new Color(60, 60, 60));
         
         selectedMenuPanel.add(playlistScrollPane, BorderLayout.CENTER);
-
+        
         selectedMenuPanel.setBorder(BorderFactory.createTitledBorder(
             BorderFactory.createLineBorder(new Color(60, 60, 60), 1),
             "Media Library",
@@ -757,7 +955,6 @@ public class MidnightMediaPlayer extends JFrame {
         musicListButton.setForeground(TEXT_COLOR);
         playlistButton.setForeground(PRIMARY_COLOR);
         logMenuButton.setForeground(TEXT_COLOR);
-
         UpdatePerMenuUI();
         RecyclePlaylistSelection();
 
@@ -766,13 +963,11 @@ public class MidnightMediaPlayer extends JFrame {
         playlistScrollPane.getViewport().setBackground(DARKER_BG);
         playlistScrollPane.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED);
         
-        // Style the scrollbar
         JScrollBar verticalScrollBar = playlistScrollPane.getVerticalScrollBar();
         verticalScrollBar.setBackground(DARKER_BG);
         verticalScrollBar.setForeground(new Color(60, 60, 60));
         
         selectedMenuPanel.add(playlistScrollPane, BorderLayout.CENTER);
-
 
         selectedMenuPanel.setBorder(BorderFactory.createTitledBorder(
             BorderFactory.createLineBorder(new Color(60, 60, 60), 1),
@@ -791,13 +986,8 @@ public class MidnightMediaPlayer extends JFrame {
         musicListButton.setForeground(TEXT_COLOR);
         playlistButton.setForeground(TEXT_COLOR);
         logMenuButton.setForeground(PRIMARY_COLOR);
-
         UpdatePerMenuUI();
-
-
-        //Panel goes here
-
-
+        
         selectedMenuPanel.setBorder(BorderFactory.createTitledBorder(
             BorderFactory.createLineBorder(new Color(60, 60, 60), 1),
             "Activity Log",
@@ -814,13 +1004,8 @@ public class MidnightMediaPlayer extends JFrame {
         musicListButton.setForeground(TEXT_COLOR);
         playlistButton.setForeground(TEXT_COLOR);
         logMenuButton.setForeground(TEXT_COLOR);
-
         UpdatePerMenuUI();
-
-
-        //Panel goes here
-
-
+        
         selectedMenuPanel.setBorder(BorderFactory.createTitledBorder(
             BorderFactory.createLineBorder(new Color(60, 60, 60), 1),
             "Configuration",
@@ -831,27 +1016,22 @@ public class MidnightMediaPlayer extends JFrame {
         ));
     }
 
-    private void UpdatePerMenuUI()
-    {
+    private void UpdatePerMenuUI() {
         ClearOldPanel();
-        for(ActionListener command : newMediaButton.getActionListeners())
-        {
+        for(ActionListener command : newMediaButton.getActionListeners()) {
             newMediaButton.removeActionListener(command);
         }
         newMediaButton.setVisible(true);
 
-        if(currentTab == tab.Media)
-        {
+        if(currentTab == tab.Media) {
             newMediaButton.addActionListener(e -> OpenMediaAddingMenu());
             newMediaButton.setText("+ Add Media");
-        }
-        else if(currentTab == tab.Playlist)
-        {
+        } else if(currentTab == tab.Playlist) {
             newMediaButton.addActionListener(e -> OpenPlaylistCreator());
             newMediaButton.setText("+ New Playlist");
-        }
-        else
+        } else {
             newMediaButton.setVisible(false);
+        }
     }
 
     private void ClearOldPanel() {
@@ -860,72 +1040,7 @@ public class MidnightMediaPlayer extends JFrame {
         selectedMenuPanel.repaint();
     }
 
-    // State toggle methods (visual only)
-    private void togglePlayPause() {
-        if (playlistModel == null || playlistModel.isEmpty()) {
-            mediaNameLabel.setText("No media available");
-            return;
-        }
-        
-        isPlaying = !isPlaying;
-        updateButtonStates();
-        
-        if (isPlaying) {
-            mediaNameLabel.setText("Now Playing: " + playlistModel.get(currentTrackIndex >= 0 ? currentTrackIndex : 0));
-
-            jumpscareChance();
-        }
-    }
-    
-    private void jumpscareChance() {
-        int chance = 5;
-        int roll = (int)(Math.random() * 100);
-
-        if (roll < chance) {
-            triggerJumpscare();
-        }
-    }
-
-
-    private void triggerJumpscare() {
-        JWindow jumpscareWindow = new JWindow();
-        jumpscareWindow.setAlwaysOnTop(true);
-        jumpscareWindow.setBackground(Color.BLACK);
-        Dimension screen = Toolkit.getDefaultToolkit().getScreenSize();
-        jumpscareWindow.setSize(screen);
-        jumpscareWindow.setLocation(0, 0);
-
-        JLabel imageLabel = new JLabel();
-        imageLabel.setHorizontalAlignment(SwingConstants.CENTER);
-        ImageIcon icon = new ImageIcon("casper_jumpscare.png");
-        imageLabel.setIcon(new ImageIcon(
-            icon.getImage().getScaledInstance(
-                screen.width, screen.height, Image.SCALE_SMOOTH
-            )
-        ));
-
-        jumpscareWindow.add(imageLabel);
-        jumpscareWindow.setVisible(true);
-
-        playScreamSound(); 
-
-        
-        new Timer(300, e -> jumpscareWindow.dispose()).start();
-    }
-
-    private void playScreamSound() {
-        try {
-            AudioInputStream audio =
-                AudioSystem.getAudioInputStream(new File("jumpscare_sound.wav"));
-
-            Clip clip = AudioSystem.getClip();
-            clip.open(audio);
-            clip.start();
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-    }
-    
+    // State toggle methods
     private void toggleShuffle() {
         isShuffled = !isShuffled;
         updateButtonStates();
@@ -938,6 +1053,20 @@ public class MidnightMediaPlayer extends JFrame {
     
     private void toggleMute() {
         isMuted = !isMuted;
+        
+        if (currentClip != null) {
+            try {
+                FloatControl gainControl = (FloatControl) currentClip.getControl(FloatControl.Type.MASTER_GAIN);
+                if (isMuted) {
+                    gainControl.setValue(gainControl.getMinimum());
+                } else {
+                    setVolume(volumeSlider.getValue());
+                }
+            } catch (Exception e) {
+                // Some formats don't support volume control
+            }
+        }
+        
         updateButtonStates();
     }
     
@@ -945,7 +1074,6 @@ public class MidnightMediaPlayer extends JFrame {
         isFullscreen = !isFullscreen;
         if (isFullscreen) {
             setExtendedState(JFrame.MAXIMIZED_BOTH);
-            // Remove window decorations for true fullscreen
             dispose();
             setUndecorated(true);
             setVisible(true);
@@ -957,40 +1085,72 @@ public class MidnightMediaPlayer extends JFrame {
         }
     }
     
-    private void updateNowPlaying() {
-        if (currentTrackIndex >= 0 && currentTrackIndex < playlistModel.size()) {
-            mediaNameLabel.setText("Now Playing: " + playlistModel.get(currentTrackIndex));
-            folderOriginLabel.setText("From: Midnight Playlist");
-            
-            // Simulate progress update
-            new Timer(1000, e -> {
-                if (isPlaying) {
-                    int current = mediaProgressSlider.getValue();
-                    if (current < 100) {
-                        mediaProgressSlider.setValue(current + 1);
-                        updateTimeLabels(current + 1);
-                    }
-                }
-            }).start();
+    private void jumpscareChance() {
+        int chance = 5;
+        int roll = (int)(Math.random() * 100);
+
+        if (roll < chance) {
+            triggerJumpscare();
+        }
+    }
+
+    private void triggerJumpscare() {
+        boolean wasPlaying = isPlaying;
+        if (wasPlaying) {
+            pausePlayback();
+        }
+        
+        JWindow jumpscareWindow = new JWindow();
+        jumpscareWindow.setAlwaysOnTop(true);
+        jumpscareWindow.setBackground(Color.BLACK);
+        Dimension screen = Toolkit.getDefaultToolkit().getScreenSize();
+        jumpscareWindow.setSize(screen);
+        jumpscareWindow.setLocation(0, 0);
+
+        JLabel imageLabel = new JLabel();
+        imageLabel.setHorizontalAlignment(SwingConstants.CENTER);
+        try {
+            ImageIcon icon = new ImageIcon("casper_jumpscare.png");
+            imageLabel.setIcon(new ImageIcon(
+                icon.getImage().getScaledInstance(
+                    screen.width, screen.height, Image.SCALE_SMOOTH
+                )
+            ));
+        } catch (Exception e) {
+            // If image not found, use red screen
+            imageLabel.setBackground(Color.RED);
+            imageLabel.setOpaque(true);
+        }
+
+        jumpscareWindow.add(imageLabel);
+        jumpscareWindow.setVisible(true);
+
+        playScreamSound();
+
+        new Timer(300, e -> {
+            jumpscareWindow.dispose();
+            if (wasPlaying && currentClip != null) {
+                currentClip.start();
+            }
+        }).start();
+    }
+
+    private void playScreamSound() {
+        try {
+            AudioInputStream audio = AudioSystem.getAudioInputStream(new File("jumpscare_sound.wav"));
+            Clip clip = AudioSystem.getClip();
+            clip.open(audio);
+            clip.start();
+        } catch (Exception e) {
+            // Ignore if sound file not found
         }
     }
     
-    private void updateTimeLabels(int progress) {
-        int totalSeconds = 180; // 3 minutes
-        int currentSeconds = (progress * totalSeconds) / 100;
-        
-        currentTimeLabel.setText(String.format("%d:%02d", currentSeconds / 60, currentSeconds % 60));
-        totalTimeLabel.setText(String.format("%d:%02d", totalSeconds / 60, totalSeconds % 60));
-    }
-    
-    // Main method to run the application
+    // Main method
     public static void main(String[] args) {
         SwingUtilities.invokeLater(() -> {
             try {
-                // Use system look and feel
                 UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
-                
-                // Set some default UI properties for better dark theme
                 UIManager.put("ScrollBar.thumb", new Color(60, 60, 60));
                 UIManager.put("ScrollBar.track", new Color(18, 18, 18));
                 UIManager.put("ScrollBar.width", 12);
@@ -999,5 +1159,15 @@ public class MidnightMediaPlayer extends JFrame {
             }
             player = new MidnightMediaPlayer();
         });
+    }
+    
+    // Cleanup on close
+    @Override
+    public void dispose() {
+        stopPlayback();
+        if (playbackTimer != null) {
+            playbackTimer.stop();
+        }
+        super.dispose();
     }
 }
