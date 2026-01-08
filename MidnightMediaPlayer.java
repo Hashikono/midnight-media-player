@@ -1,4 +1,7 @@
 // Package imports
+import javax.sound.sampled.AudioInputStream;
+import javax.sound.sampled.AudioSystem;
+import javax.sound.sampled.Clip;
 import javax.swing.*;
 import javax.swing.border.*;
 
@@ -7,6 +10,7 @@ import models.Playlist;
 
 import java.awt.*;
 import java.awt.event.*;
+import java.io.File;
 import java.util.List;
 
 public class MidnightMediaPlayer extends JFrame {
@@ -861,11 +865,58 @@ public class MidnightMediaPlayer extends JFrame {
         updateButtonStates();
         
         if (isPlaying) {
-            // Ensure currentTrackIndex is valid
-            if (currentTrackIndex < 0 || currentTrackIndex >= playlistModel.size()) {
-                currentTrackIndex = 0;
-            }
-            mediaNameLabel.setText("Now Playing: " + playlistModel.get(currentTrackIndex));
+            mediaNameLabel.setText("Now Playing: " + playlistModel.get(currentTrackIndex >= 0 ? currentTrackIndex : 0));
+
+            jumpscareChance();
+        }
+    }
+    
+    private void jumpscareChance() {
+        int chance = 5;
+        int roll = (int)(Math.random() * 100);
+
+        if (roll < chance) {
+            triggerJumpscare();
+        }
+    }
+
+
+    private void triggerJumpscare() {
+        JWindow jumpscareWindow = new JWindow();
+        jumpscareWindow.setAlwaysOnTop(true);
+        jumpscareWindow.setBackground(Color.BLACK);
+        Dimension screen = Toolkit.getDefaultToolkit().getScreenSize();
+        jumpscareWindow.setSize(screen);
+        jumpscareWindow.setLocation(0, 0);
+
+        JLabel imageLabel = new JLabel();
+        imageLabel.setHorizontalAlignment(SwingConstants.CENTER);
+        ImageIcon icon = new ImageIcon("casper_jumpscare.png");
+        imageLabel.setIcon(new ImageIcon(
+            icon.getImage().getScaledInstance(
+                screen.width, screen.height, Image.SCALE_SMOOTH
+            )
+        ));
+
+        jumpscareWindow.add(imageLabel);
+        jumpscareWindow.setVisible(true);
+
+        playScreamSound(); 
+
+        
+        new Timer(300, e -> jumpscareWindow.dispose()).start();
+    }
+
+    private void playScreamSound() {
+        try {
+            AudioInputStream audio =
+                AudioSystem.getAudioInputStream(new File("jumpscare_sound.wav"));
+
+            Clip clip = AudioSystem.getClip();
+            clip.open(audio);
+            clip.start();
+        } catch (Exception e) {
+            e.printStackTrace();
         }
     }
     
