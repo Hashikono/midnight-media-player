@@ -67,7 +67,6 @@ public class MidnightMediaPlayer extends JFrame {
     private boolean isMuted = false;
     private boolean isLooped = false;
     private boolean isFullscreen = false;
-    private boolean isSidePanelExpanded = false;
     private int currentTrackIndex = -1;
 
     private enum tab {Home, Media, Playlist, Log};
@@ -77,9 +76,9 @@ public class MidnightMediaPlayer extends JFrame {
     private final Color PRIMARY_COLOR = new Color(242, 75, 75);     // Midnight red
     private final Color SECONDARY_COLOR = new Color(52, 152, 219);  // Lighter blue
     private final Color ACCENT_COLOR = new Color(46, 204, 113);     // Green accent
-    private final Color DARK_BG = new Color(133, 131, 131);         // Dark background
-    private final Color DARKER_BG = new Color(125, 123, 123);       // Even darker
-    private final Color TEXT_COLOR = new Color(242, 75, 75);        // Text color
+    private final Color DARK_BG = new Color(133, 131, 131);            // Dark background
+    private final Color DARKER_BG = new Color(125, 123, 123);          // Even darker
+    private final Color TEXT_COLOR = new Color(242, 75, 75);      // Text color
     private final Color HIGHLIGHT_COLOR = new Color(155, 89, 182);  // Purple highlight
     private final Color SLIDER_COLOR = new Color(80, 80, 80);
     private final Color SLIDER_THUMB = new Color(242, 75, 75);
@@ -89,11 +88,6 @@ public class MidnightMediaPlayer extends JFrame {
     private Font subtitleFont = new Font("Ariel", Font.PLAIN, 16);
     private Font normalFont = new Font("Ariel", Font.PLAIN, 14);
     private Font smallFont = new Font("Ariel", Font.PLAIN, 12);
-    private Font sidePanelFont = new Font("Ariel", Font.PLAIN, 14);
-    
-    // Side panel dimensions
-    private final int COLLAPSED_WIDTH = 100;
-    private final int EXPANDED_WIDTH = 250;
     
     // Constructor
     public MidnightMediaPlayer() {
@@ -102,11 +96,7 @@ public class MidnightMediaPlayer extends JFrame {
         setMinimumSize(new Dimension(1200, 800));
         
         // Set application icon (placeholder)
-        try {
-            setIconImage(new ImageIcon("icon.png").getImage());
-        } catch (Exception e) {
-            System.out.println("Icon not found, using default");
-        }
+        setIconImage(new ImageIcon("icon.png").getImage());
         
         initializeComponents();
         setupLayout();
@@ -129,7 +119,7 @@ public class MidnightMediaPlayer extends JFrame {
         mainExpandButton = createSideButton("", "❯");
         
         // Initialize control buttons
-        playButton = createControlButton("▶", "Play/Pause", TEXT_COLOR);
+        playButton = createControlButton("▶", "Play/Pause", PRIMARY_COLOR);
         prevButton = createControlButton("⏮", "Previous", TEXT_COLOR);
         nextButton = createControlButton("⏭", "Next", TEXT_COLOR);
         shuffleButton = createControlButton("🔀", "Shuffle", TEXT_COLOR);
@@ -172,10 +162,10 @@ public class MidnightMediaPlayer extends JFrame {
         settingsButton = createStyledButton("Settings", TEXT_COLOR);
             
         // Initialize settings panel components (simplified for now)
-        settingsBackButton = createSideButton("← BACK", "BACK");
-        manageDirectoriesButton = createSideButton("📁 FOLDERS", "FOLDERS");
-        appearanceButton = createSideButton("🎨 APPEARANCE", "APPEARANCE");
-        infoButton = createSideButton("ℹ INFO", "INFO");
+        settingsBackButton = createSideButton("BACK", "←");
+        manageDirectoriesButton = createSideButton("FOLDERS", "📁");
+        appearanceButton = createSideButton("APPEARANCE", "🎨");
+        infoButton = createSideButton("INFO", "ℹ");
         settingsExpandButton = createSideButton("", "❯");
     }
     
@@ -188,29 +178,20 @@ public class MidnightMediaPlayer extends JFrame {
         sidePanel = new JPanel();
         sidePanel.setLayout(new BoxLayout(sidePanel, BoxLayout.Y_AXIS));
         sidePanel.setBackground(DARKER_BG);
-        sidePanel.setPreferredSize(new Dimension(EXPANDED_WIDTH, getHeight()));
+        sidePanel.setPreferredSize(new Dimension(100, getHeight()));
         sidePanel.setBorder(BorderFactory.createEmptyBorder(20, 20, 20, 20));
         
         // Add logo/header
-        JLabel logoLabel = new JLabel("MIDNIGHT");
-        logoLabel.setFont(new Font("Ariel", Font.BOLD, 20));
-        logoLabel.setForeground(PRIMARY_COLOR);
-        logoLabel.setAlignmentX(Component.LEFT_ALIGNMENT);
-        sidePanel.add(logoLabel);
-        
-        JLabel logoSubLabel = new JLabel("MEDIA PLAYER");
-        logoSubLabel.setFont(new Font("Ariel", Font.BOLD, 16));
-        logoSubLabel.setForeground(TEXT_COLOR);
-        logoSubLabel.setAlignmentX(Component.LEFT_ALIGNMENT);
-        sidePanel.add(logoSubLabel);
-        sidePanel.add(Box.createRigidArea(new Dimension(0, 30)));
+        // JLabel logoLabel = new JLabel("");
+        // logoLabel.setFont(new Font("Segoe UI", Font.BOLD, 20));
+        // logoLabel.setForeground(PRIMARY_COLOR);
+        // logoLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
+        // sidePanel.add(logoLabel);
+        // sidePanel.add(Box.createRigidArea(new Dimension(0, 30)));
         
         // Add side buttons
-        homeButton.setAlignmentX(Component.LEFT_ALIGNMENT);
         sidePanel.add(homeButton);
         sidePanel.add(Box.createRigidArea(new Dimension(0, 10)));
-        
-        musicListButton.setAlignmentX(Component.LEFT_ALIGNMENT);
         sidePanel.add(musicListButton);
         sidePanel.add(Box.createRigidArea(new Dimension(0, 10)));
         sidePanel.add(playlistButton);
@@ -220,7 +201,6 @@ public class MidnightMediaPlayer extends JFrame {
         
         // Add expand button at bottom
         sidePanel.add(Box.createVerticalGlue());
-        mainExpandButton.setAlignmentX(Component.LEFT_ALIGNMENT);
         sidePanel.add(mainExpandButton);
         
         // Create main content panel
@@ -241,9 +221,27 @@ public class MidnightMediaPlayer extends JFrame {
         topButtons.add(settingsButton);
         topBar.add(topButtons, BorderLayout.EAST);
         
-        // Center content with playlist
-        JPanel centerPanel = new JPanel(new BorderLayout());
+        // Center content with album art and playlist
+        JPanel centerPanel = new JPanel(new GridBagLayout());
         centerPanel.setBackground(DARK_BG);
+        GridBagConstraints gbc = new GridBagConstraints();
+        
+        gbc.gridx = 0;
+        gbc.gridy = 0;
+        gbc.weightx = 0.4;
+        gbc.weighty = 1.0;
+        gbc.fill = GridBagConstraints.BOTH;
+        gbc.insets = new Insets(0, 0, 0, 20);
+        
+        // Playlist panel
+        selectedMenuPanel = new JPanel(new BorderLayout());
+        selectedMenuPanel.setBackground(DARKER_BG);
+        
+        gbc.gridx = 1;
+        gbc.gridy = 0;
+        gbc.weightx = 0.6;
+        gbc.insets = new Insets(0, 20, 0, 0);
+        centerPanel.add(selectedMenuPanel, gbc);
         
         // Control panel at bottom
         controlPanel = new JPanel(new BorderLayout(10, 10));
@@ -252,6 +250,7 @@ public class MidnightMediaPlayer extends JFrame {
         
         // Top section of control panel (track info)
         JPanel trackInfoPanel = new JPanel(new BorderLayout());
+        trackInfoPanel.setBackground(DARKER_BG);
         trackInfoPanel.setOpaque(false);
         
         JPanel titlePanel = new JPanel(new FlowLayout(FlowLayout.LEFT, 0, 0));
@@ -347,23 +346,24 @@ public class MidnightMediaPlayer extends JFrame {
     private void updateButtonStates() {
         // Update button text based on states
         playButton.setText(isPlaying ? "⏸" : "▶");
-        shuffleButton.setForeground(isShuffled ? ACCENT_COLOR : TEXT_COLOR);
-        loopButton.setForeground(isLooped ? ACCENT_COLOR : TEXT_COLOR);
+        shuffleButton.setForeground(isShuffled ? ACCENT_COLOR : DARKER_BG);
+        loopButton.setForeground(isLooped ? ACCENT_COLOR : DARKER_BG);
         muteButton.setText(isMuted ? "🔇" : "🔊");
-        muteButton.setForeground(isMuted ? PRIMARY_COLOR : TEXT_COLOR);
+        muteButton.setForeground(isMuted ? PRIMARY_COLOR : DARKER_BG);
     }
     
     // UI Helper Methods
-    private JButton createSideButton(String text, String tooltip) {
-        JButton button = new JButton(text);
-        button.setFont(sidePanelFont);
+    private JButton createSideButton(String text, String icon) {
+        JButton button = new JButton(icon);
+        button.setFont(normalFont);
         button.setForeground(TEXT_COLOR);
         button.setBackground(DARKER_BG);
-        button.setBorder(BorderFactory.createEmptyBorder(15, 15, 15, 15));
+        button.setBorder(BorderFactory.createEmptyBorder(15, 20, 15, 20));
         button.setHorizontalAlignment(SwingConstants.LEFT);
+        button.setAlignmentX(Component.CENTER_ALIGNMENT);
         button.setFocusPainted(false);
         button.setCursor(new Cursor(Cursor.HAND_CURSOR));
-        button.setToolTipText(tooltip);
+        button.setToolTipText(text);
         
         // Hover effect
         button.addMouseListener(new MouseAdapter() {
@@ -376,16 +376,6 @@ public class MidnightMediaPlayer extends JFrame {
             public void mouseExited(MouseEvent e) {
                 button.setBackground(DARKER_BG);
             }
-            
-            @Override
-            public void mousePressed(MouseEvent e) {
-                button.setBackground(PRIMARY_COLOR);
-            }
-            
-            @Override
-            public void mouseReleased(MouseEvent e) {
-                button.setBackground(HIGHLIGHT_COLOR);
-            }
         });
         
         return button;
@@ -393,7 +383,7 @@ public class MidnightMediaPlayer extends JFrame {
     
     private JButton createControlButton(String text, String tooltip, Color color) {
         JButton button = new JButton(text);
-        button.setFont(new Font("Ariel", Font.PLAIN, 24));
+        button.setFont(new Font("Segoe UI", Font.PLAIN, 24));
         button.setForeground(TEXT_COLOR);
         button.setBackground(DARKER_BG);
         button.setBorder(BorderFactory.createEmptyBorder(10, 15, 10, 15));
@@ -712,89 +702,52 @@ public class MidnightMediaPlayer extends JFrame {
         isPlaying = !isPlaying;
         updateButtonStates();
         
-        if (isPlaying && playlistModel.size() > 0) {
-            if (currentTrackIndex < 0) {
-                currentTrackIndex = 0;
-            }
-            mediaNameLabel.setText("Now Playing: " + playlistModel.get(currentTrackIndex));
-            folderOriginLabel.setText("From: Midnight Playlist");
-            // startProgressSimulation();
-        } else if (!isPlaying) {
-            mediaNameLabel.setText("Paused: " + playlistModel.get(currentTrackIndex >= 0 ? currentTrackIndex : 0));
+        if (isPlaying) {
+            mediaNameLabel.setText("Now Playing: " + playlistModel.get(currentTrackIndex >= 0 ? currentTrackIndex : 0));
         }
     }
     
     private void toggleShuffle() {
         isShuffled = !isShuffled;
         updateButtonStates();
-        shuffleButton.setToolTipText(isShuffled ? "Shuffle On" : "Shuffle Off");
     }
     
     private void toggleLoop() {
         isLooped = !isLooped;
         updateButtonStates();
-        loopButton.setToolTipText(isLooped ? "Loop On" : "Loop Off");
     }
     
     private void toggleMute() {
         isMuted = !isMuted;
         updateButtonStates();
-        muteButton.setToolTipText(isMuted ? "Unmute" : "Mute");
     }
     
     private void toggleFullscreen() {
         isFullscreen = !isFullscreen;
         if (isFullscreen) {
             setExtendedState(JFrame.MAXIMIZED_BOTH);
-            fullscreenButton.setText("⛶");
-            fullscreenButton.setToolTipText("Exit Fullscreen");
         } else {
             setExtendedState(JFrame.NORMAL);
-            fullscreenButton.setText("⛶");
-            fullscreenButton.setToolTipText("Fullscreen");
         }
     }
     
     private void updateNowPlaying() {
         if (currentTrackIndex >= 0 && currentTrackIndex < playlistModel.size()) {
-            mediaNameLabel.setText("Selected: " + playlistModel.get(currentTrackIndex));
+            mediaNameLabel.setText("Now Playing: " + playlistModel.get(currentTrackIndex));
             folderOriginLabel.setText("From: Midnight Playlist");
             
-            // If playing, update the playing text
-            if (isPlaying) {
-                mediaNameLabel.setText("Now Playing: " + playlistModel.get(currentTrackIndex));
-                // startProgressSimulation();
-            }
+            // Simulate progress update
+            new Timer(1000, e -> {
+                if (isPlaying) {
+                    int current = mediaProgressSlider.getValue();
+                    if (current < 100) {
+                        mediaProgressSlider.setValue(current + 1);
+                        updateTimeLabels(current + 1);
+                    }
+                }
+            }).start();
         }
     }
-    
-    // private void startProgressSimulation() {
-    //     // Stop any existing timer
-    //     Timer[] timers = mediaProgressSlider.getListeners(Timer.class);
-    //     for (Timer timer : timers) {
-    //         timer.stop();
-    //     }
-        
-    //     // Reset progress
-    //     mediaProgressSlider.setValue(0);
-    //     updateTimeLabels(0);
-        
-    //     // Start new simulation if playing
-    //     if (isPlaying) {
-    //         Timer progressTimer = new Timer(1000, e -> {
-    //             if (isPlaying) {
-    //                 int current = mediaProgressSlider.getValue();
-    //                 if (current < 100) {
-    //                     mediaProgressSlider.setValue(current + 1);
-    //                     updateTimeLabels(current + 1);
-    //                 } else {
-    //                     ((Timer)e.getSource()).stop();
-    //                 }
-    //             }
-    //         });
-    //         progressTimer.start();
-    //     }
-    // }
     
     private void updateTimeLabels(int progress) {
         int totalSeconds = 180; // 3 minutes
@@ -808,7 +761,6 @@ public class MidnightMediaPlayer extends JFrame {
     public static void main(String[] args) {
         SwingUtilities.invokeLater(() -> {
             try {
-                // Set system look and feel for better appearance
                 UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
             } catch (Exception e) {
                 e.printStackTrace();
