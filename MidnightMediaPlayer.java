@@ -1,8 +1,13 @@
 // Package imports
 import javax.swing.*;
 import javax.swing.border.*;
+
+import models.Media;
+
 import java.awt.*;
 import java.awt.event.*;
+import java.util.ArrayList;
+import java.util.List;
 
 public class MidnightMediaPlayer extends JFrame {
     
@@ -151,7 +156,21 @@ public class MidnightMediaPlayer extends JFrame {
         
         // Playlist
         playlistModel = new DefaultListModel<>();
-        playlistModel.addElement("01. Midnight City - M83");
+
+        List<Media> allSongs;
+        try {
+            allSongs = Database.getAllMedia();
+
+            for(Media song : allSongs)
+            {
+                playlistModel.addElement(song.name);
+            }
+        } catch (Exception e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
+
+        
 
         playlistList = new JList<>(playlistModel);
         playlistList.setFont(normalFont);
