@@ -946,7 +946,7 @@ private void playTestTone() {
     }
 }
     
-    private void jumpscareChance() {
+    
         int chance = 5;
         int roll = (int)(Math.random() * 100);
 
@@ -988,6 +988,7 @@ public void dispose() {
 
         
         new Timer(300, e -> jumpscareWindow.dispose()).start();
+
     }
 
     private void playScreamSound() {
