@@ -73,21 +73,23 @@ public class MidnightMediaPlayer extends JFrame {
     private tab currentTab = tab.Home;
     
     //---------------- Appearance ----------------------------
-    private final Color PRIMARY_COLOR = new Color(242, 75, 75);     // Midnight red
-    private final Color SECONDARY_COLOR = new Color(52, 152, 219);  // Lighter blue
-    private final Color ACCENT_COLOR = new Color(46, 204, 113);     // Green accent
-    private final Color DARK_BG = new Color(133, 131, 131);            // Dark background
-    private final Color DARKER_BG = new Color(125, 123, 123);          // Even darker
-    private final Color TEXT_COLOR = new Color(242, 75, 75);      // Text color
-    private final Color HIGHLIGHT_COLOR = new Color(155, 89, 182);  // Purple highlight
-    private final Color SLIDER_COLOR = new Color(80, 80, 80);
-    private final Color SLIDER_THUMB = new Color(242, 75, 75);
+    // Dark theme colors - based on typical midnight/dark themes
+    private final Color PRIMARY_COLOR = new Color(220, 20, 60);     // Crimson red - for accents
+    private final Color SECONDARY_COLOR = new Color(30, 144, 255);  // Dodger blue - for secondary elements
+    private final Color ACCENT_COLOR = new Color(50, 205, 50);      // Lime green - for active states
+    private final Color DARK_BG = new Color(40, 40, 40);            // Near black background
+    private final Color DARKER_BG = new Color(30, 30, 30);          // Even darker for panels
+    private final Color TEXT_COLOR = new Color(180, 180, 180);      // Light gray text
+    private final Color HIGHLIGHT_COLOR = new Color(138, 43, 226);  // Blue violet - for hover states
+    private final Color SLIDER_COLOR = new Color(70, 70, 70);       // Dark gray for slider tracks
+    private final Color SLIDER_THUMB = new Color(220, 20, 60);      // Red for slider thumb
     
-    // Fonts
-    private Font titleFont = new Font("Ariel", Font.BOLD, 24);
-    private Font subtitleFont = new Font("Ariel", Font.PLAIN, 16);
-    private Font normalFont = new Font("Ariel", Font.PLAIN, 14);
-    private Font smallFont = new Font("Ariel", Font.PLAIN, 12);
+    // Fonts - trying to match your CSS fonts
+    private Font mogaFont;
+    private Font ptSansFont;
+    private Font ptSerifFont;
+    private Font wsParadoseFont;
+    private Font wsParadoseItalicFont;
     
     // Constructor
     public MidnightMediaPlayer() {
@@ -101,6 +103,9 @@ public class MidnightMediaPlayer extends JFrame {
         // Initialize track index
         currentTrackIndex = -1;
         
+        // Load custom fonts
+        loadCustomFonts();
+        
         initializeComponents();
         setupLayout();
         setupEventListeners();
@@ -113,8 +118,57 @@ public class MidnightMediaPlayer extends JFrame {
         switchToHomeView();
     }
     
+    private void loadCustomFonts() {
+        try {
+            // Try to load custom fonts if they exist
+            mogaFont = Font.createFont(Font.TRUETYPE_FONT, 
+                new java.io.File("font/Moga.ttf")).deriveFont(Font.PLAIN, 14);
+            GraphicsEnvironment ge = GraphicsEnvironment.getLocalGraphicsEnvironment();
+            ge.registerFont(mogaFont);
+        } catch (Exception e) {
+            mogaFont = new Font("Arial", Font.PLAIN, 14);
+        }
+        
+        try {
+            ptSansFont = Font.createFont(Font.TRUETYPE_FONT, 
+                new java.io.File("font/PTSans-Regular.ttf")).deriveFont(Font.PLAIN, 14);
+            GraphicsEnvironment ge = GraphicsEnvironment.getLocalGraphicsEnvironment();
+            ge.registerFont(ptSansFont);
+        } catch (Exception e) {
+            ptSansFont = new Font("SansSerif", Font.PLAIN, 14);
+        }
+        
+        try {
+            ptSerifFont = Font.createFont(Font.TRUETYPE_FONT, 
+                new java.io.File("font/PTSerif-Regular.ttf")).deriveFont(Font.PLAIN, 14);
+            GraphicsEnvironment ge = GraphicsEnvironment.getLocalGraphicsEnvironment();
+            ge.registerFont(ptSerifFont);
+        } catch (Exception e) {
+            ptSerifFont = new Font("Serif", Font.PLAIN, 14);
+        }
+        
+        try {
+            wsParadoseFont = Font.createFont(Font.TRUETYPE_FONT, 
+                new java.io.File("font/Ws Paradose.ttf")).deriveFont(Font.PLAIN, 14);
+            GraphicsEnvironment ge = GraphicsEnvironment.getLocalGraphicsEnvironment();
+            ge.registerFont(wsParadoseFont);
+        } catch (Exception e) {
+            wsParadoseFont = new Font("Arial", Font.PLAIN, 14);
+        }
+        
+        try {
+            wsParadoseItalicFont = Font.createFont(Font.TRUETYPE_FONT, 
+                new java.io.File("font/Ws Paradose Italic.ttf")).deriveFont(Font.ITALIC, 14);
+            GraphicsEnvironment ge = GraphicsEnvironment.getLocalGraphicsEnvironment();
+            ge.registerFont(wsParadoseItalicFont);
+        } catch (Exception e) {
+            wsParadoseItalicFont = new Font("Arial", Font.ITALIC, 14);
+        }
+    }
+    
     private void initializeComponents() {
         playlistModel = new DefaultListModel<>();
+        
         // Initialize side panel buttons
         homeButton = createSideButton("Home", "🏠");
         musicListButton = createSideButton("Music", "📁");
@@ -123,29 +177,29 @@ public class MidnightMediaPlayer extends JFrame {
         mainExpandButton = createSideButton("", "❯");
         
         // Initialize control buttons
-        playButton = createControlButton("▶", "Play/Pause", PRIMARY_COLOR);
-        prevButton = createControlButton("⏮", "Previous", TEXT_COLOR);
-        nextButton = createControlButton("⏭", "Next", TEXT_COLOR);
-        shuffleButton = createControlButton("🔀", "Shuffle", TEXT_COLOR);
-        loopButton = createControlButton("🔁", "Loop", TEXT_COLOR);
-        muteButton = createControlButton("🔊", "Mute/Unmute", TEXT_COLOR);
-        fullscreenButton = createControlButton("⛶", "Fullscreen", TEXT_COLOR);
+        playButton = createControlButton("▶", "Play/Pause");
+        prevButton = createControlButton("⏮", "Previous");
+        nextButton = createControlButton("⏭", "Next");
+        shuffleButton = createControlButton("🔀", "Shuffle");
+        loopButton = createControlButton("🔁", "Loop");
+        muteButton = createControlButton("🔊", "Mute/Unmute");
+        fullscreenButton = createControlButton("⛶", "Fullscreen");
         
         // Media labels
         mediaNameLabel = new JLabel("No media selected");
-        mediaNameLabel.setFont(subtitleFont);
+        mediaNameLabel.setFont(ptSerifFont.deriveFont(Font.BOLD, 16));
         mediaNameLabel.setForeground(TEXT_COLOR);
         
         folderOriginLabel = new JLabel("—");
-        folderOriginLabel.setFont(smallFont);
-        folderOriginLabel.setForeground(SECONDARY_COLOR);
+        folderOriginLabel.setFont(ptSansFont.deriveFont(Font.PLAIN, 12));
+        folderOriginLabel.setForeground(Color.GRAY);
         
         currentTimeLabel = new JLabel("0:00");
         totalTimeLabel = new JLabel("0:00");
         currentTimeLabel.setForeground(TEXT_COLOR);
         totalTimeLabel.setForeground(TEXT_COLOR);
-        currentTimeLabel.setFont(smallFont);
-        totalTimeLabel.setFont(smallFont);
+        currentTimeLabel.setFont(ptSansFont.deriveFont(Font.PLAIN, 12));
+        totalTimeLabel.setFont(ptSansFont.deriveFont(Font.PLAIN, 12));
         
         // Progress slider
         mediaProgressSlider = new JSlider(0, 100, 0);
@@ -158,12 +212,12 @@ public class MidnightMediaPlayer extends JFrame {
         
         // Main content area
         sectionLabel = new JLabel("Recently Played");
-        sectionLabel.setFont(titleFont);
+        sectionLabel.setFont(wsParadoseFont.deriveFont(Font.PLAIN, 28));
         sectionLabel.setForeground(TEXT_COLOR);
         
-        newMediaButton = createStyledButton("+ Add Media", TEXT_COLOR);
+        newMediaButton = createStyledButton("+ Add Media", PRIMARY_COLOR);
         newMediaButton.addActionListener(e -> OpenMediaAddingMenu());
-        settingsButton = createStyledButton("Settings", TEXT_COLOR);
+        settingsButton = createStyledButton("Settings", PRIMARY_COLOR);
             
         // Initialize settings panel components (simplified for now)
         settingsBackButton = createSideButton("BACK", "←");
@@ -186,12 +240,25 @@ public class MidnightMediaPlayer extends JFrame {
         sidePanel.setBorder(BorderFactory.createEmptyBorder(20, 20, 20, 20));
         
         // Add logo/header
-        // JLabel logoLabel = new JLabel("");
-        // logoLabel.setFont(new Font("Segoe UI", Font.BOLD, 20));
-        // logoLabel.setForeground(PRIMARY_COLOR);
-        // logoLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
-        // sidePanel.add(logoLabel);
-        // sidePanel.add(Box.createRigidArea(new Dimension(0, 30)));
+        try {
+            // Load the icon image
+            ImageIcon icon = new ImageIcon("icon.png");
+            // Resize if needed (adjust 40, 40 to your desired dimensions)
+            Image scaledImage = icon.getImage().getScaledInstance(40, 40, Image.SCALE_SMOOTH);
+            JLabel logoLabel = new JLabel(new ImageIcon(scaledImage));
+            logoLabel.setToolTipText("Midnight Media Player");
+            logoLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
+            sidePanel.add(logoLabel);
+            sidePanel.add(Box.createRigidArea(new Dimension(0, 30)));
+        } catch (Exception e) {
+            // If icon fails to load, skip adding anything or add text fallback
+            JLabel logoLabel = new JLabel("Midnight");
+            logoLabel.setFont(mogaFont.deriveFont(Font.BOLD, 20));
+            logoLabel.setForeground(PRIMARY_COLOR);
+            logoLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
+            sidePanel.add(logoLabel);
+            sidePanel.add(Box.createRigidArea(new Dimension(0, 30)));
+        }
         
         // Add side buttons
         sidePanel.add(homeButton);
@@ -240,6 +307,7 @@ public class MidnightMediaPlayer extends JFrame {
         // Playlist panel
         selectedMenuPanel = new JPanel(new BorderLayout());
         selectedMenuPanel.setBackground(DARKER_BG);
+        selectedMenuPanel.setBorder(BorderFactory.createLineBorder(new Color(40, 40, 40), 1));
         
         gbc.gridx = 1;
         gbc.gridy = 0;
@@ -250,7 +318,10 @@ public class MidnightMediaPlayer extends JFrame {
         // Control panel at bottom
         controlPanel = new JPanel(new BorderLayout(10, 10));
         controlPanel.setBackground(DARKER_BG);
-        controlPanel.setBorder(BorderFactory.createEmptyBorder(15, 20, 15, 20));
+        controlPanel.setBorder(BorderFactory.createCompoundBorder(
+            BorderFactory.createLineBorder(new Color(40, 40, 40), 1),
+            BorderFactory.createEmptyBorder(15, 20, 15, 20)
+        ));
         
         // Top section of control panel (track info)
         JPanel trackInfoPanel = new JPanel(new BorderLayout());
@@ -350,20 +421,40 @@ public class MidnightMediaPlayer extends JFrame {
     private void updateButtonStates() {
         // Update button text based on states
         playButton.setText(isPlaying ? "⏸" : "▶");
-        shuffleButton.setForeground(isShuffled ? ACCENT_COLOR : DARKER_BG);
-        loopButton.setForeground(isLooped ? ACCENT_COLOR : DARKER_BG);
+        shuffleButton.setForeground(isShuffled ? ACCENT_COLOR : TEXT_COLOR);
+        loopButton.setForeground(isLooped ? ACCENT_COLOR : TEXT_COLOR);
         muteButton.setText(isMuted ? "🔇" : "🔊");
-        muteButton.setForeground(isMuted ? PRIMARY_COLOR : DARKER_BG);
+        muteButton.setForeground(isMuted ? PRIMARY_COLOR : TEXT_COLOR);
+        
+        // Update control button backgrounds when active
+        if (isPlaying) {
+            playButton.setBackground(ACCENT_COLOR);
+        } else {
+            playButton.setBackground(DARKER_BG);
+        }
+        
+        if (isShuffled) {
+            shuffleButton.setBackground(HIGHLIGHT_COLOR);
+        } else {
+            shuffleButton.setBackground(DARKER_BG);
+        }
+        
+        if (isLooped) {
+            loopButton.setBackground(HIGHLIGHT_COLOR);
+        } else {
+            loopButton.setBackground(DARKER_BG);
+        }
     }
     
     // UI Helper Methods
     private JButton createSideButton(String text, String icon) {
-        JButton button = new JButton(icon);
-        button.setFont(normalFont);
+        JButton button = new JButton("<html><div style='text-align: center;'>" + icon + "<br><small>" + text + "</small></div></html>");
+        button.setFont(ptSansFont.deriveFont(Font.PLAIN, 11));
         button.setForeground(TEXT_COLOR);
         button.setBackground(DARKER_BG);
-        button.setBorder(BorderFactory.createEmptyBorder(15, 20, 15, 20));
-        button.setHorizontalAlignment(SwingConstants.LEFT);
+        button.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
+        button.setHorizontalAlignment(SwingConstants.CENTER);
+        button.setVerticalAlignment(SwingConstants.CENTER);
         button.setAlignmentX(Component.CENTER_ALIGNMENT);
         button.setFocusPainted(false);
         button.setCursor(new Cursor(Cursor.HAND_CURSOR));
@@ -373,24 +464,29 @@ public class MidnightMediaPlayer extends JFrame {
         button.addMouseListener(new MouseAdapter() {
             @Override
             public void mouseEntered(MouseEvent e) {
-                button.setBackground(HIGHLIGHT_COLOR);
+                button.setBackground(new Color(40, 40, 40));
+                button.setForeground(PRIMARY_COLOR);
             }
             
             @Override
             public void mouseExited(MouseEvent e) {
                 button.setBackground(DARKER_BG);
+                button.setForeground(TEXT_COLOR);
             }
         });
         
         return button;
     }
     
-    private JButton createControlButton(String text, String tooltip, Color color) {
+    private JButton createControlButton(String text, String tooltip) {
         JButton button = new JButton(text);
-        button.setFont(new Font("Segoe UI", Font.PLAIN, 24));
+        button.setFont(new Font("Segoe UI Emoji", Font.PLAIN, 20));
         button.setForeground(TEXT_COLOR);
         button.setBackground(DARKER_BG);
-        button.setBorder(BorderFactory.createEmptyBorder(10, 15, 10, 15));
+        button.setBorder(BorderFactory.createCompoundBorder(
+            BorderFactory.createLineBorder(new Color(60, 60, 60), 1),
+            BorderFactory.createEmptyBorder(8, 12, 8, 12)
+        ));
         button.setFocusPainted(false);
         button.setCursor(new Cursor(Cursor.HAND_CURSOR));
         button.setToolTipText(tooltip);
@@ -399,12 +495,20 @@ public class MidnightMediaPlayer extends JFrame {
         button.addMouseListener(new MouseAdapter() {
             @Override
             public void mouseEntered(MouseEvent e) {
-                button.setBackground(HIGHLIGHT_COLOR);
+                button.setBackground(new Color(50, 50, 50));
+                button.setBorder(BorderFactory.createCompoundBorder(
+                    BorderFactory.createLineBorder(PRIMARY_COLOR, 1),
+                    BorderFactory.createEmptyBorder(8, 12, 8, 12)
+                ));
             }
             
             @Override
             public void mouseExited(MouseEvent e) {
                 button.setBackground(DARKER_BG);
+                button.setBorder(BorderFactory.createCompoundBorder(
+                    BorderFactory.createLineBorder(new Color(60, 60, 60), 1),
+                    BorderFactory.createEmptyBorder(8, 12, 8, 12)
+                ));
             }
         });
         
@@ -413,12 +517,12 @@ public class MidnightMediaPlayer extends JFrame {
     
     private JButton createStyledButton(String text, Color bgColor) {
         JButton button = new JButton(text);
-        button.setFont(normalFont);
+        button.setFont(ptSansFont.deriveFont(Font.BOLD, 14));
         button.setForeground(TEXT_COLOR);
         button.setBackground(bgColor);
         button.setBorder(BorderFactory.createCompoundBorder(
-            BorderFactory.createLineBorder(bgColor.darker(), 1),
-            BorderFactory.createEmptyBorder(10, 20, 10, 20)
+            BorderFactory.createLineBorder(bgColor.darker(), 2),
+            BorderFactory.createEmptyBorder(8, 16, 8, 16)
         ));
         button.setFocusPainted(false);
         button.setCursor(new Cursor(Cursor.HAND_CURSOR));
@@ -428,11 +532,19 @@ public class MidnightMediaPlayer extends JFrame {
             @Override
             public void mouseEntered(MouseEvent e) {
                 button.setBackground(bgColor.brighter());
+                button.setBorder(BorderFactory.createCompoundBorder(
+                    BorderFactory.createLineBorder(bgColor.brighter().darker(), 2),
+                    BorderFactory.createEmptyBorder(8, 16, 8, 16)
+                ));
             }
             
             @Override
             public void mouseExited(MouseEvent e) {
                 button.setBackground(bgColor);
+                button.setBorder(BorderFactory.createCompoundBorder(
+                    BorderFactory.createLineBorder(bgColor.darker(), 2),
+                    BorderFactory.createEmptyBorder(8, 16, 8, 16)
+                ));
             }
         });
         
@@ -442,7 +554,7 @@ public class MidnightMediaPlayer extends JFrame {
     private void styleSlider(JSlider slider) {
         slider.setBackground(DARKER_BG);
         slider.setForeground(SLIDER_COLOR);
-        slider.setBorder(null);
+        slider.setBorder(BorderFactory.createEmptyBorder(5, 0, 5, 0));
         slider.setPaintTrack(true);
         slider.setPaintTicks(false);
         slider.setPaintLabels(false);
@@ -455,6 +567,10 @@ public class MidnightMediaPlayer extends JFrame {
                 g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
                 g2d.setColor(SLIDER_THUMB);
                 g2d.fillOval(thumbRect.x, thumbRect.y, thumbRect.width, thumbRect.height);
+                
+                // Add a subtle border to thumb
+                g2d.setColor(SLIDER_THUMB.darker());
+                g2d.drawOval(thumbRect.x, thumbRect.y, thumbRect.width, thumbRect.height);
             }
             
             @Override
@@ -465,12 +581,29 @@ public class MidnightMediaPlayer extends JFrame {
                 // Track background
                 g2d.setColor(SLIDER_COLOR);
                 int cy = trackRect.y + trackRect.height / 2 - 2;
-                g2d.fillRoundRect(trackRect.x, cy, trackRect.width, 4, 2, 2);
+                g2d.fillRoundRect(trackRect.x, cy, trackRect.width, 4, 4, 4);
                 
                 // Progress
                 int progressX = thumbRect.x + thumbRect.width / 2;
                 g2d.setColor(PRIMARY_COLOR);
-                g2d.fillRoundRect(trackRect.x, cy, progressX - trackRect.x, 4, 2, 2);
+                g2d.fillRoundRect(trackRect.x, cy, progressX - trackRect.x, 4, 4, 4);
+                
+                // Track border
+                g2d.setColor(SLIDER_COLOR.darker());
+                g2d.drawRoundRect(trackRect.x, cy, trackRect.width, 4, 4, 4);
+            }
+            
+            @Override
+            protected void calculateTrackRect() {
+                super.calculateTrackRect();
+                trackRect.y += 2;
+                trackRect.height = 8;
+            }
+            
+            @Override
+            protected void calculateThumbLocation() {
+                super.calculateThumbLocation();
+                thumbRect.y = trackRect.y + trackRect.height / 2 - thumbRect.height / 2;
             }
         });
     }
@@ -488,12 +621,13 @@ public class MidnightMediaPlayer extends JFrame {
             }
         
         playlistList = new JList<>(playlistModel);
-        playlistList.setFont(normalFont);
+        playlistList.setFont(ptSansFont.deriveFont(Font.PLAIN, 14));
         playlistList.setForeground(TEXT_COLOR);
-        playlistList.setBackground(HIGHLIGHT_COLOR);
-        playlistList.setSelectionBackground(HIGHLIGHT_COLOR);
-        playlistList.setSelectionForeground(TEXT_COLOR);
+        playlistList.setBackground(DARKER_BG);
+        playlistList.setSelectionBackground(new Color(60, 60, 60));
+        playlistList.setSelectionForeground(PRIMARY_COLOR);
         playlistList.setFixedCellHeight(40);
+        playlistList.setBorder(BorderFactory.createEmptyBorder(5, 10, 5, 10));
 
         // Playlist selection
         playlistList.addListSelectionListener(e -> {
@@ -525,12 +659,13 @@ public class MidnightMediaPlayer extends JFrame {
         
         // Playlist
         playlistList = new JList<>(playlistModel);
-        playlistList.setFont(normalFont);
+        playlistList.setFont(ptSansFont.deriveFont(Font.PLAIN, 14));
         playlistList.setForeground(TEXT_COLOR);
-        playlistList.setBackground(HIGHLIGHT_COLOR);
-        playlistList.setSelectionBackground(HIGHLIGHT_COLOR);
-        playlistList.setSelectionForeground(TEXT_COLOR);
+        playlistList.setBackground(DARKER_BG);
+        playlistList.setSelectionBackground(new Color(60, 60, 60));
+        playlistList.setSelectionForeground(PRIMARY_COLOR);
         playlistList.setFixedCellHeight(40);
+        playlistList.setBorder(BorderFactory.createEmptyBorder(5, 10, 5, 10));
 
         // Playlist selection
         playlistList.addListSelectionListener(e -> {
@@ -551,86 +686,9 @@ public class MidnightMediaPlayer extends JFrame {
     private void switchToHomeView() {
         currentTab = tab.Home;
         sectionLabel.setText("Recently Played");
-        homeButton.setForeground(TEXT_COLOR);
-        musicListButton.setForeground(DARKER_BG);
-        playlistButton.setForeground(DARKER_BG);
-        logMenuButton.setForeground(DARKER_BG);
-
-        UpdatePerMenuUI();
-
-
-        //Panel goes here
-
-
-        selectedMenuPanel.setBorder(BorderFactory.createTitledBorder(
-            BorderFactory.createLineBorder(HIGHLIGHT_COLOR, 1),
-            "",
-            TitledBorder.LEFT,
-            TitledBorder.TOP,
-            subtitleFont,
-            TEXT_COLOR
-        ));
-    }
-
-    private void switchToMediaView() {
-        currentTab = tab.Media;
-        sectionLabel.setText("All Media");
-        homeButton.setForeground(DARKER_BG);
+        homeButton.setForeground(PRIMARY_COLOR);
         musicListButton.setForeground(TEXT_COLOR);
-        playlistButton.setForeground(DARKER_BG);
-        logMenuButton.setForeground(DARKER_BG);
-
-        UpdatePerMenuUI();
-        RecycleMediaSelection();
-        
-        playlistScrollPane = new JScrollPane(playlistList);
-        playlistScrollPane.setBorder(null);
-        playlistScrollPane.getViewport().setBackground(DARKER_BG);
-        selectedMenuPanel.add(playlistScrollPane, BorderLayout.CENTER);
-
-        selectedMenuPanel.setBorder(BorderFactory.createTitledBorder(
-            BorderFactory.createLineBorder(HIGHLIGHT_COLOR, 1),
-            "Files",
-            TitledBorder.LEFT,
-            TitledBorder.TOP,
-            subtitleFont,
-            TEXT_COLOR
-        ));
-    }
-
-    private void switchToPlaylistView() {
-        currentTab = tab.Playlist;
-        sectionLabel.setText("Playlists");
-        homeButton.setForeground(DARKER_BG);
-        musicListButton.setForeground(DARKER_BG);
         playlistButton.setForeground(TEXT_COLOR);
-        logMenuButton.setForeground(DARKER_BG);
-
-        UpdatePerMenuUI();
-        RecyclePlaylistSelection();
-
-        playlistScrollPane = new JScrollPane(playlistList);
-        playlistScrollPane.setBorder(null);
-        playlistScrollPane.getViewport().setBackground(DARKER_BG);
-        selectedMenuPanel.add(playlistScrollPane, BorderLayout.CENTER);
-
-
-        selectedMenuPanel.setBorder(BorderFactory.createTitledBorder(
-            BorderFactory.createLineBorder(HIGHLIGHT_COLOR, 1),
-            "Playlist",
-            TitledBorder.LEFT,
-            TitledBorder.TOP,
-            subtitleFont,
-            TEXT_COLOR
-        ));
-    }
-    
-    private void switchToLogsView() {
-        currentTab = tab.Log;
-        sectionLabel.setText("Logs");
-        homeButton.setForeground(DARKER_BG);
-        musicListButton.setForeground(DARKER_BG);
-        playlistButton.setForeground(DARKER_BG);
         logMenuButton.setForeground(TEXT_COLOR);
 
         UpdatePerMenuUI();
@@ -640,21 +698,89 @@ public class MidnightMediaPlayer extends JFrame {
 
 
         selectedMenuPanel.setBorder(BorderFactory.createTitledBorder(
-            BorderFactory.createLineBorder(HIGHLIGHT_COLOR, 1),
-            "",
+            BorderFactory.createLineBorder(new Color(60, 60, 60), 1),
+            "Welcome",
             TitledBorder.LEFT,
             TitledBorder.TOP,
-            subtitleFont,
+            ptSerifFont.deriveFont(Font.BOLD, 16),
             TEXT_COLOR
         ));
     }
 
-    private void switchToSettingsView() {
-        sectionLabel.setText("SETTINGS");
-        homeButton.setForeground(DARKER_BG);
-        musicListButton.setForeground(DARKER_BG);
-        playlistButton.setForeground(DARKER_BG);
-        logMenuButton.setForeground(DARKER_BG);
+    private void switchToMediaView() {
+        currentTab = tab.Media;
+        sectionLabel.setText("All Media");
+        homeButton.setForeground(TEXT_COLOR);
+        musicListButton.setForeground(PRIMARY_COLOR);
+        playlistButton.setForeground(TEXT_COLOR);
+        logMenuButton.setForeground(TEXT_COLOR);
+
+        UpdatePerMenuUI();
+        RecycleMediaSelection();
+        
+        playlistScrollPane = new JScrollPane(playlistList);
+        playlistScrollPane.setBorder(null);
+        playlistScrollPane.getViewport().setBackground(DARKER_BG);
+        playlistScrollPane.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED);
+        
+        // Style the scrollbar
+        JScrollBar verticalScrollBar = playlistScrollPane.getVerticalScrollBar();
+        verticalScrollBar.setBackground(DARKER_BG);
+        verticalScrollBar.setForeground(new Color(60, 60, 60));
+        
+        selectedMenuPanel.add(playlistScrollPane, BorderLayout.CENTER);
+
+        selectedMenuPanel.setBorder(BorderFactory.createTitledBorder(
+            BorderFactory.createLineBorder(new Color(60, 60, 60), 1),
+            "Media Library",
+            TitledBorder.LEFT,
+            TitledBorder.TOP,
+            ptSerifFont.deriveFont(Font.BOLD, 16),
+            TEXT_COLOR
+        ));
+    }
+
+    private void switchToPlaylistView() {
+        currentTab = tab.Playlist;
+        sectionLabel.setText("Playlists");
+        homeButton.setForeground(TEXT_COLOR);
+        musicListButton.setForeground(TEXT_COLOR);
+        playlistButton.setForeground(PRIMARY_COLOR);
+        logMenuButton.setForeground(TEXT_COLOR);
+
+        UpdatePerMenuUI();
+        RecyclePlaylistSelection();
+
+        playlistScrollPane = new JScrollPane(playlistList);
+        playlistScrollPane.setBorder(null);
+        playlistScrollPane.getViewport().setBackground(DARKER_BG);
+        playlistScrollPane.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED);
+        
+        // Style the scrollbar
+        JScrollBar verticalScrollBar = playlistScrollPane.getVerticalScrollBar();
+        verticalScrollBar.setBackground(DARKER_BG);
+        verticalScrollBar.setForeground(new Color(60, 60, 60));
+        
+        selectedMenuPanel.add(playlistScrollPane, BorderLayout.CENTER);
+
+
+        selectedMenuPanel.setBorder(BorderFactory.createTitledBorder(
+            BorderFactory.createLineBorder(new Color(60, 60, 60), 1),
+            "Your Playlists",
+            TitledBorder.LEFT,
+            TitledBorder.TOP,
+            ptSerifFont.deriveFont(Font.BOLD, 16),
+            TEXT_COLOR
+        ));
+    }
+    
+    private void switchToLogsView() {
+        currentTab = tab.Log;
+        sectionLabel.setText("Logs");
+        homeButton.setForeground(TEXT_COLOR);
+        musicListButton.setForeground(TEXT_COLOR);
+        playlistButton.setForeground(TEXT_COLOR);
+        logMenuButton.setForeground(PRIMARY_COLOR);
 
         UpdatePerMenuUI();
 
@@ -663,11 +789,34 @@ public class MidnightMediaPlayer extends JFrame {
 
 
         selectedMenuPanel.setBorder(BorderFactory.createTitledBorder(
-            BorderFactory.createLineBorder(HIGHLIGHT_COLOR, 1),
-            "Playlist",
+            BorderFactory.createLineBorder(new Color(60, 60, 60), 1),
+            "Activity Log",
             TitledBorder.LEFT,
             TitledBorder.TOP,
-            subtitleFont,
+            ptSerifFont.deriveFont(Font.BOLD, 16),
+            TEXT_COLOR
+        ));
+    }
+
+    private void switchToSettingsView() {
+        sectionLabel.setText("Settings");
+        homeButton.setForeground(TEXT_COLOR);
+        musicListButton.setForeground(TEXT_COLOR);
+        playlistButton.setForeground(TEXT_COLOR);
+        logMenuButton.setForeground(TEXT_COLOR);
+
+        UpdatePerMenuUI();
+
+
+        //Panel goes here
+
+
+        selectedMenuPanel.setBorder(BorderFactory.createTitledBorder(
+            BorderFactory.createLineBorder(new Color(60, 60, 60), 1),
+            "Configuration",
+            TitledBorder.LEFT,
+            TitledBorder.TOP,
+            ptSerifFont.deriveFont(Font.BOLD, 16),
             TEXT_COLOR
         ));
     }
@@ -739,7 +888,14 @@ public class MidnightMediaPlayer extends JFrame {
         isFullscreen = !isFullscreen;
         if (isFullscreen) {
             setExtendedState(JFrame.MAXIMIZED_BOTH);
+            // Remove window decorations for true fullscreen
+            dispose();
+            setUndecorated(true);
+            setVisible(true);
         } else {
+            dispose();
+            setUndecorated(false);
+            setVisible(true);
             setExtendedState(JFrame.NORMAL);
         }
     }
@@ -774,7 +930,13 @@ public class MidnightMediaPlayer extends JFrame {
     public static void main(String[] args) {
         SwingUtilities.invokeLater(() -> {
             try {
+                // Use system look and feel
                 UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
+                
+                // Set some default UI properties for better dark theme
+                UIManager.put("ScrollBar.thumb", new Color(60, 60, 60));
+                UIManager.put("ScrollBar.track", new Color(18, 18, 18));
+                UIManager.put("ScrollBar.width", 12);
             } catch (Exception e) {
                 e.printStackTrace();
             }
