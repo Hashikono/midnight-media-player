@@ -67,6 +67,9 @@ public class MidnightMediaPlayer extends JFrame {
     private boolean isLooped = false;
     private boolean isFullscreen = false;
     private int currentTrackIndex = -1;
+
+    private enum tab {Home, Media, Playlist, Log};
+    private tab currentTab = tab.Home;
     
     //---------------- Appearance ----------------------------
     private final Color PRIMARY_COLOR = new Color(242, 75, 75);     // Midnight red
@@ -482,7 +485,7 @@ public class MidnightMediaPlayer extends JFrame {
         playlistList.setSelectionBackground(HIGHLIGHT_COLOR);
         playlistList.setSelectionForeground(TEXT_COLOR);
         playlistList.setFixedCellHeight(40);
-        
+
         // Playlist selection
         playlistList.addListSelectionListener(e -> {
             if (!e.getValueIsAdjusting()) {
@@ -500,13 +503,14 @@ public class MidnightMediaPlayer extends JFrame {
     
     // View switching methods (visual only)
     private void switchToHomeView() {
+        currentTab = tab.Home;
         sectionLabel.setText("Recently Played");
         homeButton.setForeground(TEXT_COLOR);
         musicListButton.setForeground(DARKER_BG);
         playlistButton.setForeground(DARKER_BG);
         logMenuButton.setForeground(DARKER_BG);
 
-        ClearOldPanel();
+        UpdatePerMenuUI();
 
 
         //Panel goes here
@@ -523,13 +527,14 @@ public class MidnightMediaPlayer extends JFrame {
     }
 
     private void switchToMediaView() {
+        currentTab = tab.Media;
         sectionLabel.setText("All Media");
         homeButton.setForeground(DARKER_BG);
         musicListButton.setForeground(TEXT_COLOR);
         playlistButton.setForeground(DARKER_BG);
         logMenuButton.setForeground(DARKER_BG);
 
-        ClearOldPanel();
+        UpdatePerMenuUI();
         RecycleMediaSelection();
         
         playlistScrollPane = new JScrollPane(playlistList);
@@ -548,13 +553,14 @@ public class MidnightMediaPlayer extends JFrame {
     }
 
     private void switchToPlaylistView() {
+        currentTab = tab.Playlist;
         sectionLabel.setText("Playlists");
         homeButton.setForeground(DARKER_BG);
         musicListButton.setForeground(DARKER_BG);
         playlistButton.setForeground(TEXT_COLOR);
         logMenuButton.setForeground(DARKER_BG);
 
-        ClearOldPanel();
+        UpdatePerMenuUI();
 
 
         //Panel goes here
@@ -571,13 +577,14 @@ public class MidnightMediaPlayer extends JFrame {
     }
     
     private void switchToLogsView() {
+        currentTab = tab.Log;
         sectionLabel.setText("Logs");
         homeButton.setForeground(DARKER_BG);
         musicListButton.setForeground(DARKER_BG);
         playlistButton.setForeground(DARKER_BG);
         logMenuButton.setForeground(TEXT_COLOR);
 
-        ClearOldPanel();
+        UpdatePerMenuUI();
 
 
         //Panel goes here
@@ -600,7 +607,7 @@ public class MidnightMediaPlayer extends JFrame {
         playlistButton.setForeground(DARKER_BG);
         logMenuButton.setForeground(DARKER_BG);
 
-        ClearOldPanel();
+        UpdatePerMenuUI();
 
 
         //Panel goes here
@@ -614,6 +621,29 @@ public class MidnightMediaPlayer extends JFrame {
             subtitleFont,
             TEXT_COLOR
         ));
+    }
+
+    private void UpdatePerMenuUI()
+    {
+        ClearOldPanel();
+        for(ActionListener command : newMediaButton.getActionListeners())
+        {
+            newMediaButton.removeActionListener(command);
+        }
+        newMediaButton.setVisible(true);
+
+        if(currentTab == tab.Media)
+        {
+            newMediaButton.addActionListener(e -> OpenMediaAddingMenu());
+            newMediaButton.setText("+ Add Media");
+        }
+        else if(currentTab == tab.Playlist)
+        {
+            newMediaButton.addActionListener(e -> OpenMediaAddingMenu());
+            newMediaButton.setText("+ New Playlist");
+        }
+        else
+            newMediaButton.setVisible(false);
     }
 
     private void ClearOldPanel() {
