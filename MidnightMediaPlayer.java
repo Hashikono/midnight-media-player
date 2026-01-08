@@ -178,16 +178,16 @@ public class MidnightMediaPlayer extends JFrame {
         sidePanel = new JPanel();
         sidePanel.setLayout(new BoxLayout(sidePanel, BoxLayout.Y_AXIS));
         sidePanel.setBackground(DARKER_BG);
-        sidePanel.setPreferredSize(new Dimension(250, getHeight()));
+        sidePanel.setPreferredSize(new Dimension(100, getHeight()));
         sidePanel.setBorder(BorderFactory.createEmptyBorder(20, 20, 20, 20));
         
         // Add logo/header
-        JLabel logoLabel = new JLabel("MIDNIGHT PLAYER");
-        logoLabel.setFont(new Font("Segoe UI", Font.BOLD, 20));
-        logoLabel.setForeground(PRIMARY_COLOR);
-        logoLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
-        sidePanel.add(logoLabel);
-        sidePanel.add(Box.createRigidArea(new Dimension(0, 30)));
+        // JLabel logoLabel = new JLabel("");
+        // logoLabel.setFont(new Font("Segoe UI", Font.BOLD, 20));
+        // logoLabel.setForeground(PRIMARY_COLOR);
+        // logoLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
+        // sidePanel.add(logoLabel);
+        // sidePanel.add(Box.createRigidArea(new Dimension(0, 30)));
         
         // Add side buttons
         sidePanel.add(homeButton);
@@ -363,7 +363,7 @@ public class MidnightMediaPlayer extends JFrame {
     
     // UI Helper Methods
     private JButton createSideButton(String text, String icon) {
-        JButton button = new JButton(icon + "  " + text);
+        JButton button = new JButton(icon);
         button.setFont(normalFont);
         button.setForeground(TEXT_COLOR);
         button.setBackground(DARKER_BG);
@@ -372,6 +372,7 @@ public class MidnightMediaPlayer extends JFrame {
         button.setAlignmentX(Component.CENTER_ALIGNMENT);
         button.setFocusPainted(false);
         button.setCursor(new Cursor(Cursor.HAND_CURSOR));
+        button.setToolTipText(text);
         
         // Hover effect
         button.addMouseListener(new MouseAdapter() {
