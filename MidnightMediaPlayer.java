@@ -43,7 +43,9 @@ public class MidnightMediaPlayer extends JFrame {
     private JLabel folderOriginLabel;
     private JLabel currentTimeLabel;
     private JLabel totalTimeLabel;
+    List<Media> allSongs;
 
+    
     // Main content area
     private JPanel mainContentPanel;
     private JLabel sectionLabel;
@@ -651,11 +653,11 @@ public class MidnightMediaPlayer extends JFrame {
     private void RecyclePlaylistSelection() {
         playlistModel = new DefaultListModel<>();
 
-        List<Playlist> allSongs;
+        List<Playlist> allPlaylists;
         try {
-            allSongs = Database.getAllPlaylists();
+            allPlaylists = Database.getAllPlaylists();
 
-            for(Playlist song : allSongs)
+            for(Playlist song : allPlaylists)
             {
                 playlistModel.addElement(song.name);
             }
@@ -687,8 +689,6 @@ public class MidnightMediaPlayer extends JFrame {
     // DB connections
     private void RecycleMediaSelection() {
         playlistModel = new DefaultListModel<>();
-
-        List<Media> allSongs;
         try {
             allSongs = Database.getAllMedia();
 
@@ -697,26 +697,26 @@ public class MidnightMediaPlayer extends JFrame {
                 playlistModel.addElement(song.name);
             }
         
-        // Playlist
-        playlistList = new JList<>(playlistModel);
-        playlistList.setFont(ptSansFont.deriveFont(Font.PLAIN, 14));
-        playlistList.setForeground(TEXT_COLOR);
-        playlistList.setBackground(DARKER_BG);
-        playlistList.setSelectionBackground(new Color(60, 60, 60));
-        playlistList.setSelectionForeground(PRIMARY_COLOR);
-        playlistList.setFixedCellHeight(40);
-        playlistList.setBorder(BorderFactory.createEmptyBorder(5, 10, 5, 10));
+            // Playlist
+            playlistList = new JList<>(playlistModel);
+            playlistList.setFont(ptSansFont.deriveFont(Font.PLAIN, 14));
+            playlistList.setForeground(TEXT_COLOR);
+            playlistList.setBackground(DARKER_BG);
+            playlistList.setSelectionBackground(new Color(60, 60, 60));
+            playlistList.setSelectionForeground(PRIMARY_COLOR);
+            playlistList.setFixedCellHeight(40);
+            playlistList.setBorder(BorderFactory.createEmptyBorder(5, 10, 5, 10));
 
-        // Playlist selection
-        playlistList.addListSelectionListener(e -> {
-            if (!e.getValueIsAdjusting()) {
-                int index = playlistList.getSelectedIndex();
-                if (index >= 0) {
-                    currentTrackIndex = index;
-                    updateNowPlaying();
+            // Playlist selection
+            playlistList.addListSelectionListener(e -> {
+                if (!e.getValueIsAdjusting()) {
+                    int index = playlistList.getSelectedIndex();
+                    if (index >= 0) {
+                        currentTrackIndex = allSongs.get(index).id;
+                        updateNowPlaying();
+                    }
                 }
-            }
-        });
+            });
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -895,14 +895,35 @@ public class MidnightMediaPlayer extends JFrame {
     if (!isPlaying) {
         try {
             // Try to play any WAV file in the directory
-            File[] wavFiles = new File(".").listFiles((dir, name) -> 
-                name.toLowerCase().endsWith(".wav"));
+            // File[] wavFiles = new File(".").listFiles((dir, name) -> 
+            //     name.toLowerCase().endsWith(".wav"));
             
-            if (wavFiles != null && wavFiles.length > 0) {
-                File audioFile = wavFiles[0];
-                audioStream = AudioSystem.getAudioInputStream(audioFile);
+            if (currentTrackIndex >= 0) {
+                String path = Database.findMediaById(currentTrackIndex).path;
+                File audioFile = new File(path);
+
+                AudioInputStream originalStream = AudioSystem.getAudioInputStream(audioFile);
+                System.out.println(path);
+
+                AudioFormat baseFormat = originalStream.getFormat();
+
+                AudioFormat decodedFormat = new AudioFormat(
+                        AudioFormat.Encoding.PCM_SIGNED,
+                        baseFormat.getSampleRate(),
+                        16,
+                        baseFormat.getChannels(),
+                        baseFormat.getChannels() * 2,
+                        baseFormat.getSampleRate(),
+                        false
+                );
+
+                AudioInputStream decodedStream =
+                AudioSystem.getAudioInputStream(decodedFormat, originalStream);
+
                 currentClip = AudioSystem.getClip();
-                currentClip.open(audioStream);
+                currentClip.open(decodedStream);
+                currentClip.start();
+
                 currentClip.start();
                 playbackTimer.start();
                 isPlaying = true;
@@ -912,17 +933,18 @@ public class MidnightMediaPlayer extends JFrame {
                 playTestTone();
             }
         } catch (Exception e) {
+            System.out.println(e);
             playTestTone();
         }
-    } else {
-        if (currentClip != null) {
-            currentClip.stop();
-            playbackTimer.stop();
-            isPlaying = false;
-            playButton.setText("▶");
+        } else {
+            if (currentClip != null) {
+                currentClip.stop();
+                playbackTimer.stop();
+                isPlaying = false;
+                playButton.setText("▶");
+            }
         }
     }
-}
 
 private void playTestTone() {
     try {
