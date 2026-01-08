@@ -156,32 +156,6 @@ public class MidnightMediaPlayer extends JFrame {
         newMediaButton = createStyledButton("+ Add Media", TEXT_COLOR);
         newMediaButton.addActionListener(e -> OpenMediaAddingMenu());
         settingsButton = createStyledButton("Settings", TEXT_COLOR);
-        
-        // Playlist
-        playlistModel = new DefaultListModel<>();
-
-        List<Media> allSongs;
-        try {
-            allSongs = Database.getAllMedia();
-
-            for(Media song : allSongs)
-            {
-                playlistModel.addElement(song.name);
-            }
-        } catch (Exception e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
-        }
-
-        
-
-        playlistList = new JList<>(playlistModel);
-        playlistList.setFont(normalFont);
-        playlistList.setForeground(TEXT_COLOR);
-        playlistList.setBackground(HIGHLIGHT_COLOR);
-        playlistList.setSelectionBackground(HIGHLIGHT_COLOR);
-        playlistList.setSelectionForeground(TEXT_COLOR);
-        playlistList.setFixedCellHeight(40);
             
         // Initialize settings panel components (simplified for now)
         settingsBackButton = createSideButton("BACK", "←");
@@ -357,17 +331,6 @@ public class MidnightMediaPlayer extends JFrame {
         loopButton.addActionListener(e -> toggleLoop());
         muteButton.addActionListener(e -> toggleMute());
         fullscreenButton.addActionListener(e -> toggleFullscreen());
-        
-        // Playlist selection
-        playlistList.addListSelectionListener(e -> {
-            if (!e.getValueIsAdjusting()) {
-                int index = playlistList.getSelectedIndex();
-                if (index >= 0) {
-                    currentTrackIndex = index;
-                    updateNowPlaying();
-                }
-            }
-        });
     }
     
     private void updateButtonStates() {
@@ -498,6 +461,42 @@ public class MidnightMediaPlayer extends JFrame {
         });
     }
     
+    // DB connections
+    private void RecycleMediaSelection() {
+        playlistModel = new DefaultListModel<>();
+
+        List<Media> allSongs;
+        try {
+            allSongs = Database.getAllMedia();
+
+            for(Media song : allSongs)
+            {
+                playlistModel.addElement(song.name);
+            }
+        
+        // Playlist
+        playlistList = new JList<>(playlistModel);
+        playlistList.setFont(normalFont);
+        playlistList.setForeground(TEXT_COLOR);
+        playlistList.setBackground(HIGHLIGHT_COLOR);
+        playlistList.setSelectionBackground(HIGHLIGHT_COLOR);
+        playlistList.setSelectionForeground(TEXT_COLOR);
+        playlistList.setFixedCellHeight(40);
+        
+        // Playlist selection
+        playlistList.addListSelectionListener(e -> {
+            if (!e.getValueIsAdjusting()) {
+                int index = playlistList.getSelectedIndex();
+                if (index >= 0) {
+                    currentTrackIndex = index;
+                    updateNowPlaying();
+                }
+            }
+        });
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
     
     // View switching methods (visual only)
     private void switchToHomeView() {
@@ -531,6 +530,7 @@ public class MidnightMediaPlayer extends JFrame {
         logMenuButton.setForeground(DARKER_BG);
 
         ClearOldPanel();
+        RecycleMediaSelection();
         
         playlistScrollPane = new JScrollPane(playlistList);
         playlistScrollPane.setBorder(null);
