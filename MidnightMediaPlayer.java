@@ -40,6 +40,7 @@ public class MidnightMediaPlayer extends JFrame {
     private JLabel sectionLabel;
     private JButton home_addFolderButton;
     private JButton settingsButton;
+    private JPanel selectedMenuPanel;
     private JScrollPane playlistScrollPane;
     private JList<String> playlistList;   
     private DefaultListModel<String> playlistModel;
@@ -148,12 +149,12 @@ public class MidnightMediaPlayer extends JFrame {
         volumeSlider.setPreferredSize(new Dimension(100, 20));
         
         // Main content area
-        sectionLabel = new JLabel("RECENTLY PLAYED");
+        sectionLabel = new JLabel("Recently Played");
         sectionLabel.setFont(titleFont);
         sectionLabel.setForeground(TEXT_COLOR);
         
         home_addFolderButton = createStyledButton("+ ADD FOLDER", TEXT_COLOR);
-        settingsButton = createStyledButton("SETTINGS", TEXT_COLOR);
+        settingsButton = createStyledButton("Settings", TEXT_COLOR);
         
         // Playlist
         playlistModel = new DefaultListModel<>();
@@ -254,9 +255,9 @@ public class MidnightMediaPlayer extends JFrame {
         gbc.insets = new Insets(0, 0, 0, 20);
         
         // Playlist panel
-        JPanel playlistPanel = new JPanel(new BorderLayout());
-        playlistPanel.setBackground(DARKER_BG);
-        playlistPanel.setBorder(BorderFactory.createTitledBorder(
+        selectedMenuPanel = new JPanel(new BorderLayout());
+        selectedMenuPanel.setBackground(DARKER_BG);
+        selectedMenuPanel.setBorder(BorderFactory.createTitledBorder(
             BorderFactory.createLineBorder(HIGHLIGHT_COLOR, 1),
             "PLAYLIST",
             TitledBorder.LEFT,
@@ -265,16 +266,11 @@ public class MidnightMediaPlayer extends JFrame {
             TEXT_COLOR
         ));
         
-        playlistScrollPane = new JScrollPane(playlistList);
-        playlistScrollPane.setBorder(null);
-        playlistScrollPane.getViewport().setBackground(DARKER_BG);
-        playlistPanel.add(playlistScrollPane, BorderLayout.CENTER);
-        
         gbc.gridx = 1;
         gbc.gridy = 0;
         gbc.weightx = 0.6;
         gbc.insets = new Insets(0, 20, 0, 0);
-        centerPanel.add(playlistPanel, gbc);
+        centerPanel.add(selectedMenuPanel, gbc);
         
         // Control panel at bottom
         controlPanel = new JPanel(new BorderLayout(10, 10));
@@ -511,6 +507,8 @@ public class MidnightMediaPlayer extends JFrame {
         musicListButton.setForeground(DARKER_BG);
         playlistButton.setForeground(DARKER_BG);
         logMenuButton.setForeground(DARKER_BG);
+
+        ClearOldPanel();
     }
 
     private void switchToMediaView() {
@@ -519,6 +517,13 @@ public class MidnightMediaPlayer extends JFrame {
         musicListButton.setForeground(TEXT_COLOR);
         playlistButton.setForeground(DARKER_BG);
         logMenuButton.setForeground(DARKER_BG);
+
+        ClearOldPanel();
+        
+        playlistScrollPane = new JScrollPane(playlistList);
+        playlistScrollPane.setBorder(null);
+        playlistScrollPane.getViewport().setBackground(DARKER_BG);
+        selectedMenuPanel.add(playlistScrollPane, BorderLayout.CENTER);
     }
 
     private void switchToPlaylistView() {
@@ -527,6 +532,8 @@ public class MidnightMediaPlayer extends JFrame {
         musicListButton.setForeground(DARKER_BG);
         playlistButton.setForeground(TEXT_COLOR);
         logMenuButton.setForeground(DARKER_BG);
+
+        ClearOldPanel();
     }
     
     private void switchToLogsView() {
@@ -535,6 +542,8 @@ public class MidnightMediaPlayer extends JFrame {
         musicListButton.setForeground(DARKER_BG);
         playlistButton.setForeground(DARKER_BG);
         logMenuButton.setForeground(TEXT_COLOR);
+
+        ClearOldPanel();
     }
 
     private void switchToSettingsView() {
@@ -543,6 +552,14 @@ public class MidnightMediaPlayer extends JFrame {
         musicListButton.setForeground(DARKER_BG);
         playlistButton.setForeground(DARKER_BG);
         logMenuButton.setForeground(DARKER_BG);
+
+        ClearOldPanel();
+    }
+
+    private void ClearOldPanel() {
+        selectedMenuPanel.removeAll();
+        selectedMenuPanel.revalidate();
+        selectedMenuPanel.repaint();
     }
 
     // State toggle methods (visual only)
