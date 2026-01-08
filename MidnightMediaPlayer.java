@@ -350,6 +350,8 @@ public class MidnightMediaPlayer extends JFrame {
     private void setupEventListeners() {
         // Side panel buttons
         homeButton.addActionListener(e -> switchToHomeView());
+        musicListButton.addActionListener(e -> switchToMediaView());
+        playlistButton.addActionListener(e -> switchToPlaylistView());
         settingsButton.addActionListener(e -> switchToSettingsView());
         
         // Control buttons (visual feedback only)
@@ -503,9 +505,25 @@ public class MidnightMediaPlayer extends JFrame {
     // View switching methods (visual only)
     private void switchToHomeView() {
         sectionLabel.setText("RECENTLY PLAYED");
-        homeButton.setForeground(DARKER_BG);
+        homeButton.setForeground(TEXT_COLOR);
         musicListButton.setForeground(DARKER_BG);
         playlistButton.setForeground(DARKER_BG);
+        videoListButton.setForeground(DARKER_BG);
+    }
+
+    private void switchToMediaView() {
+        sectionLabel.setText("RECENTLY PLAYED");
+        homeButton.setForeground(DARKER_BG);
+        musicListButton.setForeground(TEXT_COLOR);
+        playlistButton.setForeground(DARKER_BG);
+        videoListButton.setForeground(DARKER_BG);
+    }
+
+    private void switchToPlaylistView() {
+        sectionLabel.setText("RECENTLY PLAYED");
+        homeButton.setForeground(DARKER_BG);
+        musicListButton.setForeground(DARKER_BG);
+        playlistButton.setForeground(TEXT_COLOR);
         videoListButton.setForeground(DARKER_BG);
     }
     
