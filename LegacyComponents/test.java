@@ -1,3 +1,4 @@
+package LegacyComponents;
 import javax.swing.*;
 
 //This is JUST a reference to how java windows are displayed

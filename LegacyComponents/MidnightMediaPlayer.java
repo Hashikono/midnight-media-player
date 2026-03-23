@@ -1,7 +1,11 @@
+package LegacyComponents;
 // Package imports
 import javax.swing.*;
 import javax.swing.border.*;
 
+import Database;
+import MediaAddingMenu;
+import PlaylistAddingMenu;
 import models.Media;
 import models.Playlist;
 
