@@ -11,6 +11,7 @@ import java.util.List;  // For List interface
 
 // Main class extending JFrame (main application window)
 public class App extends JFrame {
+    private JPanel center;
     
     // ========== CONSTRUCTOR ==========
     public App() {
@@ -44,7 +45,13 @@ public class App extends JFrame {
     
     // ========== COMPONENT INITIALIZATION ==========
     private void initializeComponents() {
-        add(new MediaControlBar());
+        center = new JPanel();
+        center.setBackground(ColorScheme.DARK_BG);
+        add(center, BorderLayout.CENTER);
+
+
+        add(new MediaControlBar(), BorderLayout.SOUTH);
+        add(new NavBar(), BorderLayout.WEST);
     }
     
     // ========== HELPER METHOD: CREATE GRADIENT PANEL ==========
@@ -181,51 +188,6 @@ public class App extends JFrame {
     // ========== LAYOUT SETUP ==========
     private void setupLayout() {
         
-        // ========== CENTER PANEL (Album Art & Title) ==========
-        JPanel centerPanel = new JPanel(new BorderLayout());
-        centerPanel.setOpaque(false);  // Transparent to show gradient
-        
-        // Album art panel with centering
-        JPanel albumPanel = new JPanel(new GridBagLayout());  // Centers content
-        albumPanel.setOpaque(false);
-        albumPanel.setBorder(new EmptyBorder(20, 20, 20, 20));  // Padding
-        
-        // Title panel
-        JPanel titlePanel = new JPanel(new BorderLayout());
-        titlePanel.setOpaque(false);
-        titlePanel.setBorder(new EmptyBorder(0, 40, 20, 40));  // Padding
-        
-        // Add components to center panel
-        centerPanel.add(albumPanel, BorderLayout.CENTER);
-        centerPanel.add(titlePanel, BorderLayout.SOUTH);
-        
-        // ========== PROGRESS PANEL ==========
-        JPanel progressPanel = new JPanel(new BorderLayout(15, 0));  // 15px horizontal gap
-        progressPanel.setOpaque(false);
-        progressPanel.setBorder(new EmptyBorder(10, 40, 10, 40));  // Padding
-        
-        // Panel for time labels
-        JPanel timePanel = new JPanel(new GridLayout(1, 2));  // Two columns
-        timePanel.setOpaque(false);
-        
-        // Add components to progress panel
-        progressPanel.add(timePanel, BorderLayout.NORTH);
-        
-        // Volume control panel
-        JPanel volumePanel = new JPanel(new FlowLayout(FlowLayout.CENTER, 10, 0));
-        volumePanel.setOpaque(false);
-        volumePanel.add(new JLabel("🔈") {{  // Volume icon
-            setFont(new Font("Segoe UI Symbol", Font.PLAIN, 16));
-            setForeground(ColorScheme.TEXT_COLOR);
-        }});
-        // Playlist title
-        JLabel playlistTitle = new JLabel("PLAYLIST");
-        playlistTitle.setFont(new Font("Segoe UI", Font.BOLD, 12));
-        playlistTitle.setForeground(new Color(180, 180, 180));
-        playlistTitle.setBorder(new EmptyBorder(0, 0, 10, 0));  // Bottom margin
-        
-        // ========== SET FRAME LAYOUT ==========
-        setLayout(new BorderLayout());
     }
     
     // ========== FILE MANAGEMENT METHODS ==========

@@ -8,8 +8,10 @@ import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.RenderingHints;
 
+import javax.swing.BoxLayout;
 import javax.swing.JButton;
 import javax.swing.JPanel;
+import javax.swing.border.MatteBorder;
 
 public class MediaControlBar extends JPanel{
     
@@ -72,7 +74,10 @@ public class MediaControlBar extends JPanel{
     
     
     public MediaControlBar() {
-        setForeground(ColorScheme.PRIMARY_COLOR);
+        setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
+        setPreferredSize(new Dimension(0, 70));
+        setBorder(new MatteBorder(2, 0, 0, 0, new Color(60, 60, 65)));
+        setBackground(ColorScheme.DARK_BG);
         System.out.println("running");
     }
 }
