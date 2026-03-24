@@ -12,22 +12,6 @@ import java.util.List;  // For List interface
 // Main class extending JFrame (main application window)
 public class App extends JFrame {
     
-    // Panels for organizing layout
-    private JPanel controlPanel;     // Holds control buttons
-    private JPanel displayPanel;     // Holds album art and title
-    // private JPanel playlistPanel;    // Holds playlist
-    private JPanel mainPanel;        // Main container panel
-    
-    // ========== APPLICATION STATE VARIABLES ==========
-    
-    private boolean isPlaying = false;    // Tracks if media is currently playing
-    private boolean isMuted = false;      // Tracks if audio is muted
-    private boolean isRepeating = false;  // Tracks if repeat mode is enabled
-    private boolean isShuffling = false;  // Tracks if shuffle mode is enabled
-    private boolean playlistVisible = true; // Tracks playlist visibility
-    private List<File> playlist = new ArrayList<>(); // List of media files
-    private int currentTrackIndex = -1;   // Index of currently playing track (-1 = none)
-    
     // ========== CONSTRUCTOR ==========
     public App() {
         // Set window title
@@ -43,7 +27,7 @@ public class App extends JFrame {
         setLocationRelativeTo(null);
         
         // Remove default window decorations (title bar, borders)
-        setUndecorated(true);
+        setUndecorated(true); //Setting to false will make it have the bar of a normal app... do we want that?
         
         // Create rounded corners for the window
         // setShape(new RoundRectangle2D.Double(0, 0, 1000, 700, 30, 30));
@@ -60,14 +44,7 @@ public class App extends JFrame {
     
     // ========== COMPONENT INITIALIZATION ==========
     private void initializeComponents() {
-        // Create buttons with custom styling
-        
-        // ========== PANEL INITIALIZATION ==========
-        // Create panels with gradient backgrounds
-        controlPanel = createGradientPanel(ColorScheme.DARK_BG, new Color(35, 35, 40));
-        displayPanel = createGradientPanel(new Color(25, 25, 30), ColorScheme.DARK_BG);
-        // playlistPanel = createGradientPanel(new Color(35, 35, 40), new Color(40, 40, 45));
-        mainPanel = createGradientPanel(ColorScheme.DARK_BG, new Color(30, 30, 35));
+        add(new MediaControlBar());
     }
     
     // ========== HELPER METHOD: CREATE GRADIENT PANEL ==========
@@ -92,66 +69,9 @@ public class App extends JFrame {
         };
     }
     
-    // ========== HELPER METHOD: CREATE MODERN BUTTON ==========
-    // Creates a custom styled button with rounded corners and hover effects
-    private JButton createModernButton(String text, String tooltip, Color baseColor) {
-        // Create button with custom painting
-        JButton button = new JButton(text) {
-            @Override
-            protected void paintComponent(Graphics g) {
-                Graphics2D g2 = (Graphics2D) g.create();
-                g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, 
-                                   RenderingHints.VALUE_ANTIALIAS_ON);
-                
-                int width = getWidth();
-                int height = getHeight();
-                
-                // Determine button color based on state
-                Color buttonColor;
-                if (getModel().isPressed()) {
-                    buttonColor = baseColor.darker();  // Darker when pressed
-                } else if (getModel().isRollover()) {
-                    buttonColor = baseColor.brighter();  // Brighter on hover
-                } else {
-                    buttonColor = baseColor;  // Normal state
-                }
-                
-                // Draw rounded rectangle background
-                g2.setColor(buttonColor);
-                g2.fillRoundRect(0, 0, width - 1, height - 1, 15, 15);
-                
-                // Draw button text (centered)
-                g2.setColor(Color.WHITE);
-                g2.setFont(getFont());
-                FontMetrics fm = g2.getFontMetrics();
-                int x = (width - fm.stringWidth(getText())) / 2;  // Center horizontally
-                int y = (height - fm.getHeight()) / 2 + fm.getAscent();  // Center vertically
-                g2.drawString(getText(), x, y);
-                
-                // Draw border
-                g2.setColor(baseColor.brighter());  // Slightly brighter border
-                g2.setStroke(new BasicStroke(1.5f));  // 1.5 pixel border
-                g2.drawRoundRect(1, 1, width - 3, height - 3, 15, 15);
-                
-                g2.dispose();
-            }
-        };
-        
-        // Set button properties
-        button.setFont(new Font("Segoe UI Symbol", Font.BOLD, 14));  // Icon font
-        button.setPreferredSize(new Dimension(45, 40));  // Fixed size
-        button.setToolTipText(tooltip);  // Tooltip text
-        button.setContentAreaFilled(false);  // Don't use default background
-        button.setBorderPainted(false);  // Don't paint default border
-        button.setFocusPainted(false);  // Don't show focus rectangle
-        button.setCursor(new Cursor(Cursor.HAND_CURSOR));  // Hand cursor on hover
-        
-        return button;
-    }
-    
     // ========== CUSTOM WINDOW CONTROLS ==========
     // Creates custom title bar with window control buttons
-    private void setupWindowControls() {
+    private void setupWindowControls() { //Needs a rework, thing looks ugly rn
         // Create title bar panel
         JPanel titleBar = new JPanel(new BorderLayout());
         titleBar.setBackground(ColorScheme.DARK_BG);
@@ -168,9 +88,9 @@ public class App extends JFrame {
         controlButtons.setOpaque(false);  // Transparent background
         
         // Create control buttons
-        JButton minimizeBtn = createWindowControlButton("－", "Minimize");
-        JButton maximizeBtn = createWindowControlButton("□", "Maximize");
-        JButton closeBtn = createWindowControlButton("×", "Close");
+        JButton minimizeBtn = createWindowControlButton("-", "Minimize");
+        JButton maximizeBtn = createWindowControlButton("+", "Maximize");
+        JButton closeBtn = createWindowControlButton("x", "Close");
         closeBtn.setBackground(new Color(231, 76, 60));  // Red close button
         
         // Add action listeners to control buttons
@@ -260,8 +180,6 @@ public class App extends JFrame {
     
     // ========== LAYOUT SETUP ==========
     private void setupLayout() {
-        // Set main panel layout
-        mainPanel.setLayout(new BorderLayout());
         
         // ========== CENTER PANEL (Album Art & Title) ==========
         JPanel centerPanel = new JPanel(new BorderLayout());
@@ -293,10 +211,6 @@ public class App extends JFrame {
         // Add components to progress panel
         progressPanel.add(timePanel, BorderLayout.NORTH);
         
-        // ========== CONTROL PANEL (Buttons) ==========
-        controlPanel.setLayout(new FlowLayout(FlowLayout.CENTER, 15, 15));  // Centered, 15px gaps
-        controlPanel.setBorder(new EmptyBorder(15, 20, 20, 20));  // Padding
-        
         // Volume control panel
         JPanel volumePanel = new JPanel(new FlowLayout(FlowLayout.CENTER, 10, 0));
         volumePanel.setOpaque(false);
@@ -304,83 +218,20 @@ public class App extends JFrame {
             setFont(new Font("Segoe UI Symbol", Font.PLAIN, 16));
             setForeground(ColorScheme.TEXT_COLOR);
         }});
-        
-        controlPanel.add(volumePanel);
-        
-        // ========== PLAYLIST PANEL ==========
-        // playlistPanel.setLayout(new BorderLayout());
-        // playlistPanel.setPreferredSize(new Dimension(300, 0));  // Fixed width
-        // playlistPanel.setBorder(new CompoundBorder(
-        //     new MatteBorder(0, 1, 0, 0, new Color(60, 60, 65)),  // Left border
-        //     new EmptyBorder(10, 10, 10, 10)  // Padding
-        // ));
-        
         // Playlist title
         JLabel playlistTitle = new JLabel("PLAYLIST");
         playlistTitle.setFont(new Font("Segoe UI", Font.BOLD, 12));
         playlistTitle.setForeground(new Color(180, 180, 180));
         playlistTitle.setBorder(new EmptyBorder(0, 0, 10, 0));  // Bottom margin
         
-        // Add components to playlist panel
-        // playlistPanel.add(playlistTitle, BorderLayout.NORTH);
-        
-        // ========== ASSEMBLE MAIN PANEL ==========
-        mainPanel.add(centerPanel, BorderLayout.CENTER);
-        mainPanel.add(progressPanel, BorderLayout.NORTH);
-        mainPanel.add(controlPanel, BorderLayout.SOUTH);
-        // mainPanel.add(playlistPanel, BorderLayout.EAST);
-        
         // ========== SET FRAME LAYOUT ==========
         setLayout(new BorderLayout());
-        add(mainPanel, BorderLayout.CENTER);
     }
     
     // ========== FILE MANAGEMENT METHODS ==========
     
-    // Play next track in playlist
-    private void playNextTrack() {
-        if (playlist.isEmpty()) return;  // Nothing to play
-        
-        // Calculate next track index
-        if (isShuffling) {
-            // Random track for shuffle mode
-            currentTrackIndex = (int) (Math.random() * playlist.size());
-        } else {
-            // Next track in sequence, wrap around to beginning
-            currentTrackIndex = (currentTrackIndex + 1) % playlist.size();
-        }
-        
-        // playTrack(currentTrackIndex);  // Play the selected track
-    }
-    
-    // Play previous track in playlist
-    private void playPreviousTrack() {
-        if (playlist.isEmpty()) return;  // Nothing to play
-        
-        // Calculate previous track index (wrap around to end if needed)
-        currentTrackIndex = (currentTrackIndex - 1 + playlist.size()) % playlist.size();
-        
-        // playTrack(currentTrackIndex);  // Play the selected track
-    }
-    
-    
-    // Format seconds into MM:SS format
-    private String formatTime(int seconds) {
-        int mins = seconds / 60;    // Calculate minutes
-        int secs = seconds % 60;    // Calculate remaining seconds
-        return String.format("%02d:%02d", mins, secs);  // Format as 00:00
-    }
-    
-    // Get name of current track
-    private String getCurrentTrackName() {
-        if (currentTrackIndex >= 0 && currentTrackIndex < playlist.size()) {
-            return playlist.get(currentTrackIndex).getName();
-        }
-        return "No track";  // Default text when no track is loaded
-    }
-    
     // ========== MAIN METHOD ==========
-    public static void main(String[] args) {
+    public static void main(String[] args) { //Base was stolen from TestApp.java, so any parts we want back should come from there
         // Use SwingUtilities.invokeLater to ensure thread safety
         SwingUtilities.invokeLater(() -> {
             try {
