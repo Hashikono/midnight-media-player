@@ -11,6 +11,7 @@ import java.util.List;  // For List interface
 
 // Main class extending JFrame (main application window)
 public class App extends JFrame {
+    public static App player;
     private JPanel center;
     
     // ========== CONSTRUCTOR ==========
@@ -204,7 +205,7 @@ public class App extends JFrame {
             }
             
             // Create and display the media player
-            App player = new App();
+            player = new App();
             player.setVisible(true);  // Make window visible
         });
     }

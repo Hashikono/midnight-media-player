@@ -1,7 +1,9 @@
 import java.awt.BasicStroke;
+import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Cursor;
 import java.awt.Dimension;
+import java.awt.FlowLayout;
 import java.awt.Font;
 import java.awt.FontMetrics;
 import java.awt.Graphics;
@@ -11,9 +13,15 @@ import java.awt.RenderingHints;
 import javax.swing.BoxLayout;
 import javax.swing.JButton;
 import javax.swing.JPanel;
+import javax.swing.border.EmptyBorder;
 import javax.swing.border.MatteBorder;
 
 public class MediaControlBar extends JPanel{
+    JButton playButton;
+    JButton nextButton;
+    JButton prevButton;
+    JButton repeatButton;
+    JButton shuffleButton;
     
     // ========== HELPER METHOD: CREATE MODERN BUTTON ==========
     // Creates a custom styled button with rounded corners and hover effects
@@ -78,5 +86,19 @@ public class MediaControlBar extends JPanel{
         setPreferredSize(new Dimension(0, 70));
         setBorder(new MatteBorder(2, 0, 0, 0, new Color(60, 60, 65)));
         setBackground(ColorScheme.DARK_BG);
+
+        setLayout(new FlowLayout(FlowLayout.CENTER, 15, 15));  // Centered, 15px gaps
+
+        shuffleButton = createModernButton("🔀", "Shuffle", ColorScheme.LIGHT_BG);
+        playButton = createModernButton("▶", "Play", ColorScheme.PRIMARY_COLOR);
+        nextButton = createModernButton("⏭", "Next", ColorScheme.LIGHT_BG);
+        prevButton = createModernButton("⏮", "Previous", ColorScheme.LIGHT_BG);
+        repeatButton = createModernButton("🔁", "Repeat", ColorScheme.LIGHT_BG);
+
+        add(shuffleButton);
+        add(prevButton);
+        add(playButton);
+        add(nextButton);
+        add(repeatButton);
     }
 }
