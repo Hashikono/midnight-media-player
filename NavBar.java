@@ -12,6 +12,5 @@ public class NavBar extends JPanel{
         setPreferredSize(new Dimension(60, 0));
         setBorder(new MatteBorder(0, 0, 0, 2, new Color(60, 60, 65)));
         setBackground(ColorScheme.DARK_BG);
-        System.out.println("running");
     }
 }

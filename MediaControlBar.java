@@ -78,6 +78,5 @@ public class MediaControlBar extends JPanel{
         setPreferredSize(new Dimension(0, 70));
         setBorder(new MatteBorder(2, 0, 0, 0, new Color(60, 60, 65)));
         setBackground(ColorScheme.DARK_BG);
-        System.out.println("running");
     }
 }
