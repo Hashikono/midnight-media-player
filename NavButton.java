@@ -29,13 +29,14 @@ public class NavButton extends JButton {
 
     public void Expand()
     {
-        setPreferredSize(new Dimension(160, 40));  // Fixed size
+        setPreferredSize(new Dimension(160, 40));
+        setText(expandedText);
     }
 
     public void Shrink()
     {
-
-        setPreferredSize(new Dimension(50, 40));  // Fixed size
+        setPreferredSize(new Dimension(50, 40));
+        setText(normalText);
     }
 
     

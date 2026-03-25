@@ -60,6 +60,6 @@ public class NavBar extends JPanel{
         add(homeButton);
         add(expandButton);
 
-        homeButton.addActionListener(e -> Resizing());
+        expandButton.addActionListener(e -> Resizing());
     }
 }
