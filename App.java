@@ -33,6 +33,12 @@ public class App extends JFrame {
         
         // Create rounded corners for the window
         // setShape(new RoundRectangle2D.Double(0, 0, 1000, 700, 30, 30));
+
+        try {
+            Database.initialize();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
         
         // Initialize all GUI components
         initializeComponents();
@@ -46,13 +52,16 @@ public class App extends JFrame {
     
     // ========== COMPONENT INITIALIZATION ==========
     private void initializeComponents() {
+        add(new MediaControlBar(), BorderLayout.SOUTH);
+        add(new NavBar(), BorderLayout.WEST);
+
+
         center = new JPanel();
+        center.setLayout(new BorderLayout());
         center.setBackground(ColorScheme.DARK_BG);
         add(center, BorderLayout.CENTER);
 
-
-        add(new MediaControlBar(), BorderLayout.SOUTH);
-        add(new NavBar(), BorderLayout.WEST);
+        center.add(new SongsMenu());
     }
     
     // ========== HELPER METHOD: CREATE GRADIENT PANEL ==========

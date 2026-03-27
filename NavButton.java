@@ -9,6 +9,7 @@ import java.awt.Graphics2D;
 import java.awt.RenderingHints;
 
 import javax.swing.JButton;
+import javax.swing.SwingConstants;
 import javax.swing.border.LineBorder;
 
 public class NavButton extends JButton {
@@ -29,14 +30,18 @@ public class NavButton extends JButton {
 
     public void Expand()
     {
-        setPreferredSize(new Dimension(160, 40));
+        setPreferredSize(new Dimension(170, 40));
         setText(expandedText);
+        setHorizontalAlignment(SwingConstants.LEADING);
+        setBorder(new LineBorder(bgColor.brighter(), 19, true));
     }
 
     public void Shrink()
     {
         setPreferredSize(new Dimension(50, 40));
         setText(normalText);
+        setHorizontalAlignment(SwingConstants.CENTER);
+        setBorder(new LineBorder(bgColor.brighter(), 2, true)); // rounded border
     }
 
     
@@ -59,7 +64,8 @@ public class NavButton extends JButton {
         setFocusPainted(false);
         setBackground(bgColor);
         setForeground(textColor);
-        setOpaque(true);
+        setOpaque(false);
+        setContentAreaFilled(true);
         setBorder(new LineBorder(bgColor.brighter(), 2, true)); // rounded border
 
         setCursor(new Cursor(Cursor.HAND_CURSOR));

@@ -15,6 +15,7 @@ import javax.swing.JPanel;
 import javax.swing.border.MatteBorder;
 
 public class NavBar extends JPanel{
+    JPanel mainButtonsBox;
     NavButton homeButton;
     NavButton expandButton;
 
@@ -45,19 +46,26 @@ public class NavBar extends JPanel{
         else
             Shrink();
     }
+
+    private void SetUpMainButtonBg()
+    {
+        mainButtonsBox = new JPanel();
+        mainButtonsBox.setOpaque(false);
+        mainButtonsBox.setLayout(new FlowLayout(FlowLayout.CENTER, 15, 5));  // Centered, 15px gaps
+    }
     
     public NavBar() {
-        setLayout(new BoxLayout(this, BoxLayout.X_AXIS));
         setPreferredSize(new Dimension(60, 0));
         setBorder(new MatteBorder(0, 0, 0, 2, new Color(60, 60, 65)));
         setBackground(ColorScheme.DARK_BG);
 
-        setLayout(new FlowLayout(FlowLayout.CENTER, 15, 5));  // Centered, 15px gaps
+        SetUpMainButtonBg();
 
-        homeButton = new NavButton("🔀","🔀 Home", "Home", ColorScheme.LIGHT_BG, ColorScheme.PRIMARY_COLOR);
-        expandButton = new NavButton(">>","<< Shrink", "Expand", ColorScheme.LIGHT_BG, ColorScheme.TEXT_COLOR);
+        homeButton = new NavButton("⌂","⌂ Home", "Home", ColorScheme.DARK_BG.brighter(), ColorScheme.PRIMARY_COLOR);
+        expandButton = new NavButton("»","« Shrink", "Expand", ColorScheme.DARK_BG.brighter(), ColorScheme.TEXT_COLOR);
 
-        add(homeButton);
+        mainButtonsBox.add(homeButton);
+        add(mainButtonsBox);
         add(expandButton);
 
         expandButton.addActionListener(e -> Resizing());
