@@ -1,12 +1,18 @@
+import java.awt.Color;
 import java.awt.Container;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
+import java.awt.GridBagConstraints;
+import java.awt.GridBagLayout;
 
 import javax.swing.BoxLayout;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
+import javax.swing.SwingConstants;
+import javax.swing.border.MatteBorder;
+
 import models.Media;
 
 public class SongItem extends JPanel {
@@ -32,13 +38,19 @@ public class SongItem extends JPanel {
     // panel.add(rightPanel, gbc);
 
     public SongItem(Media data) {
-        setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
+        setLayout(new BoxLayout(this, BoxLayout.X_AXIS));
         mainSongDetails = new JPanel();
         mainSongDetails.setLayout(new FlowLayout(FlowLayout.LEADING, 3, 0));
         
         songImage = new JLabel(new ImageIcon("TempSongImage.png"));
+
         songTitle = new JLabel(data.name);
+        // songTitle.setSize(getParent().getWidth() / 3, 30);
+        songTitle.setHorizontalAlignment(SwingConstants.LEADING);
+        songTitle.setBorder(new MatteBorder(0, 0, 0, 1, ColorScheme.PRIMARY_COLOR));
+
         songAuthor = new JLabel(data.author);
+        songAuthor.setBorder(new MatteBorder(0, 0, 0, 1, ColorScheme.PRIMARY_COLOR));
 
 
         // mainSongDetails.add(songImage);
