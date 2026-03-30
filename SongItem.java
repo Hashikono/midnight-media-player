@@ -11,6 +11,7 @@ import javax.swing.JButton;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.SwingConstants;
+import javax.swing.border.EmptyBorder;
 import javax.swing.border.MatteBorder;
 
 import models.Media;
@@ -37,23 +38,28 @@ public class SongItem extends JPanel {
     // gbc.weightx = 0.7;
     // panel.add(rightPanel, gbc);
 
+    // songTitle.setBorder(BorderFactory.createCompoundBorder(new MatteBorder(0, 0, 0, 1, ColorScheme.PRIMARY_COLOR), BorderFactory.createEmptyBorder(0, 10, 0, 10)));
+
     public SongItem(Media data) {
         setLayout(new BoxLayout(this, BoxLayout.X_AXIS));
         mainSongDetails = new JPanel();
         mainSongDetails.setLayout(new FlowLayout(FlowLayout.LEADING, 3, 0));
+        mainSongDetails.setBorder(new EmptyBorder(2, 0, 0, 0));
         
-        songImage = new JLabel(new ImageIcon("TempSongImage.png"));
+        // int totalWidth = getParent().getWidth() - 30;
+        songImage = new JLabel(ImageUtils.getScaledCover("TempSongImage.png", 30)); //used to be new ImageIcon("TempSongImage.png") Just tested and this func doesn't seem to work, lol. I'll look through it again in a sec
 
         songTitle = new JLabel(data.name);
-        // songTitle.setSize(getParent().getWidth() / 3, 30);
         songTitle.setHorizontalAlignment(SwingConstants.LEADING);
+        // songTitle.setPreferredSize(new Dimension((int)(totalWidth * .3), 30));
         songTitle.setBorder(new MatteBorder(0, 0, 0, 1, ColorScheme.PRIMARY_COLOR));
 
         songAuthor = new JLabel(data.author);
+        // songAuthor.setPreferredSize(new Dimension((int)(totalWidth * .3), 30));
         songAuthor.setBorder(new MatteBorder(0, 0, 0, 1, ColorScheme.PRIMARY_COLOR));
 
 
-        // mainSongDetails.add(songImage);
+        mainSongDetails.add(songImage);
         mainSongDetails.add(songTitle);
         mainSongDetails.add(songAuthor);
 
@@ -65,10 +71,21 @@ public class SongItem extends JPanel {
         Container parent = getParent();
 
         if (parent != null) {
-            int width = parent.getWidth();
-            return new Dimension(width, 35);
+            int totalWidth = parent.getWidth();
+            return new Dimension(totalWidth, 35);
         }
 
         return super.getPreferredSize();
+    }
+
+    @Override
+    public void doLayout()
+    {
+        super.doLayout();
+
+        int totalWidth = getWidth();
+
+        songTitle.setPreferredSize(new Dimension((int)(totalWidth * .275), 30));
+        songTitle.setPreferredSize(new Dimension((int)(totalWidth * .175), 30));
     }
 }
