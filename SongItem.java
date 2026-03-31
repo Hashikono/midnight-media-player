@@ -10,6 +10,7 @@ import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
+import javax.swing.OverlayLayout;
 import javax.swing.SwingConstants;
 import javax.swing.border.EmptyBorder;
 import javax.swing.border.MatteBorder;
@@ -18,7 +19,10 @@ import models.Media;
 
 public class SongItem extends JPanel {
     private JPanel mainSongDetails;
+    private JPanel coverContainer;
+    private JButton playButton;
     private JLabel songImage;
+
     private JLabel songTitle;
     private JLabel songAuthor;
 
@@ -46,11 +50,40 @@ public class SongItem extends JPanel {
         mainSongDetails.setLayout(new FlowLayout(FlowLayout.LEADING, 3, 0));
         mainSongDetails.setBorder(new EmptyBorder(2, 0, 0, 0));
         
-        // int totalWidth = getParent().getWidth() - 30;
-        songImage = new JLabel(ImageUtils.getScaledCover("TempSongImage.png", 30)); //used to be new ImageIcon("TempSongImage.png") Just tested and this func doesn't seem to work, lol. I'll look through it again in a sec
-        songImage.setPreferredSize(new Dimension(30, 30));
-        songImage.setMinimumSize(new Dimension(30, 30));
-        songImage.setMaximumSize(new Dimension(30, 30));
+        //Image part
+        coverContainer = new JPanel();
+        coverContainer.setLayout(new OverlayLayout(coverContainer));
+        coverContainer.setPreferredSize(new Dimension(40, 40));
+
+        songImage = new JLabel(ImageUtils.getScaledCover("TempSongImage.png", 40)); //used to be new ImageIcon("TempSongImage.png") Just tested and this func doesn't seem to work, lol. I'll look through it again in a sec
+        songImage.setAlignmentX(.5f);
+        songImage.setAlignmentY(.5f);
+        // songImage.setPreferredSize(new Dimension(30, 30));
+
+        playButton = new JButton("▶");
+        playButton.setAlignmentX(.5f);
+        playButton.setAlignmentY(.5f);
+        playButton.setPreferredSize(new Dimension(40, 40));
+
+        playButton.setContentAreaFilled(true);
+        playButton.setBorderPainted(false);
+        playButton.setForeground(new Color(20, 20, 20, 10));
+        playButton.setVisible(false);
+
+        coverContainer.add(playButton);
+        coverContainer.add(songImage);
+
+        coverContainer.addMouseListener(new java.awt.event.MouseAdapter() {
+            @Override
+            public void mouseEntered(java.awt.event.MouseEvent e) {
+                playButton.setVisible(true);
+            }
+
+            @Override
+            public void mouseExited(java.awt.event.MouseEvent e) {
+                playButton.setVisible(false);
+            }
+        });
 
         songTitle = new JLabel(data.name);
         songTitle.setHorizontalAlignment(SwingConstants.LEADING);
@@ -60,7 +93,7 @@ public class SongItem extends JPanel {
         songAuthor.setBorder(new MatteBorder(0, 0, 0, 1, ColorScheme.PRIMARY_COLOR));
 
 
-        mainSongDetails.add(songImage);
+        mainSongDetails.add(coverContainer);
         mainSongDetails.add(songTitle);
         mainSongDetails.add(songAuthor);
 
@@ -73,7 +106,7 @@ public class SongItem extends JPanel {
 
         if (parent != null) {
             int totalWidth = parent.getWidth();
-            return new Dimension(totalWidth, 35);
+            return new Dimension(totalWidth, 45);
         }
 
         return super.getPreferredSize();
@@ -84,7 +117,7 @@ public class SongItem extends JPanel {
     {
         super.doLayout();
 
-        int totalWidth = getWidth();
+        int totalWidth = getWidth() - 30;
 
         songTitle.setPreferredSize(new Dimension((int)(totalWidth * .275), 30));
         songTitle.setPreferredSize(new Dimension((int)(totalWidth * .175), 30));
