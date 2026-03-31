@@ -44,6 +44,21 @@ public class SongItem extends JPanel {
 
     // songTitle.setBorder(BorderFactory.createCompoundBorder(new MatteBorder(0, 0, 0, 1, ColorScheme.PRIMARY_COLOR), BorderFactory.createEmptyBorder(0, 10, 0, 10)));
 
+    java.awt.event.MouseAdapter hoverHandler = new java.awt.event.MouseAdapter() {
+        @Override
+        public void mouseEntered(java.awt.event.MouseEvent e) {
+            playButton.setVisible(true);
+        }
+
+        @Override
+        public void mouseExited(java.awt.event.MouseEvent e) {
+            if (!coverContainer.getBounds().contains(javax.swing.SwingUtilities.convertPoint(e.getComponent(), e.getPoint(), coverContainer)))
+            {
+                playButton.setVisible(false);
+            }
+        }
+    };
+
     public SongItem(Media data) {
         setLayout(new BoxLayout(this, BoxLayout.X_AXIS));
         mainSongDetails = new JPanel();
@@ -63,27 +78,33 @@ public class SongItem extends JPanel {
         playButton = new JButton("▶");
         playButton.setAlignmentX(.5f);
         playButton.setAlignmentY(.5f);
-        playButton.setPreferredSize(new Dimension(40, 40));
+        playButton.setMinimumSize(new Dimension(40, 40));
+        playButton.setMaximumSize(new Dimension(40, 40));
 
         playButton.setContentAreaFilled(true);
         playButton.setBorderPainted(false);
-        playButton.setForeground(new Color(20, 20, 20, 10));
+        playButton.setBackground(new Color(20, 20, 20, 10));
+        playButton.setForeground(ColorScheme.DARK_BG);
         playButton.setVisible(false);
 
         coverContainer.add(playButton);
         coverContainer.add(songImage);
 
-        coverContainer.addMouseListener(new java.awt.event.MouseAdapter() {
-            @Override
-            public void mouseEntered(java.awt.event.MouseEvent e) {
-                playButton.setVisible(true);
-            }
+        // coverContainer.addMouseListener(new java.awt.event.MouseAdapter() {
+        //     @Override
+        //     public void mouseEntered(java.awt.event.MouseEvent e) {
+        //         playButton.setVisible(true);
+        //     }
 
-            @Override
-            public void mouseExited(java.awt.event.MouseEvent e) {
-                playButton.setVisible(false);
-            }
-        });
+        //     @Override
+        //     public void mouseExited(java.awt.event.MouseEvent e) {
+        //         playButton.setVisible(false);
+        //     }
+        // });
+
+        coverContainer.addMouseListener(hoverHandler);
+        playButton.addMouseListener(hoverHandler);
+        songImage.addMouseListener(hoverHandler);
 
         songTitle = new JLabel(data.name);
         songTitle.setHorizontalAlignment(SwingConstants.LEADING);
