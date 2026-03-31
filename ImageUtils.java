@@ -1,3 +1,4 @@
+import java.awt.Color;
 import java.awt.Graphics2D;
 import java.awt.Image;
 import java.awt.image.BufferedImage;
@@ -9,18 +10,31 @@ public class ImageUtils {
     {
         ImageIcon icon = new ImageIcon(path);
         Image img = icon.getImage();
+
+        // System.out.println(icon.getIconWidth());
         
-        int sideLength = img.getWidth(null);
+        int initialWidth = img.getWidth(null);
+        int initialHeight = img.getHeight(null);
 
-        float scale = (float)size / sideLength; //Random notes from where I was getting this stuff from... use Math.max(val, val) to get the largest of 2 vals.
+        float scale = Math.max((float)size / initialWidth, (float)size / initialHeight);
 
-        Image scaledImage = img.getScaledInstance((int)(sideLength * scale), (int)(sideLength * scale), Image.SCALE_SMOOTH);
+        int scaledW = (int)(initialWidth * scale);
+        int scaledH = (int)(initialHeight * scale);
+        
+        // Image scaledImage = img.getScaledInstance(scaledW, scaledH, Image.SCALE_SMOOTH);
+        BufferedImage scaledImage = new BufferedImage(scaledW, scaledH, BufferedImage.TYPE_INT_ARGB);
+        Graphics2D g2 = scaledImage.createGraphics();
+        g2.drawImage(img, 0, 0, scaledW, scaledH, null);
+        g2.dispose();
 
         BufferedImage crop = new BufferedImage(size, size, BufferedImage.TYPE_INT_ARGB);
         Graphics2D g = crop.createGraphics();
 
-        int finalSide = (size - (int)scale) / 2;
-        g.drawImage(scaledImage, finalSide, finalSide, null);
+        int finalW = (size - scaledW) / 2;
+        int finalY = (size - scaledH) / 2;
+        // g.setColor(Color.RED);
+        // g.fillRect(0, 0, size, size);
+        g.drawImage(scaledImage, finalW, finalY, null);
         g.dispose();
 
         return new ImageIcon(crop);

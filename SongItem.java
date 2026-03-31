@@ -48,14 +48,15 @@ public class SongItem extends JPanel {
         
         // int totalWidth = getParent().getWidth() - 30;
         songImage = new JLabel(ImageUtils.getScaledCover("TempSongImage.png", 30)); //used to be new ImageIcon("TempSongImage.png") Just tested and this func doesn't seem to work, lol. I'll look through it again in a sec
+        songImage.setPreferredSize(new Dimension(30, 30));
+        songImage.setMinimumSize(new Dimension(30, 30));
+        songImage.setMaximumSize(new Dimension(30, 30));
 
         songTitle = new JLabel(data.name);
         songTitle.setHorizontalAlignment(SwingConstants.LEADING);
-        // songTitle.setPreferredSize(new Dimension((int)(totalWidth * .3), 30));
         songTitle.setBorder(new MatteBorder(0, 0, 0, 1, ColorScheme.PRIMARY_COLOR));
 
         songAuthor = new JLabel(data.author);
-        // songAuthor.setPreferredSize(new Dimension((int)(totalWidth * .3), 30));
         songAuthor.setBorder(new MatteBorder(0, 0, 0, 1, ColorScheme.PRIMARY_COLOR));
 
 
