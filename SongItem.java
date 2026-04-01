@@ -75,7 +75,7 @@ public class SongItem extends JPanel {
         songImage.setAlignmentY(.5f);
         // songImage.setPreferredSize(new Dimension(30, 30));
 
-        playButton = new JButton("▶");
+        playButton = new JButton(ImageUtils.getScaledCover("whitePlayButton.png", 40));
         playButton.setAlignmentX(.5f);
         playButton.setAlignmentY(.5f);
         playButton.setMinimumSize(new Dimension(40, 40));
