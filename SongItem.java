@@ -83,7 +83,7 @@ public class SongItem extends JPanel {
 
         playButton.setContentAreaFilled(true);
         playButton.setBorderPainted(false);
-        playButton.setBackground(new Color(20, 20, 20, 10));
+        playButton.setBackground(new Color(20, 20, 20, 30));
         playButton.setForeground(ColorScheme.DARK_BG);
         playButton.setVisible(false);
 
