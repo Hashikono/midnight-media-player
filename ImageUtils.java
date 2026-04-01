@@ -1,6 +1,7 @@
 import java.awt.Color;
 import java.awt.Graphics2D;
 import java.awt.Image;
+import java.awt.RenderingHints;
 import java.awt.image.BufferedImage;
 
 import javax.swing.ImageIcon;
@@ -25,6 +26,12 @@ public class ImageUtils {
         BufferedImage scaledImage = new BufferedImage(scaledW, scaledH, BufferedImage.TYPE_INT_ARGB);
         Graphics2D g2 = scaledImage.createGraphics();
         g2.drawImage(img, 0, 0, scaledW, scaledH, null);
+        
+        g2.setRenderingHint(RenderingHints.KEY_INTERPOLATION, RenderingHints.VALUE_INTERPOLATION_BICUBIC);
+        g2.setRenderingHint(RenderingHints.KEY_RENDERING, RenderingHints.VALUE_RENDER_QUALITY);
+        g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+        
+        g2.drawImage(img, 0, 0, scaledW, scaledH, null);
         g2.dispose();
 
         BufferedImage crop = new BufferedImage(size, size, BufferedImage.TYPE_INT_ARGB);
@@ -38,5 +45,34 @@ public class ImageUtils {
         g.dispose();
 
         return new ImageIcon(crop);
+    }
+
+    private static BufferedImage scaleImageHighQuality(Image img, int targetW, int targetH)
+    {
+        int w = img.getWidth(null);
+        int h = img.getHeight(null);
+
+        BufferedImage current = new BufferedImage(w, h, BufferedImage.TYPE_INT_ARGB);
+        Graphics2D g = current.createGraphics();
+        g.drawImage(img, 0, 0, null);
+        g.dispose();
+
+        while (w > targetW || h > targetH) {
+            w = Math.max(w / 2, targetW);
+            h = Math.max(h / 2, targetH);
+
+            BufferedImage tmp = new BufferedImage(w, h, BufferedImage.TYPE_INT_ARGB);
+            Graphics2D g2 = tmp.createGraphics();
+
+            g2.setRenderingHint(RenderingHints.KEY_INTERPOLATION, RenderingHints.VALUE_INTERPOLATION_BILINEAR);
+            g2.setRenderingHint(RenderingHints.KEY_RENDERING, RenderingHints.VALUE_RENDER_QUALITY);
+
+            g2.drawImage(current, 0, 0, w, h, null);
+            g2.dispose();
+
+            current = tmp;
+        }
+
+        return current;
     }
 }

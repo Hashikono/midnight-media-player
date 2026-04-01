@@ -48,13 +48,15 @@ public class SongItem extends JPanel {
         @Override
         public void mouseEntered(java.awt.event.MouseEvent e) {
             playButton.setVisible(true);
+            coverContainer.repaint();
         }
 
         @Override
         public void mouseExited(java.awt.event.MouseEvent e) {
-            if (!coverContainer.getBounds().contains(javax.swing.SwingUtilities.convertPoint(e.getComponent(), e.getPoint(), coverContainer)))
+            if(!coverContainer.getBounds().contains(javax.swing.SwingUtilities.convertPoint(e.getComponent(), e.getPoint(), coverContainer)))
             {
                 playButton.setVisible(false);
+                coverContainer.repaint();
             }
         }
     };
@@ -84,7 +86,7 @@ public class SongItem extends JPanel {
         playButton.setContentAreaFilled(true);
         playButton.setBorderPainted(false);
         playButton.setBackground(new Color(20, 20, 20, 30));
-        playButton.setForeground(ColorScheme.DARK_BG);
+        // playButton.setForeground(ColorScheme.DARK_BG);
         playButton.setVisible(false);
 
         coverContainer.add(playButton);
