@@ -72,12 +72,12 @@ public class SongItem extends JPanel {
         coverContainer.setLayout(new OverlayLayout(coverContainer));
         coverContainer.setPreferredSize(new Dimension(40, 40));
 
-        songImage = new JLabel(ImageUtils.getScaledCover("TempSongImage.png", 40)); //used to be new ImageIcon("TempSongImage.png") Just tested and this func doesn't seem to work, lol. I'll look through it again in a sec
+        songImage = new JLabel(ImageUtils.getResizedImage("TempSongImage.png", 40)); //used to be new ImageIcon("TempSongImage.png") Just tested and this func doesn't seem to work, lol. I'll look through it again in a sec
         songImage.setAlignmentX(.5f);
         songImage.setAlignmentY(.5f);
         // songImage.setPreferredSize(new Dimension(30, 30));
 
-        playButton = new JButton(ImageUtils.getScaledCover("whitePlayButton.png", 40));
+        playButton = new JButton(ImageUtils.getResizedImage("whitePlayButton.png", 40));
         playButton.setAlignmentX(.5f);
         playButton.setAlignmentY(.5f);
         playButton.setMinimumSize(new Dimension(40, 40));
