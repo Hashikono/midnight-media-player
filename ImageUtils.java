@@ -23,7 +23,7 @@ public class ImageUtils {
         int scaledH = (int)(initialHeight * scale);
         
         // Image scaledImage = img.getScaledInstance(scaledW, scaledH, Image.SCALE_SMOOTH);
-        BufferedImage scaledImage = new BufferedImage(scaledW, scaledH, BufferedImage.TYPE_INT_ARGB);
+        BufferedImage scaledImage = scaleImageHighQuality(img, scaledW, scaledH);
         Graphics2D g2 = scaledImage.createGraphics();
         g2.drawImage(img, 0, 0, scaledW, scaledH, null);
         
