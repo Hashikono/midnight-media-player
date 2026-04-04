@@ -2,9 +2,11 @@ import java.awt.BorderLayout;
 import java.awt.FlowLayout;
 import java.awt.Font;
 
-import javax.swing.BorderFactory;
+// import javax.swing.BorderFactory;
+import javax.swing.JButton;
+import javax.swing.JDialog;
 import javax.swing.JLabel;
-import javax.swing.JList;
+// import javax.swing.JList;
 import javax.swing.JPanel;
 import javax.swing.SwingConstants;
 import javax.swing.border.EmptyBorder;
@@ -15,6 +17,7 @@ import java.util.List;
 
 public class SongsMenu extends JPanel {
     private JPanel MusicListContainer;
+    private JButton openMediaAdderButton;
     private List<Media> allSongs;
     private List<SongItem> allListedMedia = new ArrayList<>();
 
@@ -33,6 +36,12 @@ public class SongsMenu extends JPanel {
         } catch (Exception e) {
             e.printStackTrace();
         }
+    }
+    
+    private void OpenMediaAddingMenu() {
+        JDialog dialog = MediaAddingMenu.OpenMediaAddingMenu(App.player);
+        dialog.setLocationRelativeTo(App.player);
+        dialog.setVisible(true); // BLOCKS until dialog is closed
     }
 
     public SongsMenu()

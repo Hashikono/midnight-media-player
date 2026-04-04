@@ -1,5 +1,5 @@
 import java.awt.BasicStroke;
-import java.awt.BorderLayout;
+// import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Cursor;
 import java.awt.Dimension;
@@ -13,7 +13,7 @@ import java.awt.RenderingHints;
 import javax.swing.BoxLayout;
 import javax.swing.JButton;
 import javax.swing.JPanel;
-import javax.swing.border.EmptyBorder;
+// import javax.swing.border.EmptyBorder;
 import javax.swing.border.MatteBorder;
 
 public class MediaControlBar extends JPanel{

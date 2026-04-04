@@ -1,13 +1,13 @@
 // Import necessary packages
 import javax.swing.*;  // For Swing GUI components
 import javax.swing.border.*;  // For border styling
-import javax.swing.filechooser.FileNameExtensionFilter;  // For file type filtering
+// import javax.swing.filechooser.FileNameExtensionFilter;  // For file type filtering
 import java.awt.*;  // For AWT components and graphics
 import java.awt.event.*;  // For event handling
-import java.awt.geom.RoundRectangle2D;  // For creating rounded window corners
-import java.io.File;  // For file handling
-import java.util.ArrayList;  // For dynamic array list
-import java.util.List;  // For List interface
+// import java.awt.geom.RoundRectangle2D;  // For creating rounded window corners
+// import java.io.File;  // For file handling
+// import java.util.ArrayList;  // For dynamic array list
+// import java.util.List;  // For List interface
 
 // Main class extending JFrame (main application window)
 public class App extends JFrame {

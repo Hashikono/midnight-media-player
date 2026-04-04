@@ -2,11 +2,11 @@ import java.awt.Color;
 import java.awt.Container;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
-import java.awt.GridBagConstraints;
-import java.awt.GridBagLayout;
+// import java.awt.GridBagConstraints;
+// import java.awt.GridBagLayout;
 
 import javax.swing.BoxLayout;
-import javax.swing.ImageIcon;
+// import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
@@ -137,14 +137,17 @@ public class SongItem extends JPanel {
         mainSongDetails.add(songAuthor);
 
         endSongDetails = new JPanel();
-        endSongDetails.setLayout(new FlowLayout(FlowLayout.LEADING, 3, 0));
-        endSongDetails.setBorder(new EmptyBorder(2, 0, 0, 0));
+        endSongDetails.setLayout(new FlowLayout(FlowLayout.TRAILING, 3, 0));
+        endSongDetails.setBorder(new EmptyBorder(2, 0, 0, 10));
         endSongDetails.setPreferredSize(new Dimension(25, 45));
 
         songLength = new JLabel("00:00");
 
-        songOptions = new JButton("⠇");
-        songOptions.setPreferredSize(new Dimension(45, 40));
+        songOptions = new JButton(ImageUtils.getResizedImage("TresDots.png",11,15));
+        songOptions.setPreferredSize(new Dimension(10, 40));
+        songOptions.setContentAreaFilled(true);
+        songOptions.setBorderPainted(false);
+        // songOptions.setBackground(new Color(20, 20, 20, 30));
 
         endSongDetails.add(songLength);
         endSongDetails.add(songOptions);
