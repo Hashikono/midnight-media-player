@@ -22,9 +22,13 @@ public class SongItem extends JPanel {
     private JPanel coverContainer;
     private JButton playButton;
     private JLabel songImage;
-
     private JLabel songTitle;
     private JLabel songAuthor;
+
+    private JPanel endSongDetails;
+    private JLabel songLength;
+    private JButton songOptions;
+
 
     // JPanel panel = new JPanel(new GridBagLayout());
     // GridBagConstraints gbc = new GridBagConstraints();
@@ -75,7 +79,6 @@ public class SongItem extends JPanel {
         songImage = new JLabel(ImageUtils.getResizedImage("TempSongImage.png", 40)); //used to be new ImageIcon("TempSongImage.png") Just tested and this func doesn't seem to work, lol. I'll look through it again in a sec
         songImage.setAlignmentX(.5f);
         songImage.setAlignmentY(.5f);
-        // songImage.setPreferredSize(new Dimension(30, 30));
 
         playButton = new JButton(ImageUtils.getResizedImage("whitePlayButton.png", 40));
         playButton.setAlignmentX(.5f);
@@ -86,47 +89,46 @@ public class SongItem extends JPanel {
         playButton.setContentAreaFilled(true);
         playButton.setBorderPainted(false);
         playButton.setBackground(new Color(20, 20, 20, 30));
-        // playButton.setForeground(ColorScheme.DARK_BG);
         playButton.setVisible(false);
+
+        playButton.setFocusable(false);
+        playButton.setRolloverEnabled(false);
 
         coverContainer.add(playButton);
         coverContainer.add(songImage);
 
-        // coverContainer.addMouseListener(new java.awt.event.MouseAdapter() {
-        //     @Override
-        //     public void mouseEntered(java.awt.event.MouseEvent e) {
-        //         playButton.setVisible(true);
-        //     }
-
-        //     @Override
-        //     public void mouseExited(java.awt.event.MouseEvent e) {
-        //         playButton.setVisible(false);
-        //     }
-        // });
-
-        // coverContainer.addMouseListener(hoverHandler);
-        // playButton.addMouseListener(hoverHandler);
-        // songImage.addMouseListener(hoverHandler);
-
-        coverContainer.addMouseMotionListener(new java.awt.event.MouseMotionAdapter() {
+        coverContainer.addMouseListener(new java.awt.event.MouseAdapter() {
             @Override
-            public void mouseMoved(java.awt.event.MouseEvent e) {
+            public void mouseEntered(java.awt.event.MouseEvent e) {
                 playButton.setVisible(true);
             }
-        });
 
-        coverContainer.addMouseListener(new java.awt.event.MouseAdapter() {
             @Override
             public void mouseExited(java.awt.event.MouseEvent e) {
                 playButton.setVisible(false);
             }
         });
 
+        playButton.addMouseListener(new java.awt.event.MouseAdapter() {
+            @Override
+            public void mouseEntered(java.awt.event.MouseEvent e) {
+                playButton.setVisible(true);
+            }
+
+            @Override
+            public void mouseExited(java.awt.event.MouseEvent e) {
+                playButton.setVisible(false);
+            }
+        });
+
+        
+
         songTitle = new JLabel(data.name);
         songTitle.setHorizontalAlignment(SwingConstants.LEADING);
         songTitle.setBorder(new MatteBorder(0, 0, 0, 1, ColorScheme.PRIMARY_COLOR));
 
-        songAuthor = new JLabel(data.author);
+        songAuthor = new JLabel(data.author); //Doesn't make anything appear if is empty...
+        songAuthor.setHorizontalAlignment(SwingConstants.LEADING);
         songAuthor.setBorder(new MatteBorder(0, 0, 0, 1, ColorScheme.PRIMARY_COLOR));
 
 
@@ -134,7 +136,27 @@ public class SongItem extends JPanel {
         mainSongDetails.add(songTitle);
         mainSongDetails.add(songAuthor);
 
+        endSongDetails = new JPanel();
+        endSongDetails.setLayout(new FlowLayout(FlowLayout.LEADING, 3, 0));
+        endSongDetails.setBorder(new EmptyBorder(2, 0, 0, 0));
+        endSongDetails.setPreferredSize(new Dimension(25, 45));
+
+        songLength = new JLabel("00:00");
+
+        songOptions = new JButton("⠇");
+        songOptions.setPreferredSize(new Dimension(45, 40));
+
+        endSongDetails.add(songLength);
+        endSongDetails.add(songOptions);
+
+        // var tempTesting = new JLabel(ImageUtils.getResizedImage("TempSongImage.png", 40)); //used to be new ImageIcon("TempSongImage.png") Just tested and this func doesn't seem to work, lol. I'll look through it again in a sec
+        // songImage.setAlignmentX(.5f);
+        // songImage.setAlignmentY(.5f);
+        // endSongDetails.add(tempTesting);
+
+
         add(mainSongDetails);
+        add(endSongDetails);
     }
 
     @Override
