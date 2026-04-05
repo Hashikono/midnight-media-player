@@ -28,6 +28,28 @@ public class MediaAddingMenu {
 
     private static Media result = null;
 
+    private static int heldIndex;
+
+    public static JDialog OpenMediaAddingMenu(JFrame parent, int index)
+    {
+        var mediaAddingDialog = OpenMediaAddingMenu(parent);
+        heldIndex = index;
+        mediaAddingDialog.setTitle("Edit Media");
+
+        try {
+            Media originalData = Database.findMediaById(index);
+
+            pathField.setText(originalData.path);
+            nameField.setText(originalData.name);
+            extField.setText(originalData.format);
+            albumField.setText(originalData.album);
+            authorField.setText(originalData.author);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        return mediaAddingDialog;
+    }
 
     public static JDialog OpenMediaAddingMenu(JFrame parent) {
         try {Database.initialize();} catch (Exception e) {e.printStackTrace();}
@@ -97,6 +119,8 @@ public class MediaAddingMenu {
         mediaAddingDialog.add(formPanel, BorderLayout.CENTER);
         mediaAddingDialog.add(buttons, BorderLayout.SOUTH);
 
+        heldIndex = -1;
+
         return mediaAddingDialog;
     }
 
@@ -112,7 +136,10 @@ public class MediaAddingMenu {
 
         // result = info;
         try {
-            Database.insertMedia(info);
+            if(heldIndex == -1)
+                Database.insertMedia(info);
+            else
+                Database.updateMedia(info, heldIndex);
         } catch (Exception e) {
             e.printStackTrace();
         }

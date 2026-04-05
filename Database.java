@@ -1,5 +1,8 @@
 import java.util.ArrayList;
 import java.util.List;
+
+import javax.xml.crypto.Data;
+
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -8,6 +11,8 @@ import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.Statement;
 import java.sql.ResultSet;
+import java.sql.SQLException;
+
 import models.Media;
 import models.Playlist;
 
@@ -114,10 +119,33 @@ public class Database {
                 if(keys.next()) {
                     return keys.getInt(1);
                 }
-            }
+            } catch(Exception e) {
 
             throw new RuntimeException("Failed to insert media");
+            }
+
         }
+    }
+
+    public static void updateMedia(Media data, int index) throws Exception
+    {
+        String sql = """
+            UPDATE media
+            SET name = ?, author = ?, album = ?
+            WHERE id = ?
+        """;
+        
+        try (PreparedStatement ps = Database.getConnection().prepareStatement(sql)) {
+            ps.setString(1, data.name);
+            ps.setString(2, data.author);
+            ps.setString(3, data.album);
+            ps.setInt(4, index);
+
+            ps.executeUpdate();
+        } catch (Exception e) {
+            throw new RuntimeException("Failed to update media");
+        }
+
     }
 
     public static List<Media> getAllMedia() throws Exception {
@@ -242,6 +270,22 @@ public class Database {
 
             ps.executeUpdate();
         }
+    }
+
+    public static void updatePlaylistDetails(Playlist data, int index) throws Exception
+    {
+        String sql = """
+        UPDATE playlist
+        SET name = ?
+        WHERE id = ?
+    """;
+
+    try (PreparedStatement ps = getConnection().prepareStatement(sql)) {
+        ps.setString(1, data.name);
+        ps.setInt(2, index);
+
+        ps.executeUpdate();
+    }
     }
 
     public static int getMediaCount(int playlistId) throws Exception {

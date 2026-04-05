@@ -5,9 +5,11 @@ import java.awt.FlowLayout;
 // import java.awt.GridBagConstraints;
 // import java.awt.GridBagLayout;
 
+import javax.swing.BorderFactory;
 import javax.swing.BoxLayout;
 // import javax.swing.ImageIcon;
 import javax.swing.JButton;
+import javax.swing.JDialog;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.OverlayLayout;
@@ -48,28 +50,21 @@ public class SongItem extends JPanel {
 
     // songTitle.setBorder(BorderFactory.createCompoundBorder(new MatteBorder(0, 0, 0, 1, ColorScheme.PRIMARY_COLOR), BorderFactory.createEmptyBorder(0, 10, 0, 10)));
 
-    java.awt.event.MouseAdapter hoverHandler = new java.awt.event.MouseAdapter() {
-        // @Override
-        // public void mouseEntered(java.awt.event.MouseEvent e) {
-        //     playButton.setVisible(true);
-        //     coverContainer.repaint();
-        // }
+    private void OpenContextMenu(int heldIndex)
+    {
+        JDialog dialog = MediaAddingMenu.OpenMediaAddingMenu(App.player, heldIndex);
+        dialog.setLocationRelativeTo(App.player);
+        dialog.setVisible(true);
+        // System.out.println(heldIndex);
+    }
 
-        // @Override
-        // public void mouseExited(java.awt.event.MouseEvent e) {
-        //     if(!coverContainer.getBounds().contains(javax.swing.SwingUtilities.convertPoint(e.getComponent(), e.getPoint(), coverContainer)))
-        //     {
-        //         playButton.setVisible(false);
-        //         coverContainer.repaint();
-        //     }
-        // }
-    };
 
     public SongItem(Media data) {
         setLayout(new BoxLayout(this, BoxLayout.X_AXIS));
         mainSongDetails = new JPanel();
         mainSongDetails.setLayout(new FlowLayout(FlowLayout.LEADING, 3, 0));
         mainSongDetails.setBorder(new EmptyBorder(2, 0, 0, 0));
+        // System.out.println(data.id);
         
         //Image part
         coverContainer = new JPanel();
@@ -129,7 +124,7 @@ public class SongItem extends JPanel {
 
         songAuthor = new JLabel(data.author); //Doesn't make anything appear if is empty...
         songAuthor.setHorizontalAlignment(SwingConstants.LEADING);
-        songAuthor.setBorder(new MatteBorder(0, 0, 0, 1, ColorScheme.PRIMARY_COLOR));
+        songAuthor.setBorder(BorderFactory.createCompoundBorder(new MatteBorder(0, 0, 0, 1, ColorScheme.PRIMARY_COLOR), new EmptyBorder(0, 5, 0, 0)));
 
 
         mainSongDetails.add(coverContainer);
@@ -147,15 +142,12 @@ public class SongItem extends JPanel {
         songOptions.setPreferredSize(new Dimension(10, 40));
         songOptions.setContentAreaFilled(true);
         songOptions.setBorderPainted(false);
-        // songOptions.setBackground(new Color(20, 20, 20, 30));
+
+        songOptions.addActionListener(e -> OpenContextMenu(data.id));
 
         endSongDetails.add(songLength);
         endSongDetails.add(songOptions);
 
-        // var tempTesting = new JLabel(ImageUtils.getResizedImage("TempSongImage.png", 40)); //used to be new ImageIcon("TempSongImage.png") Just tested and this func doesn't seem to work, lol. I'll look through it again in a sec
-        // songImage.setAlignmentX(.5f);
-        // songImage.setAlignmentY(.5f);
-        // endSongDetails.add(tempTesting);
 
 
         add(mainSongDetails);
@@ -182,6 +174,6 @@ public class SongItem extends JPanel {
         int totalWidth = getWidth() - 30;
 
         songTitle.setPreferredSize(new Dimension((int)(totalWidth * .275), 30));
-        songTitle.setPreferredSize(new Dimension((int)(totalWidth * .175), 30));
+        songAuthor.setPreferredSize(new Dimension((int)(totalWidth * .175), 30));
     }
 }

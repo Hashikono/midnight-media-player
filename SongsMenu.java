@@ -1,4 +1,5 @@
 import java.awt.BorderLayout;
+import java.awt.Dimension;
 import java.awt.FlowLayout;
 import java.awt.Font;
 
@@ -16,8 +17,10 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class SongsMenu extends JPanel {
-    private JPanel MusicListContainer;
+    private JPanel topComponents;
     private JButton openMediaAdderButton;
+
+    private JPanel MusicListContainer;
     private List<Media> allSongs;
     private List<SongItem> allListedMedia = new ArrayList<>();
 
@@ -51,33 +54,28 @@ public class SongsMenu extends JPanel {
         setBorder(new EmptyBorder(12, 12, 12, 20));
         setBackground(ColorScheme.DARK_BG);
         
+        topComponents = new JPanel();
+        topComponents.setLayout(new BorderLayout());
+        topComponents.setPreferredSize(new Dimension(1000, 50));
+        topComponents.setBackground(ColorScheme.DARK_BG);
+
         var title = new JLabel("Songs");
         title.setFont(new Font("Segoe UI", Font.PLAIN, 25));
         title.setForeground(ColorScheme.TEXT_COLOR);
         title.setHorizontalAlignment(SwingConstants.LEADING);
+
+        openMediaAdderButton = new JButton();
+        openMediaAdderButton.addActionListener(e -> OpenMediaAddingMenu());
+
+        topComponents.add(title, BorderLayout.WEST);
+        topComponents.add(openMediaAdderButton, BorderLayout.EAST);
 
         MusicListContainer = new JPanel();
         MusicListContainer.setLayout(new FlowLayout(1,100000000, 1));
         MusicListContainer.setBackground(ColorScheme.LIGHT_BG);
         CreateMediaList();
 
-        add(title, BorderLayout.NORTH);
+        add(topComponents, BorderLayout.NORTH);
         add(MusicListContainer);
-
-        // JPanel panel = new JPanel(new GridBagLayout());
-        // GridBagConstraints gbc = new GridBagConstraints();
-
-        // gbc.fill = GridBagConstraints.BOTH;
-        // gbc.gridy = 0;
-
-        // // Left (30%)
-        // gbc.gridx = 0;
-        // gbc.weightx = 0.3;
-        // panel.add(leftPanel, gbc);
-
-        // // Right (70%)
-        // gbc.gridx = 1;
-        // gbc.weightx = 0.7;
-        // panel.add(rightPanel, gbc);
     }
 }
