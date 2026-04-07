@@ -20,25 +20,41 @@ import javax.swing.border.MatteBorder;
 public class NavBar extends JPanel{
     JPanel mainButtonsBox;
     NavButton homeButton;
+    NavButton mediaCollectionButton;
     NavButton playlistsButton;
+    NavButton viewButton;
+    NavButton logsButton;
+    NavButton settingsButton;
     NavButton expandButton;
 
     private boolean isExpanded;
     
     private void Expand() {
         setPreferredSize(new Dimension(180, 0));
+
         homeButton.Expand();
+        mediaCollectionButton.Expand();
         playlistsButton.Expand();
+        viewButton.Expand();
+        logsButton.Expand();
+        settingsButton.Expand();
         expandButton.Expand();
+
         revalidate();
         repaint();
     }
 
     private void Shrink() {
         setPreferredSize(new Dimension(60, 0));
+
         homeButton.Shrink();
+        mediaCollectionButton.Shrink();
         playlistsButton.Shrink();
+        viewButton.Shrink();
+        logsButton.Shrink();
+        settingsButton.Shrink();
         expandButton.Shrink();
+
         revalidate();
         repaint();
     }
@@ -76,17 +92,22 @@ public class NavBar extends JPanel{
         SetUpMainButtonBg();
 
         homeButton = new NavButton("⌂","⌂ Home", "Home", ColorScheme.DARK_BG.brighter(), ColorScheme.PRIMARY_COLOR);
-        // homeButton = new NavButton("⚙","⚙ Settings", "Settings", ColorScheme.DARK_BG.brighter(), ColorScheme.PRIMARY_COLOR);
+        mediaCollectionButton = new NavButton("♫","♫ Media", "Lyrics", ColorScheme.DARK_BG.brighter(), ColorScheme.PRIMARY_COLOR);
         playlistsButton = new NavButton("📜","📜 Playlists", "Lyrics", ColorScheme.DARK_BG.brighter(), ColorScheme.PRIMARY_COLOR);
-        // playList = new NavButton("♫","♫ Lyrics", "Lyrics", ColorScheme.DARK_BG.brighter(), ColorScheme.PRIMARY_COLOR);
-        // homeButton = new NavButton("☳","☳ Lyrics", "Lyrics", ColorScheme.DARK_BG.brighter(), ColorScheme.PRIMARY_COLOR);
-        // homeButton = new NavButton("🖵","🖵 Lyrics", "Lyrics", ColorScheme.DARK_BG.brighter(), ColorScheme.PRIMARY_COLOR);
+        viewButton = new NavButton("🖵","🖵 View", "View", ColorScheme.DARK_BG.brighter(), ColorScheme.PRIMARY_COLOR);
+        logsButton = new NavButton("☳","☳ Logs", "Logs", ColorScheme.DARK_BG.brighter(), ColorScheme.PRIMARY_COLOR); //🪵 didn't work unfortunately
+        settingsButton = new NavButton("⚙","⚙ Settings", "Settings", ColorScheme.DARK_BG.brighter(), ColorScheme.PRIMARY_COLOR);
         expandButton = new NavButton("»","« Shrink", "Expand", ColorScheme.DARK_BG.brighter(), ColorScheme.TEXT_COLOR);
 
-        //Other random characters to keep: ⚂ ☊ ★ 🪵
+        //Other random characters to keep: ⚂ ☊ ★ ☳
 
         mainButtonsBox.add(createRow(homeButton));
+        mainButtonsBox.add(createRow(mediaCollectionButton));
         mainButtonsBox.add(createRow(playlistsButton));
+        mainButtonsBox.add(createRow(viewButton));
+        mainButtonsBox.add(createRow(logsButton));
+        mainButtonsBox.add(createRow(settingsButton));
+
         add(mainButtonsBox, BorderLayout.NORTH);
         add(createRow(expandButton), BorderLayout.SOUTH);
 
