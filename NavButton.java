@@ -17,15 +17,16 @@ public class NavButton extends JButton {
     private String expandedText;
     private Color bgColor;
     private Color textColor;
+    private Color selectedColor;
 
     public void Select()
     {
-
+        setForeground(selectedColor);
     }
 
     public void Unselect()
     {
-
+        setForeground(textColor);
     }
 
     public void Expand()
@@ -45,12 +46,13 @@ public class NavButton extends JButton {
     }
 
     
-    public NavButton(String normal, String expanded, String tooltip, Color bg, Color textingColor)
+    public NavButton(String normal, String expanded, String tooltip, Color bg, Color textingColor, Color selectingColor)
     {
         this.normalText = normal;
         this.expandedText = expanded;
         this.bgColor = bg;
         this.textColor = textingColor;
+        this.selectedColor = selectingColor;
 
         // Text Stuffs
         setText(normalText);

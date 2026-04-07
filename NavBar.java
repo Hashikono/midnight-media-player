@@ -59,6 +59,55 @@ public class NavBar extends JPanel{
         repaint();
     }
 
+//#region button functions
+
+    private void UnselectButtons()
+    {
+        homeButton.Unselect();
+        mediaCollectionButton.Unselect();
+        playlistsButton.Unselect();
+        viewButton.Unselect();
+        logsButton.Unselect();
+        settingsButton.Unselect();
+        expandButton.Unselect();
+    }
+
+    private void OpenHomeMenu()
+    {
+        UnselectButtons();
+        homeButton.Select();
+    }
+
+    private void OpenMediaCollection()
+    {
+        UnselectButtons();
+        mediaCollectionButton.Select();
+    }
+
+    private void OpenPlaylistMenu()
+    {
+        UnselectButtons();
+        playlistsButton.Select();
+    }
+
+    private void OpenView()
+    {
+        UnselectButtons();
+        viewButton.Select();
+    }
+
+    private void OpenLogs()
+    {
+        UnselectButtons();
+        logsButton.Select();
+    }
+
+    private void OpenSettings()
+    {
+        UnselectButtons();
+        settingsButton.Select();
+    }
+
     private void Resizing()
     {
         isExpanded = !isExpanded;
@@ -68,6 +117,8 @@ public class NavBar extends JPanel{
         else
             Shrink();
     }
+
+//#endregion button functions
 
     private JPanel createRow(JComponent comp) {
         JPanel row = new JPanel(new FlowLayout(FlowLayout.CENTER, 15, 5));
@@ -91,13 +142,13 @@ public class NavBar extends JPanel{
 
         SetUpMainButtonBg();
 
-        homeButton = new NavButton("⌂","⌂ Home", "Home", ColorScheme.DARK_BG.brighter(), ColorScheme.PRIMARY_COLOR);
-        mediaCollectionButton = new NavButton("♫","♫ Media", "Lyrics", ColorScheme.DARK_BG.brighter(), ColorScheme.PRIMARY_COLOR);
-        playlistsButton = new NavButton("📜","📜 Playlists", "Lyrics", ColorScheme.DARK_BG.brighter(), ColorScheme.PRIMARY_COLOR);
-        viewButton = new NavButton("🖵","🖵 View", "View", ColorScheme.DARK_BG.brighter(), ColorScheme.PRIMARY_COLOR);
-        logsButton = new NavButton("☳","☳ Logs", "Logs", ColorScheme.DARK_BG.brighter(), ColorScheme.PRIMARY_COLOR); //🪵 didn't work unfortunately
-        settingsButton = new NavButton("⚙","⚙ Settings", "Settings", ColorScheme.DARK_BG.brighter(), ColorScheme.PRIMARY_COLOR);
-        expandButton = new NavButton("»","« Shrink", "Expand", ColorScheme.DARK_BG.brighter(), ColorScheme.TEXT_COLOR);
+        homeButton = new NavButton("⌂","⌂ Home", "Home", ColorScheme.DARK_BG.brighter(), ColorScheme.LIGHT_BG.darker(), ColorScheme.PRIMARY_COLOR);
+        mediaCollectionButton = new NavButton("♫","♫ Media", "Lyrics", ColorScheme.DARK_BG.brighter(), ColorScheme.LIGHT_BG.darker(), ColorScheme.PRIMARY_COLOR);
+        playlistsButton = new NavButton("📜","📜 Playlists", "Lyrics", ColorScheme.DARK_BG.brighter(), ColorScheme.LIGHT_BG.darker(), ColorScheme.PRIMARY_COLOR);
+        viewButton = new NavButton("🖵","🖵 View", "View", ColorScheme.DARK_BG.brighter(), ColorScheme.LIGHT_BG.darker(), ColorScheme.PRIMARY_COLOR);
+        logsButton = new NavButton("☳","☳ Logs", "Logs", ColorScheme.DARK_BG.brighter(), ColorScheme.LIGHT_BG.darker(), ColorScheme.PRIMARY_COLOR); //🪵 didn't work unfortunately
+        settingsButton = new NavButton("⚙","⚙ Settings", "Settings", ColorScheme.DARK_BG.brighter(), ColorScheme.LIGHT_BG.darker(), ColorScheme.PRIMARY_COLOR);
+        expandButton = new NavButton("»","« Shrink", "Expand", ColorScheme.DARK_BG.brighter(), ColorScheme.TEXT_COLOR, ColorScheme.TEXT_COLOR);
 
         //Other random characters to keep: ⚂ ☊ ★ ☳
 
@@ -111,6 +162,14 @@ public class NavBar extends JPanel{
         add(mainButtonsBox, BorderLayout.NORTH);
         add(createRow(expandButton), BorderLayout.SOUTH);
 
+        homeButton.addActionListener(e -> OpenHomeMenu());
+        mediaCollectionButton.addActionListener(e -> OpenMediaCollection());
+        playlistsButton.addActionListener(e -> OpenPlaylistMenu());
+        viewButton.addActionListener(e -> OpenView());
+        logsButton.addActionListener(e -> OpenLogs());
+        settingsButton.addActionListener(e -> OpenSettings());
         expandButton.addActionListener(e -> Resizing());
+
+        OpenHomeMenu();
     }
 }
