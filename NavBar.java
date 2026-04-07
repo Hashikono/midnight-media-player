@@ -1,4 +1,5 @@
 // import java.awt.BasicStroke;
+import java.awt.BorderLayout;
 import java.awt.Color;
 // import java.awt.Cursor;
 import java.awt.Dimension;
@@ -70,6 +71,7 @@ public class NavBar extends JPanel{
         setPreferredSize(new Dimension(60, 0));
         setBorder(new MatteBorder(0, 0, 0, 2, new Color(60, 60, 65)));
         setBackground(ColorScheme.DARK_BG);
+        setLayout(new BorderLayout());
 
         SetUpMainButtonBg();
 
@@ -85,8 +87,8 @@ public class NavBar extends JPanel{
 
         mainButtonsBox.add(createRow(homeButton));
         mainButtonsBox.add(createRow(playlistsButton));
-        add(mainButtonsBox);
-        add(expandButton);
+        add(mainButtonsBox, BorderLayout.NORTH);
+        add(createRow(expandButton), BorderLayout.SOUTH);
 
         expandButton.addActionListener(e -> Resizing());
     }
