@@ -64,7 +64,12 @@ public class SongsMenu extends JPanel {
         title.setForeground(ColorScheme.TEXT_COLOR);
         title.setHorizontalAlignment(SwingConstants.LEADING);
 
-        openMediaAdderButton = new JButton();
+        openMediaAdderButton = new JButton("Add Media");
+        openMediaAdderButton.setBackground(ColorScheme.PRIMARY_COLOR.brighter());
+        openMediaAdderButton.setOpaque(true);
+        openMediaAdderButton.setBorderPainted(false);
+        openMediaAdderButton.setMaximumSize(new Dimension(20, 10)); //Not doing anything for some reason
+
         openMediaAdderButton.addActionListener(e -> OpenMediaAddingMenu());
 
         topComponents.add(title, BorderLayout.WEST);

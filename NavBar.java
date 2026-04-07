@@ -9,6 +9,8 @@ import java.awt.FlowLayout;
 // import java.awt.Graphics2D;
 // import java.awt.RenderingHints;
 
+import javax.swing.BoxLayout;
+import javax.swing.JComponent;
 // import javax.swing.BoxLayout;
 // import javax.swing.JButton;
 import javax.swing.JPanel;
@@ -17,6 +19,7 @@ import javax.swing.border.MatteBorder;
 public class NavBar extends JPanel{
     JPanel mainButtonsBox;
     NavButton homeButton;
+    NavButton playlistsButton;
     NavButton expandButton;
 
     private boolean isExpanded;
@@ -24,6 +27,7 @@ public class NavBar extends JPanel{
     private void Expand() {
         setPreferredSize(new Dimension(180, 0));
         homeButton.Expand();
+        playlistsButton.Expand();
         expandButton.Expand();
         revalidate();
         repaint();
@@ -32,6 +36,7 @@ public class NavBar extends JPanel{
     private void Shrink() {
         setPreferredSize(new Dimension(60, 0));
         homeButton.Shrink();
+        playlistsButton.Shrink();
         expandButton.Shrink();
         revalidate();
         repaint();
@@ -47,11 +52,18 @@ public class NavBar extends JPanel{
             Shrink();
     }
 
+    private JPanel createRow(JComponent comp) {
+        JPanel row = new JPanel(new FlowLayout(FlowLayout.CENTER, 15, 5));
+        row.setOpaque(false);
+        row.add(comp);
+        return row;
+    }
+
     private void SetUpMainButtonBg()
     {
         mainButtonsBox = new JPanel();
         mainButtonsBox.setOpaque(false);
-        mainButtonsBox.setLayout(new FlowLayout(FlowLayout.CENTER, 15, 5));  // Centered, 15px gaps
+        mainButtonsBox.setLayout(new BoxLayout(mainButtonsBox, BoxLayout.Y_AXIS));  // Centered, 15px gaps
     }
     
     public NavBar() {
@@ -62,9 +74,17 @@ public class NavBar extends JPanel{
         SetUpMainButtonBg();
 
         homeButton = new NavButton("⌂","⌂ Home", "Home", ColorScheme.DARK_BG.brighter(), ColorScheme.PRIMARY_COLOR);
+        // homeButton = new NavButton("⚙","⚙ Settings", "Settings", ColorScheme.DARK_BG.brighter(), ColorScheme.PRIMARY_COLOR);
+        playlistsButton = new NavButton("📜","📜 Playlists", "Lyrics", ColorScheme.DARK_BG.brighter(), ColorScheme.PRIMARY_COLOR);
+        // playList = new NavButton("♫","♫ Lyrics", "Lyrics", ColorScheme.DARK_BG.brighter(), ColorScheme.PRIMARY_COLOR);
+        // homeButton = new NavButton("☳","☳ Lyrics", "Lyrics", ColorScheme.DARK_BG.brighter(), ColorScheme.PRIMARY_COLOR);
+        // homeButton = new NavButton("🖵","🖵 Lyrics", "Lyrics", ColorScheme.DARK_BG.brighter(), ColorScheme.PRIMARY_COLOR);
         expandButton = new NavButton("»","« Shrink", "Expand", ColorScheme.DARK_BG.brighter(), ColorScheme.TEXT_COLOR);
 
-        mainButtonsBox.add(homeButton);
+        //Other random characters to keep: ⚂ ☊ ★ 🪵
+
+        mainButtonsBox.add(createRow(homeButton));
+        mainButtonsBox.add(createRow(playlistsButton));
         add(mainButtonsBox);
         add(expandButton);
 

@@ -121,9 +121,9 @@ public class Database {
                 }
             } catch(Exception e) {
 
-            throw new RuntimeException("Failed to insert media");
             }
-
+            
+            throw new RuntimeException("Failed to insert media");
         }
     }
 
