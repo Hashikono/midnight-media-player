@@ -72,40 +72,46 @@ public class NavBar extends JPanel{
         expandButton.Unselect();
     }
 
-    private void OpenHomeMenu()
+    public void OpenHomeMenu()
     {
         UnselectButtons();
         homeButton.Select();
+        App.player.OpenHomeMenu();
     }
 
     private void OpenMediaCollection()
     {
         UnselectButtons();
         mediaCollectionButton.Select();
+        App.player.OpenMediaCollection();
     }
 
     private void OpenPlaylistMenu()
     {
         UnselectButtons();
         playlistsButton.Select();
+        App.player.OpenPlaylistMenu();
     }
 
     private void OpenView()
     {
         UnselectButtons();
         viewButton.Select();
+        App.player.OpenView();
     }
 
     private void OpenLogs()
     {
         UnselectButtons();
         logsButton.Select();
+        App.player.OpenLogs();
     }
 
     private void OpenSettings()
     {
         UnselectButtons();
         settingsButton.Select();
+        App.player.OpenSettings();
     }
 
     private void Resizing()
@@ -170,6 +176,6 @@ public class NavBar extends JPanel{
         settingsButton.addActionListener(e -> OpenSettings());
         expandButton.addActionListener(e -> Resizing());
 
-        OpenHomeMenu();
+        // OpenHomeMenu(); //This gives issues because the component is initialized as the app is created, and thus before statics are set up
     }
 }

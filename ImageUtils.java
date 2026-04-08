@@ -1,9 +1,15 @@
 // import java.awt.Color;
 // import java.awt.Graphics2D;
 import java.awt.Image;
+import java.awt.image.BufferedImage;
 // import java.awt.RenderingHints;
 // import java.awt.image.BufferedImage;
+import java.io.ByteArrayInputStream;
+import java.io.File;
+import java.sql.Blob;
 
+import javax.imageio.ImageIO;
+import javax.swing.Icon;
 import javax.swing.ImageIcon;
 
 public class ImageUtils {
@@ -24,5 +30,32 @@ public class ImageUtils {
         ImageIcon image = new ImageIcon(new ImageIcon(path).getImage().getScaledInstance(width, height, Image.SCALE_SMOOTH));
 
         return image;
+    }
+
+    public static ImageIcon resizeImageIcon(ImageIcon image, int width, int height)
+    {
+        return new ImageIcon(image.getImage().getScaledInstance(width, height, Image.SCALE_SMOOTH));
+    }
+
+    public static BufferedImage bytesToImage(byte[] data) throws Exception
+    {
+        if(data == null)
+            return ImageIO.read(new File("TempSongImage.png"));
+
+        ByteArrayInputStream bis = new ByteArrayInputStream(data);
+        return ImageIO.read(bis);
+    }
+
+    public static BufferedImage bytesToImage(Blob blob) throws Exception
+    {
+        if(blob == null)
+            return ImageIO.read(new File("TempSongImage.png"));
+
+        return bytesToImage(blob.getBytes(1, (int) blob.length()));
+    }
+
+    public static Icon resizeImageIcon(Icon icon) {
+        // TODO Auto-generated method stub
+        throw new UnsupportedOperationException("Unimplemented method 'resizeImageIcon'");
     }
 }

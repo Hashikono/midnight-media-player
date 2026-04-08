@@ -14,6 +14,7 @@ public class App extends JFrame {
     public static App player;
     private JPanel center;
     
+    private NavBar nav;
     // ========== CONSTRUCTOR ==========
     public App() {
         // Set window title
@@ -52,16 +53,15 @@ public class App extends JFrame {
     
     // ========== COMPONENT INITIALIZATION ==========
     private void initializeComponents() {
+        nav = new NavBar();
         add(new MediaControlBar(), BorderLayout.SOUTH);
-        add(new NavBar(), BorderLayout.WEST);
+        add(nav, BorderLayout.WEST);
 
 
         center = new JPanel();
         center.setLayout(new BorderLayout());
         center.setBackground(ColorScheme.DARK_BG);
         add(center, BorderLayout.CENTER);
-
-        center.add(new SongsMenu());
     }
     
     // ========== HELPER METHOD: CREATE GRADIENT PANEL ==========
@@ -200,7 +200,49 @@ public class App extends JFrame {
         
     }
     
-    // ========== FILE MANAGEMENT METHODS ==========
+    // ========== MENU NAVIGATION METHODS ========== \\
+    public void CloseCurrentMenu()
+    {
+        center.removeAll();
+        center.revalidate();
+        center.repaint();
+    }
+
+    public void OpenHomeMenu()
+    {
+        CloseCurrentMenu();
+        // homeButton.Select();
+    }
+
+    public void OpenMediaCollection()
+    {
+        CloseCurrentMenu();
+        center.add(new SongsMenu());
+    }
+
+    public void OpenPlaylistMenu()
+    {
+        CloseCurrentMenu();
+        center.add(new PlaylistsMenu());
+    }
+
+    public void OpenView()
+    {
+        CloseCurrentMenu();
+        // viewButton.Select();
+    }
+
+    public void OpenLogs()
+    {
+        CloseCurrentMenu();
+        // logsButton.Select();
+    }
+
+    public void OpenSettings()
+    {
+        CloseCurrentMenu();
+        // settingsButton.Select();
+    }
     
     // ========== MAIN METHOD ==========
     public static void main(String[] args) { //Base was stolen from TestApp.java, so any parts we want back should come from there
@@ -216,6 +258,7 @@ public class App extends JFrame {
             // Create and display the media player
             player = new App();
             player.setVisible(true);  // Make window visible
+            player.nav.OpenHomeMenu(); //Open home menu (to not leave the app blank)
         });
     }
 }

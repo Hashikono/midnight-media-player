@@ -13,6 +13,9 @@ For anyone that may want to tinker with the project, or even just the peeps I'm 
 - SongItem: grabs all the data for a song given by the song menu component
 - ImageUtils: random assortment of useful image related functions (currently 1)
 - MediaAddingMenu: pop up menu for adding media to the DB
+- PlaylistsMenu: shows all the playlists you have
+- PlaylistItem: Displays a playlist to select
+- PlaylistAddingMenu: pop up menu for creating playlists
 
 
 // Lil Reminder for myself, the tool to read the db is the SQLite browser
