@@ -1,5 +1,6 @@
 import java.awt.Container;
 import java.awt.Dimension;
+import java.awt.Image;
 import java.sql.SQLException;
 
 import javax.swing.BoxLayout;
@@ -53,7 +54,10 @@ public class PlaylistItem extends JButton {
     {
         super.doLayout();
 
-        // int totalWidth = getWidth() - 30;
+        int totalWidth = getWidth();
+
+        int imageSize = (totalWidth - 6) / 3;
+        coverImage.setIcon(ImageUtils.resizeImageIcon(new ImageIcon((Image)coverImage.getIcon()), imageSize, imageSize));
 
         // songTitle.setPreferredSize(new Dimension((int)(totalWidth * .275), 30));
         // songAuthor.setPreferredSize(new Dimension((int)(totalWidth * .175), 30));
