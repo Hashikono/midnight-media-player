@@ -18,6 +18,25 @@ public class PlaylistAddingMenu {
     
     private static JTextField nameField = new JTextField(20);
 
+    private static int heldIndex;
+
+    public static JDialog OpenPlaylistCreationMenu(JFrame parent, int index)
+    {
+        var dialog = OpenPlaylistCreationMenu(parent);
+        heldIndex = index;
+        playlistMakingDialog.setTitle("Edit Playlist");
+
+        try {
+            Playlist originalData = Database.findPlaylistById(index);
+
+            nameField.setText(originalData.name);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        return dialog;
+    }
+
 
     public static JDialog OpenPlaylistCreationMenu(JFrame parent) {
         try {Database.initialize();} catch (Exception e) {e.printStackTrace();}
@@ -64,6 +83,8 @@ public class PlaylistAddingMenu {
         playlistMakingDialog.add(formPanel, BorderLayout.CENTER);
         playlistMakingDialog.add(buttons, BorderLayout.SOUTH);
 
+        heldIndex = -1;
+
         return playlistMakingDialog;
     }
 
@@ -75,7 +96,10 @@ public class PlaylistAddingMenu {
 
         // result = info;
         try {
-            Database.createPlaylist(info);
+            if(heldIndex == -1)
+                Database.createPlaylist(info);
+            else
+                Database.updatePlaylistDetails(info, heldIndex);
         } catch (Exception e) {
             e.printStackTrace();
         }

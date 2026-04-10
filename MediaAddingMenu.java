@@ -161,8 +161,8 @@ public class MediaAddingMenu {
         chooser.setFileFilter(filter);
         int returnVal = chooser.showOpenDialog(mediaAddingDialog);
         if(returnVal == JFileChooser.APPROVE_OPTION) {
-            System.out.println("You chose to open this file: " +
-                    chooser.getSelectedFile().getName());
+            // System.out.println("You chose to open this file: " +
+            //         chooser.getSelectedFile().getName());
                     
             tryingThis = chooser.getSelectedFile().getAbsolutePath();
         }

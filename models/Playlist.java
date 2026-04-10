@@ -9,11 +9,18 @@ public class Playlist {
 
     public Playlist(int id, String name)
     {
+        this.id = id;
         this.name = name;
     }
 
     public Playlist(String name)
     {
         this.name = name;
+    }
+
+    public Playlist(String name, Blob image)
+    {
+        this.name = name;
+        this.image = image;
     }
 }

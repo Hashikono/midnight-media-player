@@ -1,7 +1,8 @@
+import java.awt.BorderLayout;
 import java.awt.Container;
 import java.awt.Dimension;
 import java.awt.Font;
-import java.awt.Image;
+// import java.awt.Image;
 import java.sql.SQLException;
 
 import javax.swing.BoxLayout;
@@ -16,40 +17,40 @@ import javax.swing.SwingConstants;
 import models.Playlist;
 
 public class PlaylistItem extends JButton {
+    private JPanel imageContainer;
     private JLabel coverImage;
+    private JPanel labelContainer;
     private JLabel playListName;
 
     private ImageIcon originalIcon;
 
-    private void OpenContextMenu(int heldIndex)
+    private void OpenPlaylist(Playlist data)
     {
-        JDialog dialog = MediaAddingMenu.OpenMediaAddingMenu(App.player, heldIndex);
-        dialog.setLocationRelativeTo(App.player);
-        dialog.setVisible(true);
-        // System.out.println(heldIndex);
+        //Open Songs Menu with playlist thing
+        App.player.OpenMediaCollection(data);
+        App.player.nav.UnselectButtons();
     }
 
 
     public PlaylistItem(Playlist data) throws SQLException, Exception {
         setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
+        setBackground(ColorScheme.SECONDARY_COLOR); //Idk why it's not changing the color
 
         int imageSize = 100;
         originalIcon = new ImageIcon(ImageUtils.bytesToImage(data.image));
         coverImage = new JLabel(ImageUtils.resizeImageIcon(originalIcon, imageSize, imageSize));
-        coverImage.setPreferredSize(new Dimension(imageSize, imageSize));
-
-        var tempPanel = new JPanel();
-        tempPanel.setOpaque(false);
-        tempPanel.setPreferredSize(new Dimension(0, 0));
+        coverImage.setAlignmentX(CENTER_ALIGNMENT);
 
         playListName = new JLabel(data.name);
         playListName.setFont(new Font("Segoe UI", Font.PLAIN, 15));
         playListName.setHorizontalAlignment(SwingConstants.CENTER);
+        playListName.setAlignmentX(CENTER_ALIGNMENT);
 
-        tempPanel.add(playListName);
 
         add(coverImage);
-        add(tempPanel);
+        add(playListName);
+
+        addActionListener(e -> OpenPlaylist(data));
     }
 
     @Override
@@ -59,24 +60,24 @@ public class PlaylistItem extends JButton {
         if (parent != null) {
             int totalWidth = parent.getWidth();
             int newSide = totalWidth / 3;
-            int imageSides = newSide - 10;
+            int imageSides = newSide - 80;
             coverImage.setIcon(ImageUtils.resizeImageIcon(originalIcon, imageSides, imageSides));
-            coverImage.setPreferredSize(new Dimension(imageSides - 50, imageSides - 50));
-            return new Dimension(newSide, newSide);
+            // imageContainer.setSize(new Dimension(imageSides, imageSides));
+            return new Dimension(newSide, newSide - 50);
         }
 
         return super.getPreferredSize();
     }
 
-    @Override
-    public void doLayout()
-    {
-        super.doLayout();
+    // @Override
+    // public void doLayout()
+    // {
+    //     super.doLayout();
 
-        // int totalWidth = getWidth();
+    //     int totalWidth = getWidth();
 
-        // int imageSize = (totalWidth - 6) / 3;
-        // coverImage.setIcon(ImageUtils.resizeImageIcon(originalIcon, imageSize, imageSize));
-        // coverImage.setPreferredSize(new Dimension(imageSize, imageSize));
-    }
+    //     int imageSize = (totalWidth - 6) / 3;
+    //     // coverImage.setIcon(ImageUtils.resizeImageIcon(originalIcon, imageSize, imageSize));
+    //     // imageContainer.setPreferredSize(new Dimension(imageSize, imageSize));
+    // }
 }

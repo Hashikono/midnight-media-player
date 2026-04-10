@@ -1,6 +1,9 @@
 // Import necessary packages
 import javax.swing.*;  // For Swing GUI components
 import javax.swing.border.*;  // For border styling
+
+import models.Playlist;
+
 // import javax.swing.filechooser.FileNameExtensionFilter;  // For file type filtering
 import java.awt.*;  // For AWT components and graphics
 import java.awt.event.*;  // For event handling
@@ -14,7 +17,7 @@ public class App extends JFrame {
     public static App player;
     private JPanel center;
     
-    private NavBar nav;
+    public NavBar nav;
     // ========== CONSTRUCTOR ==========
     public App() {
         // Set window title
@@ -217,6 +220,14 @@ public class App extends JFrame {
     public void OpenMediaCollection()
     {
         CloseCurrentMenu();
+        SongsMenu.heldPlaylist = null;
+        center.add(new SongsMenu());
+    }
+
+    public void OpenMediaCollection(Playlist data)
+    {
+        CloseCurrentMenu();
+        SongsMenu.heldPlaylist = data;
         center.add(new SongsMenu());
     }
 

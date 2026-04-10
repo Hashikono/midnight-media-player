@@ -61,7 +61,7 @@ public class NavBar extends JPanel{
 
 //#region button functions
 
-    private void UnselectButtons()
+    public void UnselectButtons()
     {
         homeButton.Unselect();
         mediaCollectionButton.Unselect();

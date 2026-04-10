@@ -24,7 +24,7 @@ public class PlaylistsMenu extends JPanel {
     private List<Playlist> allPlaylists;
     private List<PlaylistItem> allPlaylistItems = new ArrayList<>();
 
-    public void CreateMediaList()
+    public void CreatePlaylistItems()
     {
         try {
             allPlaylists = Database.getAllPlaylists();
@@ -78,7 +78,7 @@ public class PlaylistsMenu extends JPanel {
         PlaylistsContainer = new JPanel();
         PlaylistsContainer.setLayout(new FlowLayout(1,1, 1));
         PlaylistsContainer.setBackground(ColorScheme.LIGHT_BG);
-        CreateMediaList();
+        CreatePlaylistItems();
 
         add(topComponents, BorderLayout.NORTH);
         add(PlaylistsContainer);

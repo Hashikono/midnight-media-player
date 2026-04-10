@@ -1,7 +1,7 @@
 import java.util.ArrayList;
 import java.util.List;
 
-import javax.xml.crypto.Data;
+// import javax.xml.crypto.Data;
 
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -11,7 +11,7 @@ import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.Statement;
 import java.sql.ResultSet;
-import java.sql.SQLException;
+// import java.sql.SQLException;
 
 import models.Media;
 import models.Playlist;
@@ -122,7 +122,7 @@ public class Database {
             } catch(Exception e) {
 
             }
-            
+
             throw new RuntimeException("Failed to insert media");
         }
     }
@@ -340,6 +340,7 @@ public class Database {
                 if(rs.next())
                 {
                     return new Playlist(
+                        rs.getInt("id"),
                         rs.getString("name")
                     );
                 }
