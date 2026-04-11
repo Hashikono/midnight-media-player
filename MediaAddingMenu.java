@@ -165,11 +165,12 @@ public class MediaAddingMenu {
             //         chooser.getSelectedFile().getName());
                     
             tryingThis = chooser.getSelectedFile().getAbsolutePath();
+
+            pathField.setText(chooser.getSelectedFile().getAbsolutePath());
+            nameField.setText(chooser.getSelectedFile().getName());
+            extField.setText(getExtensionOf(chooser.getSelectedFile().getName()));
         }
 
-        pathField.setText(chooser.getSelectedFile().getAbsolutePath());
-        nameField.setText(chooser.getSelectedFile().getName());
-        extField.setText(getExtensionOf(chooser.getSelectedFile().getName()));
         return chooser.getSelectedFile();
     }
 

@@ -6,6 +6,8 @@ import java.awt.image.BufferedImage;
 // import java.awt.image.BufferedImage;
 import java.io.ByteArrayInputStream;
 import java.io.File;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.sql.Blob;
 
 import javax.imageio.ImageIO;
@@ -57,5 +59,10 @@ public class ImageUtils {
     public static Icon resizeImageIcon(Icon icon) {
         // TODO Auto-generated method stub
         throw new UnsupportedOperationException("Unimplemented method 'resizeImageIcon'");
+    }
+
+    public static byte[] getBytesFromFile(String path) throws Exception
+    {
+        return Files.readAllBytes(Path.of(path));
     }
 }
