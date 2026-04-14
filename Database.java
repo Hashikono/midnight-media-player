@@ -237,12 +237,13 @@ public class Database {
 //#region Playlists
     public static int createPlaylist(Playlist data) throws Exception {
         String sql = """
-            INSERT INTO playlist (name)
-            VALUES (?)
+            INSERT INTO playlist (name, thumbnail)
+            VALUES (?, ?)
         """;
 
         try(PreparedStatement ps = Database.getConnection().prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
             ps.setString(1, data.name);
+            ps.setBytes(2, ImageUtils.blobToBytes(data.image));
 
             ps.executeUpdate();
 
@@ -320,7 +321,8 @@ public class Database {
             while(rs.next()) {
                 Playlist data = new Playlist(
                     rs.getInt("id"),
-                    rs.getString("name")
+                    rs.getString("name"),
+                    ImageUtils.bytesToBlob(rs.getBytes("thumbnail"))
                 );
 
                 mediaList.add(data);
@@ -342,7 +344,8 @@ public class Database {
                 {
                     return new Playlist(
                         rs.getInt("id"),
-                        rs.getString("name")
+                        rs.getString("name"),
+                        ImageUtils.bytesToBlob(rs.getBytes("thumbnail"))
                     );
                 }
             }   

@@ -23,4 +23,11 @@ public class Playlist {
         this.name = name;
         this.image = image;
     }
+
+    public Playlist(int id, String name, Blob image)
+    {
+        this.id = id;
+        this.name = name;
+        this.image = image;
+    }
 }
