@@ -1,9 +1,12 @@
 import java.awt.BorderLayout;
+import java.awt.Dimension;
 import java.awt.FlowLayout;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.io.File;
+import java.sql.Blob;
 
+import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JDialog;
 import javax.swing.JFileChooser;
@@ -11,6 +14,7 @@ import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
+import javax.swing.SwingConstants;
 import javax.swing.filechooser.FileNameExtensionFilter;
 
 import models.Playlist;
@@ -21,7 +25,7 @@ public class PlaylistAddingMenu {
 
     private static JLabel imageDisplay = new JLabel();
     private static JTextField nameField = new JTextField(20);
-    private static byte[] imageBlob;
+    private static Blob imageBlob;
 
     private static int heldIndex;
 
@@ -34,7 +38,11 @@ public class PlaylistAddingMenu {
         try {
             Playlist originalData = Database.findPlaylistById(index);
 
+            imageBlob = originalData.image;
             nameField.setText(originalData.name);
+
+            if(imageBlob != null)
+                updatePlaylistCover();
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -48,7 +56,11 @@ public class PlaylistAddingMenu {
 
         nameField.setText("");
 
+        imageBlob = null;
+
         imageDisplay.setVisible(false);
+        imageDisplay.setSize(new Dimension(50, 50));
+        imageDisplay.setHorizontalAlignment(SwingConstants.CENTER);
 
 
         playlistMakingDialog = new JDialog(parent, "Create New Playlist", true);
@@ -92,7 +104,7 @@ public class PlaylistAddingMenu {
 
         c.gridwidth = 3;
 
-        playlistMakingDialog.setSize(400, 200);
+        playlistMakingDialog.setSize(400, 400);
         playlistMakingDialog.add(formPanel, BorderLayout.CENTER);
         playlistMakingDialog.add(dialogButtons, BorderLayout.SOUTH);
 
@@ -115,7 +127,9 @@ public class PlaylistAddingMenu {
             tryingThis = chooser.getSelectedFile().getAbsolutePath();
             
             try {
-                imageBlob = ImageUtils.getBytesFromFile(chooser.getSelectedFile().getAbsolutePath());
+                imageBlob = ImageUtils.bytesToBlob(ImageUtils.getBytesFromFile(chooser.getSelectedFile().getAbsolutePath()));
+                // System.out.println(imageBlob);
+                updatePlaylistCover();
             } catch (Exception e) {
                 e.printStackTrace();
             }
@@ -127,10 +141,20 @@ public class PlaylistAddingMenu {
         return chooser.getSelectedFile();
     }
 
+    private static void updatePlaylistCover() throws Exception
+    {
+        imageDisplay.setVisible(true);
+        //ImageUtils.resizeImageIcon(ImageUtils.bytesToImage(imageBlob), 200, 200)
+        imageDisplay.setIcon(ImageUtils.resizeImageIcon(new ImageIcon(ImageUtils.bytesToImage(imageBlob)), 200, 200));
+    }
+
     private static void submit() {
         Playlist info = new Playlist(
-            nameField.getText()
+            nameField.getText(),
+            imageBlob
         );
+
+        // System.out.println(info.image);
         
 
         // result = info;

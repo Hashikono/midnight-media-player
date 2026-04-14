@@ -9,8 +9,11 @@ import java.io.File;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.sql.Blob;
+import java.sql.SQLException;
 
 import javax.imageio.ImageIO;
+import javax.sql.rowset.serial.SerialBlob;
+import javax.sql.rowset.serial.SerialException;
 import javax.swing.Icon;
 import javax.swing.ImageIcon;
 
@@ -64,5 +67,24 @@ public class ImageUtils {
     public static byte[] getBytesFromFile(String path) throws Exception
     {
         return Files.readAllBytes(Path.of(path));
+    }
+
+    public static Blob bytesToBlob(byte[] data) throws SerialException, SQLException
+    {
+        if(data != null)
+        {
+            java.sql.Blob blob = new SerialBlob(data);
+            return blob;
+        }
+        else
+            return null;
+    }
+
+    public static byte[] blobToBytes(Blob blob) throws SQLException
+    {
+        if(blob != null)
+            return blob.getBytes(1, (int)blob.length());
+        else
+            return null;
     }
 }

@@ -275,17 +275,18 @@ public class Database {
     public static void updatePlaylistDetails(Playlist data, int index) throws Exception
     {
         String sql = """
-        UPDATE playlist
-        SET name = ?
-        WHERE id = ?
-    """;
+            UPDATE playlist
+            SET name = ?, thumbnail = ?
+            WHERE id = ?
+        """;
 
-    try (PreparedStatement ps = getConnection().prepareStatement(sql)) {
-        ps.setString(1, data.name);
-        ps.setInt(2, index);
+        try (PreparedStatement ps = getConnection().prepareStatement(sql)) {
+            ps.setString(1, data.name);
+            ps.setBytes(2, ImageUtils.blobToBytes(data.image));
+            ps.setInt(3, index);
 
-        ps.executeUpdate();
-    }
+            ps.executeUpdate();
+        }
     }
 
     public static int getMediaCount(int playlistId) throws Exception {
