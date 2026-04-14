@@ -11,7 +11,9 @@ import javax.swing.BoxLayout;
 import javax.swing.JButton;
 import javax.swing.JDialog;
 import javax.swing.JLabel;
+import javax.swing.JMenuItem;
 import javax.swing.JPanel;
+import javax.swing.JPopupMenu;
 import javax.swing.OverlayLayout;
 import javax.swing.SwingConstants;
 import javax.swing.border.EmptyBorder;
@@ -31,24 +33,11 @@ public class SongItem extends JPanel {
     private JLabel songLength;
     private JButton songOptions;
 
+    private JPopupMenu contextMenu;
+    private JMenuItem editMediaDetails;
+    private JMenuItem addToPlaylist;
+    private JMenuItem deleteMedia;
 
-    // JPanel panel = new JPanel(new GridBagLayout());
-    // GridBagConstraints gbc = new GridBagConstraints();
-
-    // gbc.fill = GridBagConstraints.BOTH;
-    // gbc.gridy = 0;
-
-    // // Left (30%)
-    // gbc.gridx = 0;
-    // gbc.weightx = 0.3;
-    // panel.add(leftPanel, gbc);
-
-    // // Right (70%)
-    // gbc.gridx = 1;
-    // gbc.weightx = 0.7;
-    // panel.add(rightPanel, gbc);
-
-    // songTitle.setBorder(BorderFactory.createCompoundBorder(new MatteBorder(0, 0, 0, 1, ColorScheme.PRIMARY_COLOR), BorderFactory.createEmptyBorder(0, 10, 0, 10)));
 
     private void OpenContextMenu(int heldIndex)
     {
@@ -143,7 +132,6 @@ public class SongItem extends JPanel {
         songOptions.setContentAreaFilled(true);
         songOptions.setBorderPainted(false);
 
-        songOptions.addActionListener(e -> OpenContextMenu(data.id));
 
         endSongDetails.add(songLength);
         endSongDetails.add(songOptions);
@@ -152,6 +140,21 @@ public class SongItem extends JPanel {
 
         add(mainSongDetails);
         add(endSongDetails);
+
+
+
+        contextMenu = new JPopupMenu();
+        editMediaDetails = new JMenuItem("Edit Details");
+        addToPlaylist = new JMenuItem("Add to Playlist");
+        deleteMedia = new JMenuItem("Delete Media");
+
+        contextMenu.add(editMediaDetails);
+        contextMenu.add(addToPlaylist);
+        contextMenu.addSeparator();
+        contextMenu.add(deleteMedia);
+
+        songOptions.addActionListener(e -> {contextMenu.show(songOptions, songOptions.getWidth() - contextMenu.getWidth(), songOptions.getHeight());});
+        editMediaDetails.addActionListener(e -> OpenContextMenu(data.id));
     }
 
     @Override
