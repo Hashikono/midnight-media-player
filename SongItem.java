@@ -47,6 +47,12 @@ public class SongItem extends JPanel {
         // System.out.println(heldIndex);
     }
 
+    private void OpenAddingToPlaylistMenu(Media heldMedia) {
+        JDialog dialog = AddMediaToPlaylistMenu.OpenMediaAddingMenu(App.player, heldMedia);
+        dialog.setLocationRelativeTo(App.player);
+        dialog.setVisible(true); // BLOCKS until dialog is closed
+    }
+
 
     public SongItem(Media data) {
         setLayout(new BoxLayout(this, BoxLayout.X_AXIS));
@@ -155,6 +161,7 @@ public class SongItem extends JPanel {
 
         songOptions.addActionListener(e -> {contextMenu.show(songOptions, songOptions.getWidth() - contextMenu.getWidth(), songOptions.getHeight());});
         editMediaDetails.addActionListener(e -> OpenContextMenu(data.id));
+        addToPlaylist.addActionListener(e -> OpenAddingToPlaylistMenu(data));
     }
 
     @Override

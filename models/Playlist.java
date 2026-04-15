@@ -30,4 +30,10 @@ public class Playlist {
         this.name = name;
         this.image = image;
     }
+
+    @Override
+    public String toString()
+    {
+        return name;
+    }
 }
