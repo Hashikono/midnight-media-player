@@ -59,7 +59,7 @@ public class PlaylistItem extends JButton {
 
         if (parent != null) {
             int totalWidth = parent.getWidth();
-            int newSide = totalWidth / 3;
+            int newSide = (totalWidth - 10) / 3;
             int imageSides = newSide - 80;
             coverImage.setIcon(ImageUtils.resizeImageIcon(originalIcon, imageSides, imageSides));
             // imageContainer.setSize(new Dimension(imageSides, imageSides));

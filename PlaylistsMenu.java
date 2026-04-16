@@ -17,12 +17,21 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class PlaylistsMenu extends JPanel {
+    public static PlaylistsMenu instance;
     private JPanel topComponents;
     private JButton openPlayListCreatorMenu;
 
     private JPanel PlaylistsContainer;
     private List<Playlist> allPlaylists;
     private List<PlaylistItem> allPlaylistItems = new ArrayList<>();
+
+    public void Refresh()
+    {
+        PlaylistsContainer.removeAll();
+        CreatePlaylistItems();
+        revalidate();
+        repaint();
+    }
 
     public void CreatePlaylistItems()
     {
@@ -82,5 +91,7 @@ public class PlaylistsMenu extends JPanel {
 
         add(topComponents, BorderLayout.NORTH);
         add(PlaylistsContainer);
+
+        instance = this;
     }
 }

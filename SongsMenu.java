@@ -10,6 +10,7 @@ import javax.swing.JDialog;
 import javax.swing.JLabel;
 // import javax.swing.JList;
 import javax.swing.JPanel;
+import javax.swing.JScrollPane;
 import javax.swing.SwingConstants;
 import javax.swing.border.EmptyBorder;
 import models.Media;
@@ -19,6 +20,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class SongsMenu extends JPanel {
+    public static SongsMenu instance;
     private JPanel topComponents;
     private JButton openMediaAdderButton;
 
@@ -27,6 +29,20 @@ public class SongsMenu extends JPanel {
     private List<SongItem> allListedMedia = new ArrayList<>();
 
     public static Playlist heldPlaylist = null;
+
+    public void Refresh()
+    {
+        MusicListContainer.removeAll();
+        CreateMediaList();
+
+        if(heldPlaylist != null)
+        {
+            //Later put stuff to refresh title and image
+        }
+
+        revalidate();
+        repaint();
+    }
 
     public void CreateMediaList()
     {
@@ -121,8 +137,14 @@ public class SongsMenu extends JPanel {
         MusicListContainer.setLayout(new FlowLayout(1,100000000, 1));
         MusicListContainer.setBackground(ColorScheme.LIGHT_BG);
         CreateMediaList();
+        
+        JScrollPane scrollSideBar = new JScrollPane(MusicListContainer, JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED,
+                    JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
+        scrollSideBar.setPreferredSize(new Dimension(20, 0));
 
         add(topComponents, BorderLayout.NORTH);
-        add(MusicListContainer);
+        add(scrollSideBar);
+
+        instance = this;
     }
 }

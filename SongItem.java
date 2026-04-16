@@ -36,6 +36,7 @@ public class SongItem extends JPanel {
     private JPopupMenu contextMenu;
     private JMenuItem editMediaDetails;
     private JMenuItem addToPlaylist;
+    private JMenuItem removeFromPlaylist;
     private JMenuItem deleteMedia;
 
 
@@ -152,16 +153,52 @@ public class SongItem extends JPanel {
         contextMenu = new JPopupMenu();
         editMediaDetails = new JMenuItem("Edit Details");
         addToPlaylist = new JMenuItem("Add to Playlist");
+        removeFromPlaylist = new JMenuItem("Remove from Playlist");
         deleteMedia = new JMenuItem("Delete Media");
 
         contextMenu.add(editMediaDetails);
         contextMenu.add(addToPlaylist);
         contextMenu.addSeparator();
+        if(SongsMenu.heldPlaylist != null)
+            contextMenu.add(removeFromPlaylist);
         contextMenu.add(deleteMedia);
 
         songOptions.addActionListener(e -> {contextMenu.show(songOptions, songOptions.getWidth() - contextMenu.getWidth(), songOptions.getHeight());});
         editMediaDetails.addActionListener(e -> OpenContextMenu(data.id));
         addToPlaylist.addActionListener(e -> OpenAddingToPlaylistMenu(data));
+
+        if(SongsMenu.heldPlaylist != null)
+        { String removeFromPlaylistMessage = "Remove " + data.name + " from " + SongsMenu.heldPlaylist.name + "?"; removeFromPlaylist.addActionListener(e -> OpenConfirmationMenu(removeFromPlaylistMessage, () -> RemoveSongFromPlaylist(data)));}
+        String deleteConfirmationMessage = "Delete " + data.name + "?";
+        deleteMedia.addActionListener(e -> OpenConfirmationMenu(deleteConfirmationMessage, () -> DeleteSong(data))); //Lambas in Java are weird, lol
+    }
+
+    public void OpenConfirmationMenu(String message, Runnable executable)
+    {
+        JDialog dialog = new ConfirmationPopUp(message, executable);
+        dialog.setLocationRelativeTo(App.player);
+        dialog.setVisible(true);
+    }
+
+    public void RemoveSongFromPlaylist(Media media)
+    {
+        try{
+            Database.removeFromPlaylist(media.id, SongsMenu.heldPlaylist.id);
+            SongsMenu.instance.Refresh();
+        } catch(Exception error) {
+            //Do nothing, lol
+        }
+    }
+
+    public void DeleteSong(Media media)
+    {
+        // System.out.println("delete something");
+
+        try{
+            Database.deleteMedia(media.id);
+        } catch(Exception error) {
+            //Do nothing, lol
+        }
     }
 
     @Override

@@ -11,7 +11,7 @@ import javax.swing.JButton;
 import javax.swing.JComboBox;
 import javax.swing.JDialog;
 import javax.swing.JFrame;
-import javax.swing.JMenuItem;
+// import javax.swing.JMenuItem;
 import javax.swing.JPanel;
 
 public class AddMediaToPlaylistMenu {
@@ -24,12 +24,11 @@ public class AddMediaToPlaylistMenu {
         AddToPlaylistDialog = new JDialog(parent, "Add Media", true);
         AddToPlaylistDialog.setSize(400, 200);
 
-        dropDown.removeAll();
+        dropDown.removeAllItems();
         dropDown.addItem(null);
 
         try {
             allPlaylists = Database.getAllPlaylists();
-            System.out.println(allPlaylists.size());
 
             for(Playlist listing : allPlaylists)
             {
@@ -81,7 +80,8 @@ public class AddMediaToPlaylistMenu {
         if(selected != null)
         {
             try {
-                Database.insertToPlaylist(selected.id, media.id);
+                if(!Database.getMediaInPlaylist(selected.id).contains(media)) //Safeguard to prevent duplicate entries (causes errors)
+                    Database.insertToPlaylist(selected.id, media.id);
             } catch (Exception e) {
                 e.printStackTrace();
             }

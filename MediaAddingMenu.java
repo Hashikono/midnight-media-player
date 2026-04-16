@@ -140,6 +140,8 @@ public class MediaAddingMenu {
                 Database.insertMedia(info);
             else
                 Database.updateMedia(info, heldIndex);
+            
+            SongsMenu.instance.Refresh();
         } catch (Exception e) {
             e.printStackTrace();
         }

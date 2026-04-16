@@ -70,6 +70,7 @@ public class Database {
                 media_id INTEGER NOT NULL,
                 position INTEGER NOT NULL,
                 probability REAL DEFAULT 1,
+                repeatability INTEGER DEFAULT 0,
 
                 PRIMARY KEY (playlist_id, media_id),
 
@@ -85,6 +86,7 @@ public class Database {
         }
     }
 
+//#region Integration
     public static void addToPlaylist(int playlistId, int mediaId, int position) throws Exception {
         String sql = """
             INSERT INTO playlist_media (playlist_id, media_id, position)
@@ -98,6 +100,20 @@ public class Database {
             ps.executeUpdate();
         }
     }
+
+    public static void removeFromPlaylist(int media, int playlist) throws Exception {
+        String sql = """
+                DELETE FROM playlist_media
+                WHERE media_id = ? AND playlist_id = ?
+            """;
+
+        try(PreparedStatement ps = getConnection().prepareStatement(sql)) {
+            ps.setInt(1, media);
+            ps.setInt(2, playlist);
+            ps.executeUpdate();
+        }
+    }
+//#endregion Integration
 
 //#region MediaFiles
     public static int insertMedia(Media data) throws Exception {
@@ -218,6 +234,7 @@ public class Database {
                 if(rs.next())
                 {
                     return new Media(
+                        rs.getInt("id"),
                         rs.getString("path"),
                         rs.getString("name"),
                         rs.getString("format"),
@@ -231,7 +248,14 @@ public class Database {
         throw new RuntimeException("Failed find media");
     }
 
+    public static void deleteMedia(int id) throws Exception {
+        String sql = "DELETE FROM media WHERE id = ?";
 
+        try(PreparedStatement ps = getConnection().prepareStatement(sql)) {
+            ps.setInt(1, id);
+            ps.executeUpdate();
+        }
+    }
 //#endregion MediaFiles
 
 //#region Playlists
@@ -352,6 +376,15 @@ public class Database {
         }
 
         throw new RuntimeException("Failed find playlist");
+    }
+
+    public static void deletePlaylist(int id) throws Exception {
+        String sql = "DELETE FROM playlist WHERE id = ?";
+
+        try(PreparedStatement ps = getConnection().prepareStatement(sql)) {
+            ps.setInt(1, id);
+            ps.executeUpdate();
+        }
     }
 //#endregion Playlists
 }

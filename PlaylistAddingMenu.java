@@ -160,9 +160,17 @@ public class PlaylistAddingMenu {
         // result = info;
         try {
             if(heldIndex == -1)
+            {
                 Database.createPlaylist(info);
+                PlaylistsMenu.instance.Refresh();
+            }
             else
+            {
                 Database.updatePlaylistDetails(info, heldIndex);
+                SongsMenu.heldPlaylist = info;
+                SongsMenu.instance.Refresh();
+            }
+            
         } catch (Exception e) {
             e.printStackTrace();
         }
