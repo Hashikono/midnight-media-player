@@ -60,6 +60,7 @@ public class SongItem extends JPanel {
         mainSongDetails = new JPanel();
         mainSongDetails.setLayout(new FlowLayout(FlowLayout.LEADING, 3, 0));
         mainSongDetails.setBorder(new EmptyBorder(2, 0, 0, 0));
+        setMaximumSize(new Dimension(Integer.MAX_VALUE, 45));
         // System.out.println(data.id);
         
         //Image part

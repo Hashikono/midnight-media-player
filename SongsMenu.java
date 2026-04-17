@@ -3,6 +3,8 @@ import java.awt.Dimension;
 import java.awt.FlowLayout;
 import java.awt.Font;
 
+import javax.swing.Box;
+import javax.swing.BoxLayout;
 import javax.swing.ImageIcon;
 // import javax.swing.BorderFactory;
 import javax.swing.JButton;
@@ -52,12 +54,18 @@ public class SongsMenu extends JPanel {
             else
                 allSongs = Database.getMediaInPlaylist(heldPlaylist.id);
 
+            int i = 0;
             for(Media song : allSongs)
             {
+                i++;
                 SongItem newListItem = new SongItem(song);
                 allListedMedia.add((SongItem) newListItem);
                 MusicListContainer.add(newListItem);
                 newListItem.setOpaque(false);
+
+                if(i != allSongs.size())
+                    MusicListContainer.add(Box.createVerticalStrut(2));
+                // MusicListContainer.add(Box.createVerticalGlue());
             }
         } catch (Exception e) {
             e.printStackTrace();
@@ -134,13 +142,18 @@ public class SongsMenu extends JPanel {
         
 
         MusicListContainer = new JPanel();
-        MusicListContainer.setLayout(new FlowLayout(1,100000000, 1));
+        // MusicListContainer.setLayout(new FlowLayout(1,100000000, 1));
+        MusicListContainer.setLayout(new BoxLayout(MusicListContainer, BoxLayout.Y_AXIS));
+        // MusicListContainer.se
         MusicListContainer.setBackground(ColorScheme.LIGHT_BG);
         CreateMediaList();
         
         JScrollPane scrollSideBar = new JScrollPane(MusicListContainer, JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED,
                     JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
         scrollSideBar.setPreferredSize(new Dimension(20, 0));
+        scrollSideBar.setBorder(null);
+        scrollSideBar.setViewportBorder(null);
+        scrollSideBar.getViewport().setBackground(ColorScheme.LIGHT_BG);
 
         add(topComponents, BorderLayout.NORTH);
         add(scrollSideBar);
