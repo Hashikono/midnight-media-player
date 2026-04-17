@@ -2,6 +2,7 @@ import java.awt.BorderLayout;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
 import java.awt.Font;
+import java.awt.GridLayout;
 
 // import javax.swing.BorderFactory;
 import javax.swing.JButton;
@@ -9,6 +10,7 @@ import javax.swing.JDialog;
 import javax.swing.JLabel;
 // import javax.swing.JList;
 import javax.swing.JPanel;
+import javax.swing.JScrollPane;
 import javax.swing.SwingConstants;
 import javax.swing.border.EmptyBorder;
 import models.Playlist;
@@ -85,12 +87,20 @@ public class PlaylistsMenu extends JPanel {
         topComponents.add(openPlayListCreatorMenu, BorderLayout.EAST);
 
         PlaylistsContainer = new JPanel();
-        PlaylistsContainer.setLayout(new FlowLayout(1,1, 1));
+        // PlaylistsContainer.setLayout(new FlowLayout(1,1, 1));
+        PlaylistsContainer.setLayout(new GridLayout(0, 3, 10, 10));
         PlaylistsContainer.setBackground(ColorScheme.LIGHT_BG);
         CreatePlaylistItems();
 
+        JScrollPane scrollSideBar = new JScrollPane(PlaylistsContainer, JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED,
+                    JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
+        scrollSideBar.setPreferredSize(new Dimension(20, 0));
+        scrollSideBar.setBorder(null);
+        scrollSideBar.setViewportBorder(null);
+        scrollSideBar.getViewport().setBackground(ColorScheme.LIGHT_BG);
+
         add(topComponents, BorderLayout.NORTH);
-        add(PlaylistsContainer);
+        add(scrollSideBar);
 
         instance = this;
     }
