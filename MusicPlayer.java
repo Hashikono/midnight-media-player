@@ -61,6 +61,11 @@ public class MusicPlayer {
     public static void playTrack(Media song)
     {
         currentSong = song;
+        try {
+            MediaControlBar.setNewSong((int)MediaFileHandler.getDuration(song.path));
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
         //MediaFileHander. (some integration here?)
     }
 

@@ -27,9 +27,9 @@ public class MediaControlBar extends JPanel{
     JButton repeatButton;
     JButton shuffleButton;
 
-    JSlider musicProgress;
-    JLabel currentSecond;
-    JLabel songEndLength;
+    static JSlider musicProgress;
+    static JLabel currentSecond;
+    static JLabel songEndLength;
     
     // ========== HELPER METHOD: CREATE MODERN BUTTON ==========
     // Creates a custom styled button with rounded corners and hover effects
@@ -173,16 +173,17 @@ public class MediaControlBar extends JPanel{
         playButton.addActionListener(e -> moveProgress(50));
     }
 
-    public void moveProgress(int newSpot) //Use every second when playing music to move the bar
+    public static void moveProgress(int newSpot) //Use every second when playing music to move the bar
     {
         musicProgress.setValue(newSpot);
 
         setProgressCounter();
     }
 
-    public void setNewSong(int songLength)
+    public static void setNewSong(int songLength)
     {
         moveProgress(0);
+        musicProgress.setMaximum(songLength);
 
         int seconds = songLength % 60;
         var secondText = "";
@@ -196,7 +197,7 @@ public class MediaControlBar extends JPanel{
         songEndLength.setText(String.valueOf(minutes) + ":" + secondText);
     }
 
-    public void setProgressCounter()
+    public static void setProgressCounter()
     {
         int newSpot = musicProgress.getValue();
         int seconds = newSpot % 60;

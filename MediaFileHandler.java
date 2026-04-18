@@ -78,4 +78,25 @@ public class MediaFileHandler {
 
         return output;
     }
+
+    public static double getDuration(String path) throws Exception { //Doesn't seem to be working 100% of the time
+        String ffprobePath = "ffmpeg/ffprobe.exe";
+        ProcessBuilder pb = new ProcessBuilder(
+            ffprobePath,
+            "-v", "error",
+            "-show_entries", "format=duration",
+            "-of", "default=noprint_wrappers=1:nokey=1",
+            path
+        );
+
+        Process process = pb.start();
+
+        try (java.util.Scanner sc = new java.util.Scanner(process.getInputStream())) {
+            if (sc.hasNext()) {
+                return Double.parseDouble(sc.next().trim());
+            }
+        }
+
+        return 0;
+    }
 }
