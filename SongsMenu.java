@@ -27,7 +27,7 @@ public class SongsMenu extends JPanel {
     private JButton openMediaAdderButton;
 
     private JPanel MusicListContainer;
-    private List<Media> allSongs;
+    public static List<Media> allSongs;
     private List<SongItem> allListedMedia = new ArrayList<>();
 
     public static Playlist heldPlaylist = null;

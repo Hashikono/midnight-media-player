@@ -113,6 +113,7 @@ public class SongItem extends JPanel {
             }
         });
 
+        playButton.addActionListener(e -> plyaSong(data));
         
 
         songTitle = new JLabel(data.name);
@@ -200,6 +201,14 @@ public class SongItem extends JPanel {
         } catch(Exception error) {
             //Do nothing, lol
         }
+    }
+
+    public void plyaSong(Media media)
+    {
+        if(SongsMenu.heldPlaylist != null)
+            MusicPlayer.getPlaylist(SongsMenu.allSongs);
+        
+        MusicPlayer.playTrack(media);
     }
 
     @Override
