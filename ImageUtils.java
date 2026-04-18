@@ -42,13 +42,25 @@ public class ImageUtils {
         return new ImageIcon(image.getImage().getScaledInstance(width, height, Image.SCALE_SMOOTH));
     }
 
+    public static ImageIcon resizeImageIcon(ImageIcon image, int size)
+    {
+        return resizeImageIcon(image, size, size);
+    }
+
     public static BufferedImage bytesToImage(byte[] data) throws Exception
     {
-        if(data == null)
+        if(data == null || data.length == 0)
             return ImageIO.read(new File("TempSongImage.png"));
 
         ByteArrayInputStream bis = new ByteArrayInputStream(data);
         return ImageIO.read(bis);
+    }
+
+    public static ImageIcon bytesToIcon(byte[] data) {
+        if (data == null || data.length == 0)
+            return null;
+
+        return new ImageIcon(data);
     }
 
     public static BufferedImage bytesToImage(Blob blob) throws Exception

@@ -4,9 +4,11 @@ import java.awt.Dimension;
 import java.awt.FlowLayout;
 // import java.awt.GridBagConstraints;
 // import java.awt.GridBagLayout;
+import java.awt.image.BufferedImage;
 
 import javax.swing.BorderFactory;
 import javax.swing.BoxLayout;
+import javax.swing.ImageIcon;
 // import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JDialog;
@@ -67,8 +69,27 @@ public class SongItem extends JPanel {
         coverContainer = new JPanel();
         coverContainer.setLayout(new OverlayLayout(coverContainer));
         coverContainer.setPreferredSize(new Dimension(40, 40));
-
+        
         songImage = new JLabel(ImageUtils.getResizedImage("TempSongImage.png", 40)); //used to be new ImageIcon("TempSongImage.png") Just tested and this func doesn't seem to work, lol. I'll look through it again in a sec
+        
+        // try { //Doesn't work rn and just lags the thing
+        //     byte[] coverBytes = MediaFileHandler.extractCoverArt(data.path);
+
+        //     if(coverBytes != null)
+        //     {
+        //         BufferedImage image = ImageUtils.bytesToImage(coverBytes);
+                
+        //         // System.out.println(coverBytes.length);
+        //         if(image != null) {
+        //             ImageIcon icon = new ImageIcon(image);
+        //             songImage.setIcon(ImageUtils.resizeImageIcon(icon, 40));
+        //         }
+        //     }
+        //     // var originalIcon = new ImageIcon(ImageUtils.bytesToImage(MediaFileHandler.extractCoverArt(data.path)));
+        // } catch (Exception e) {
+        //     e.printStackTrace();
+        // }
+
         songImage.setAlignmentX(.5f);
         songImage.setAlignmentY(.5f);
 
