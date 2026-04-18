@@ -13,6 +13,10 @@ import javax.swing.JPanel;
 import javax.swing.JTextField;
 import javax.swing.filechooser.FileNameExtensionFilter;
 
+// import com.google.gson.Gson;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;
+
 import models.Media;
 
 public class MediaAddingMenu {
@@ -174,7 +178,7 @@ public class MediaAddingMenu {
             String ext = getExtensionOf(chooser.getSelectedFile().getName());
             extField.setText(ext);
 
-            if(ext.equals("mp3") || ext.equals("wav"))
+            if(ext != null)
                 getMediaDetails(chooser.getSelectedFile().getAbsolutePath());
         }
 
@@ -194,7 +198,33 @@ public class MediaAddingMenu {
 
     public static void getMediaDetails(String path)
     {
-        
+        try {
+            String json = MediaFileHandler.getMetadataJson(path);
+            fillFields(json);
+        } catch (Exception e) {
+
+        }
+    }
+
+    
+    public static void fillFields(String json) {
+        JsonObject root = JsonParser.parseString(json).getAsJsonObject();
+
+        JsonObject format = root.getAsJsonObject("format");
+        if (format == null) return;
+
+        JsonObject tags = format.getAsJsonObject("tags");
+        if (tags == null) return;
+
+        if (tags.has("artist")) {
+            String artist = tags.get("artist").getAsString();
+            authorField.setText(artist);
+        }
+
+        if (tags.has("album")) {
+            String album = tags.get("album").getAsString();
+            albumField.setText(album);
+        }
     }
 
     
