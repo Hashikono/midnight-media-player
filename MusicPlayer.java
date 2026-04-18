@@ -61,6 +61,7 @@ public class MusicPlayer {
     public static void playTrack(Media song)
     {
         currentSong = song;
+        //MediaFileHander. (some integration here?)
     }
 
     public static void getPlaylist(Playlist playlist)
