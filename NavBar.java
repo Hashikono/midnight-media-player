@@ -86,7 +86,7 @@ public class NavBar extends JPanel{
         App.player.OpenMediaCollection();
     }
 
-    private void OpenPlaylistMenu()
+    public void OpenPlaylistMenu()
     {
         UnselectButtons();
         playlistsButton.Select();

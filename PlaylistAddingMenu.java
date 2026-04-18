@@ -93,12 +93,15 @@ public class PlaylistAddingMenu {
 
         // DialogButtons
         JPanel dialogButtons = new JPanel(new FlowLayout(FlowLayout.RIGHT));
+        JButton deletePlaylist = new JButton("Delete Playlist");
         JButton ok = new JButton("OK");
         JButton cancel = new JButton("Cancel");
 
+        dialogButtons.add(deletePlaylist);
         dialogButtons.add(ok);
         dialogButtons.add(cancel);
 
+        deletePlaylist.addActionListener(e -> OpenConfirmationMenu("Delete This Playlist?", () -> DeletePlaylist(heldIndex)));
         ok.addActionListener(e -> submit());
         cancel.addActionListener(e -> playlistMakingDialog.dispose());
 
@@ -176,6 +179,26 @@ public class PlaylistAddingMenu {
         }
 
         playlistMakingDialog.dispose();
+    }
+
+    
+
+    public static void DeletePlaylist(int playlistId)
+    {
+        try{
+            Database.deletePlaylist(playlistId);
+            playlistMakingDialog.dispose();
+            App.player.nav.OpenPlaylistMenu();
+        } catch(Exception error) {
+            //Do nothing, lol
+        }
+    }
+
+    public static void OpenConfirmationMenu(String message, Runnable executable)
+    {
+        JDialog dialog = new ConfirmationPopUp(playlistMakingDialog, message, executable);
+        dialog.setLocationRelativeTo(App.player);
+        dialog.setVisible(true);
     }
 
     
