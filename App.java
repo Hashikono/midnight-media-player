@@ -270,6 +270,7 @@ public class App extends JFrame {
             player = new App();
             player.setVisible(true);  // Make window visible
             player.nav.OpenHomeMenu(); //Open home menu (to not leave the app blank)
+            // System.out.println(System.getProperty("java.class.path"));
         });
     }
 }

@@ -3,6 +3,7 @@ import java.awt.FlowLayout;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.io.File;
+import java.io.IOException;
 
 import javax.swing.JButton;
 import javax.swing.JDialog;
@@ -12,6 +13,14 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
 import javax.swing.filechooser.FileNameExtensionFilter;
+
+import org.jaudiotagger.audio.AudioFile;
+import org.jaudiotagger.audio.AudioFileIO;
+import org.jaudiotagger.audio.exceptions.CannotReadException;
+import org.jaudiotagger.audio.exceptions.InvalidAudioFrameException;
+import org.jaudiotagger.audio.exceptions.ReadOnlyFileException;
+import org.jaudiotagger.tag.Tag;
+import org.jaudiotagger.tag.TagException;
 
 import models.Media;
 
@@ -120,6 +129,7 @@ public class MediaAddingMenu {
         mediaAddingDialog.add(buttons, BorderLayout.SOUTH);
 
         heldIndex = -1;
+        // System.out.println(AudioFileIO.class.getName());
 
         return mediaAddingDialog;
     }
@@ -170,7 +180,20 @@ public class MediaAddingMenu {
 
             pathField.setText(chooser.getSelectedFile().getAbsolutePath());
             nameField.setText(chooser.getSelectedFile().getName());
-            extField.setText(getExtensionOf(chooser.getSelectedFile().getName()));
+
+            String ext = getExtensionOf(chooser.getSelectedFile().getName());
+            extField.setText(ext);
+
+            try {
+                if(ext != null)
+                {
+                    if(ext.equals("mp3") || ext.equals("wav"))
+                        getMediaDetails(chooser.getSelectedFile().getAbsolutePath());
+                }
+                
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
         }
 
         return chooser.getSelectedFile();
@@ -185,6 +208,31 @@ public class MediaAddingMenu {
         }
 
         return extension;
+    }
+
+    
+    public static void getMediaDetails(String path)
+    {
+        try {
+            File file = new File(path);
+            AudioFile  audioFile = AudioFileIO.read(file);
+            Tag tag = audioFile.getTag();
+
+            if(tag == null)
+                return;
+            
+            String authorName = tag.getFirst("ARTIST");
+            String albumName = tag.getFirst("ALBUM");
+
+            if(authorName != null && !authorName.isEmpty())
+                authorField.setText(authorName);
+            
+            if(albumName != null && !albumName.isEmpty())
+                albumField.setText(albumName);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        
     }
 
     
