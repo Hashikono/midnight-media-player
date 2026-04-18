@@ -170,7 +170,12 @@ public class MediaAddingMenu {
 
             pathField.setText(chooser.getSelectedFile().getAbsolutePath());
             nameField.setText(chooser.getSelectedFile().getName());
-            extField.setText(getExtensionOf(chooser.getSelectedFile().getName()));
+
+            String ext = getExtensionOf(chooser.getSelectedFile().getName());
+            extField.setText(ext);
+
+            if(ext.equals("mp3") || ext.equals("wav"))
+                getMediaDetails(chooser.getSelectedFile().getAbsolutePath());
         }
 
         return chooser.getSelectedFile();
@@ -185,6 +190,11 @@ public class MediaAddingMenu {
         }
 
         return extension;
+    }
+
+    public static void getMediaDetails(String path)
+    {
+        
     }
 
     
