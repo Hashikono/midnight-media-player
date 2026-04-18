@@ -58,7 +58,7 @@ public class PlaylistItem extends JButton {
         Container parent = getParent();
 
         if (parent != null) {
-            int totalWidth = parent.getWidth();
+            // int totalWidth = parent.getWidth();
             // int newSide = (totalWidth - 10) / 3;
             int newSide = getWidth();
             int imageSides = newSide - 80;

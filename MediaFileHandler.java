@@ -9,6 +9,28 @@ public class MediaFileHandler {
 
     public static void getAudioCover(Media song)
     {
-        
+
+    }
+
+    public static String getMetadataJson(String filePath) throws Exception {
+        String ffprobePath = "ffmpeg/ffprobe.exe";
+
+        ProcessBuilder pb = new ProcessBuilder(
+            ffprobePath,
+            "-v", "quiet",
+            "-print_format", "json",
+            "-show_format",
+            "-show_streams",
+            filePath
+        );
+
+        pb.redirectErrorStream(true);
+
+        Process process = pb.start();
+
+        String output = new String(process.getInputStream().readAllBytes());
+        process.waitFor();
+
+        return output;
     }
 }
