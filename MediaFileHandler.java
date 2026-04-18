@@ -1,6 +1,7 @@
 // import java.io.File;
 import java.io.ByteArrayOutputStream;
 import java.io.InputStream;
+import java.io.OutputStream;
 
 import models.Media;
 
@@ -12,40 +13,43 @@ public class MediaFileHandler {
         //do your stuff here, might also be able to pull some other tricks tho if we decide to switch this to grabbing media objects cuz it also stores the extension type
     }
 
-    public static byte[] extractCoverArt(String mediaPath) {
+    public static byte[] extractCoverArt(String mediaPath) { //I don't fully understand this because it was mostly done by chatGPT, but it's an edit it made of something I'd already made some work on
         try {
             ProcessBuilder pb = new ProcessBuilder(
-                FFMPEG_PATH,
-                "-i", mediaPath,
-                "-an",
-                "-vcodec", "mjpeg",
-                "-f", "image2pipe",
-                "pipe:1"
-            );
+            FFMPEG_PATH,
+            "-i", mediaPath,
+            "-map", "0:v:0",
+            "-c:v", "mjpeg",
+            "-f", "image2pipe",
+            "pipe:1"
+        );
 
-            pb.redirectErrorStream(true); // merge stderr (ffmpeg logs)
+        // DO NOT merge streams
+        // pb.redirectErrorStream(true); ← REMOVE
 
-            Process process = pb.start();
+        Process process = pb.start();
 
-            InputStream is = process.getInputStream();
-            ByteArrayOutputStream buffer = new ByteArrayOutputStream();
+        //consume stderr separately so ffmpeg doesn't hang
+        new Thread(() -> {
+            try (InputStream err = process.getErrorStream()) {
+                err.transferTo(OutputStream.nullOutputStream());
+            } catch (Exception ignored) {}
+        }).start();
 
-            byte[] temp = new byte[4096];
-            int read;
-            while ((read = is.read(temp)) != -1) {
-                buffer.write(temp, 0, read);
-            }
+        //Only read actual image data from stdout
+        InputStream is = process.getInputStream();
+        ByteArrayOutputStream buffer = new ByteArrayOutputStream();
 
-            process.waitFor();
+        byte[] temp = new byte[4096];
+        int read;
+        while ((read = is.read(temp)) != -1) {
+            buffer.write(temp, 0, read);
+        }
 
-            byte[] imageBytes = buffer.toByteArray();
+        process.waitFor();
 
-            // No cover art case
-            if (imageBytes.length == 0) {
-                return null;
-            }
-
-            return imageBytes;
+        byte[] imageBytes = buffer.toByteArray();
+        return imageBytes.length > 0 ? imageBytes : null;
 
         } catch (Exception e) {
             e.printStackTrace();

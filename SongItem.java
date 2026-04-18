@@ -18,6 +18,7 @@ import javax.swing.JPanel;
 import javax.swing.JPopupMenu;
 import javax.swing.OverlayLayout;
 import javax.swing.SwingConstants;
+import javax.swing.SwingWorker;
 import javax.swing.border.EmptyBorder;
 import javax.swing.border.MatteBorder;
 
@@ -72,23 +73,47 @@ public class SongItem extends JPanel {
         
         songImage = new JLabel(ImageUtils.getResizedImage("TempSongImage.png", 40)); //used to be new ImageIcon("TempSongImage.png") Just tested and this func doesn't seem to work, lol. I'll look through it again in a sec
         
-        // try { //Doesn't work rn and just lags the thing
-        //     byte[] coverBytes = MediaFileHandler.extractCoverArt(data.path);
+        new SwingWorker<ImageIcon,Void>() {
 
-        //     if(coverBytes != null)
-        //     {
-        //         BufferedImage image = ImageUtils.bytesToImage(coverBytes);
-                
-        //         // System.out.println(coverBytes.length);
-        //         if(image != null) {
-        //             ImageIcon icon = new ImageIcon(image);
-        //             songImage.setIcon(ImageUtils.resizeImageIcon(icon, 40));
-        //         }
-        //     }
-        //     // var originalIcon = new ImageIcon(ImageUtils.bytesToImage(MediaFileHandler.extractCoverArt(data.path)));
-        // } catch (Exception e) {
-        //     e.printStackTrace();
-        // }
+            @Override
+            protected ImageIcon doInBackground() throws Exception {
+                try {
+                    byte[] coverBytes = MediaFileHandler.extractCoverArt(data.path);
+
+                    if(coverBytes != null)
+                    {
+                        BufferedImage image = ImageUtils.bytesToImage(coverBytes);
+                        
+                        // System.out.println(coverBytes.length);
+                        if(image != null) {
+                            ImageIcon icon = new ImageIcon(image);
+                            return (ImageUtils.resizeImageIcon(icon, 40));
+                        }
+                    }
+                    // var originalIcon = new ImageIcon(ImageUtils.bytesToImage(MediaFileHandler.extractCoverArt(data.path)));
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+
+                return null; //nulls get ignored later, so we can chill with this
+            }
+
+            @Override
+            protected void done() {
+                try {
+                    ImageIcon icon = get();
+                    if(icon != null) {
+                        songImage.setIcon(icon);
+                        songImage.revalidate();
+                        songImage.repaint();
+                    }
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            }
+            
+        }.execute();
+        
 
         songImage.setAlignmentX(.5f);
         songImage.setAlignmentY(.5f);
