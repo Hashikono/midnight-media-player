@@ -1,2 +1,4 @@
 midnightmedia.db
 output/
+bin/
+ffmpeg/
