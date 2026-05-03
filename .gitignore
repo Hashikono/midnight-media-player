@@ -2,3 +2,4 @@ midnightmedia.db
 output/
 bin/
 ffmpeg/
+dist/
