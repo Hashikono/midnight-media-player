@@ -50,7 +50,7 @@ public class ImageUtils {
     public static BufferedImage bytesToImage(byte[] data) throws Exception
     {
         if(data == null || data.length == 0)
-            return ImageIO.read(new File("TempSongImage.png"));
+            return ImageIO.read(new File("Images/TempSongImage.png"));
 
         ByteArrayInputStream bis = new ByteArrayInputStream(data);
         return ImageIO.read(bis);
@@ -66,7 +66,7 @@ public class ImageUtils {
     public static BufferedImage bytesToImage(Blob blob) throws Exception
     {
         if(blob == null)
-            return ImageIO.read(new File("TempSongImage.png"));
+            return ImageIO.read(new File("Images/TempSongImage.png"));
 
         return bytesToImage(blob.getBytes(1, (int) blob.length()));
     }

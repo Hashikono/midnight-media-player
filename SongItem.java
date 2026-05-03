@@ -71,7 +71,7 @@ public class SongItem extends JPanel {
         coverContainer.setLayout(new OverlayLayout(coverContainer));
         coverContainer.setPreferredSize(new Dimension(40, 40));
         
-        songImage = new JLabel(ImageUtils.getResizedImage("TempSongImage.png", 40)); //used to be new ImageIcon("TempSongImage.png") Just tested and this func doesn't seem to work, lol. I'll look through it again in a sec
+        songImage = new JLabel(ImageUtils.getResizedImage("Images/TempSongImage.png", 40)); //used to be new ImageIcon("TempSongImage.png") Just tested and this func doesn't seem to work, lol. I'll look through it again in a sec
         
         new SwingWorker<ImageIcon,Void>() {
 
@@ -118,7 +118,7 @@ public class SongItem extends JPanel {
         songImage.setAlignmentX(.5f);
         songImage.setAlignmentY(.5f);
 
-        playButton = new JButton(ImageUtils.getResizedImage("whitePlayButton.png", 40));
+        playButton = new JButton(ImageUtils.getResizedImage("Images/whitePlayButton.png", 40));
         playButton.setAlignmentX(.5f);
         playButton.setAlignmentY(.5f);
         playButton.setMinimumSize(new Dimension(40, 40));
@@ -182,7 +182,7 @@ public class SongItem extends JPanel {
 
         songLength = new JLabel("00:00");
 
-        songOptions = new JButton(ImageUtils.getResizedImage("TresDots.png",11,15));
+        songOptions = new JButton(ImageUtils.getResizedImage("Images/TresDots.png",11,15));
         songOptions.setPreferredSize(new Dimension(10, 40));
         songOptions.setContentAreaFilled(true);
         songOptions.setBorderPainted(false);
