@@ -2,10 +2,6 @@
 A customized media player to be able to play media on your computer locally.
 (currently only has DB manipulation though. Playing media is yet to be implemented.)
 
-
-To run the program you need to go into the the App.Java file and run the main function on the bottom by pressing the button that appears over it.
-
-
 For anyone that may want to tinker with the project, or even just the peeps I'm working with, here's the list af all the useful files and what they do:
 - App: runs all the basic functions and where everything else stems from
 - Database: runs the database

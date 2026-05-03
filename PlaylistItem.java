@@ -37,6 +37,7 @@ public class PlaylistItem extends JButton {
         setBackground(ColorScheme.SECONDARY_COLOR); //Idk why it's not changing the color
 
         int imageSize = 100;
+        
         originalIcon = new ImageIcon(ImageUtils.bytesToImage(data.image));
         coverImage = new JLabel(ImageUtils.resizeImageIcon(originalIcon, imageSize, imageSize));
         coverImage.setAlignmentX(CENTER_ALIGNMENT);
