@@ -2,6 +2,8 @@
 A customized media player to be able to play media on your computer locally.
 (currently only has DB manipulation though. Playing media is yet to be implemented.)
 
+Should be built like any other JavaSwingX application, but make sure to include the dependancies (the stuff in lib) as well as the images in the jpackage command.
+
 For anyone that may want to tinker with the project, or even just the peeps I'm working with, here's the list af all the useful files and what they do:
 - App: runs all the basic functions and where everything else stems from
 - Database: runs the database

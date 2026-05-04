@@ -67,6 +67,7 @@ public class ImageUtils {
     {
         if(blob == null)
             return ImageIO.read(new File("Images/TempSongImage.png"));
+            //return ImageIO.read(ImageUtils.class.getResourceAsStream("/Images/TempSongImage.png"));
 
         return bytesToImage(blob.getBytes(1, (int) blob.length()));
     }
