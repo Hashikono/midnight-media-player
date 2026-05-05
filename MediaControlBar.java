@@ -170,7 +170,7 @@ public class MediaControlBar extends JPanel{
         add(bottomSection, BorderLayout.SOUTH);
         add(upperSection, BorderLayout.NORTH);
 
-        playButton.addActionListener(e -> moveProgress(50));
+        playButton.addActionListener(e -> MusicPlayer.togglePaused());
     }
 
     public static void moveProgress(int newSpot) //Use every second when playing music to move the bar
@@ -200,6 +200,8 @@ public class MediaControlBar extends JPanel{
     public static void setProgressCounter()
     {
         int newSpot = musicProgress.getValue();
+        MusicPlayer.setProgress((long)newSpot);
+
         int seconds = newSpot % 60;
         var secondText = "";
 

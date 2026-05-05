@@ -11,7 +11,7 @@ import uk.co.caprica.vlcj.factory.MediaPlayerFactory;
 import uk.co.caprica.vlcj.player.base.MediaPlayer;
 
 public class MusicPlayer {
-    private static boolean isPlaying = false;    // Tracks if media is currently playing
+    private static boolean isPaused = false;    // Tracks if media is currently playing
     private static boolean isMuted = false;      // Tracks if audio is muted
     private static boolean isRepeating = false;  // Tracks if repeat mode is enabled
     private static boolean isShuffling = false;  // Tracks if shuffle mode is enabled
@@ -21,18 +21,25 @@ public class MusicPlayer {
     private static int currentTrackIndex = -1;   // Index of currently playing track (-1 = none) Only used if not shuffling
 
 
-
-    private static EmbeddedMediaListPlayerComponent testing;
     public static MediaPlayerFactory factory;
     private static MediaPlayer player;
 
     public static void initialize()
     {
-        testing = new EmbeddedMediaListPlayerComponent();
+        MediaVisuals.visualizer = new EmbeddedMediaListPlayerComponent();
+        MediaVisuals.visualizer.mediaPlayer().audio().mute();
+
         factory = new MediaPlayerFactory();
         player = factory.mediaPlayers().newMediaPlayer();
 
-        System.out.println(player.mediaPlayerInstance());
+        // System.out.println(player.mediaPlayerInstance());
+    }
+
+    public static void togglePaused()
+    {
+        isPaused = !isPaused;
+
+        player.controls().setPause(isPaused);
     }
 
 
@@ -61,6 +68,11 @@ public class MusicPlayer {
         
         // playTrack(currentTrackIndex);  // Play the selected track
     }
+
+    public static void setProgress(long time)
+    {
+        player.controls().setTime(time);
+    }
     
     
     // Format seconds into MM:SS format
@@ -84,6 +96,9 @@ public class MusicPlayer {
         try {
             MediaControlBar.setNewSong((int)MediaFileHandler.getDuration(song.path));
             player.media().play(song.path);
+
+            // if(MediaVisuals.visualizer.getParent() != null)
+            //     MediaVisuals.visualizer.mediaPlayer().media().play(song.path);
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -108,7 +123,16 @@ public class MusicPlayer {
     public static void detatchVisuals()
     {
         // player.videoSurface().set(null); //Doesn't work in this version unfortunately, wish it did, lol
-        player.mediaPlayerInstance();
+        
+
+    }
+
+    public static void syncVisuals()
+    {
+        long currentTime = player.status().time();
+
+        MediaVisuals.visualizer.mediaPlayer().media().play(currentSong.path);
+        MediaVisuals.visualizer.mediaPlayer().controls().setTime(currentTime);
     }
     
 }

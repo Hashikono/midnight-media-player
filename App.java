@@ -243,6 +243,7 @@ public class App extends JFrame {
     {
         CloseCurrentMenu();
         center.add(new JLabel("Sorry, not implemented yet"));
+        // center.add(new MediaVisuals());
     }
 
     public void OpenLogs()

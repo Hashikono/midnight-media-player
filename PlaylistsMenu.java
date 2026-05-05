@@ -70,7 +70,7 @@ public class PlaylistsMenu extends JPanel {
         topComponents.setPreferredSize(new Dimension(1000, 50));
         topComponents.setBackground(ColorScheme.DARK_BG);
 
-        var title = new JLabel("Songs");
+        var title = new JLabel("Playlists");
         title.setFont(new Font("Segoe UI", Font.PLAIN, 25));
         title.setForeground(ColorScheme.TEXT_COLOR);
         title.setHorizontalAlignment(SwingConstants.LEADING);
