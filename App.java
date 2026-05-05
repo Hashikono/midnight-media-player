@@ -3,6 +3,7 @@ import javax.swing.*;  // For Swing GUI components
 import javax.swing.border.*;  // For border styling
 
 import models.Playlist;
+// import uk.co.caprica.vlcj.player.base.MediaPlayer;
 
 // import javax.swing.filechooser.FileNameExtensionFilter;  // For file type filtering
 import java.awt.*;  // For AWT components and graphics
@@ -40,6 +41,7 @@ public class App extends JFrame {
 
         try {
             Database.initialize();
+            MusicPlayer.initialize();
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -259,6 +261,8 @@ public class App extends JFrame {
     public static void main(String[] args) { //Base was stolen from TestApp.java, so any parts we want back should come from there
         // Use SwingUtilities.invokeLater to ensure thread safety
         System.setProperty("jna.library.path", "C:\\Program Files (x86)\\VideoLAN\\VLC");
+        // System.out.println(com.sun.jna.Platform.isWindows());
+
         SwingUtilities.invokeLater(() -> {
             try {
                 // Set the look and feel to match the operating system

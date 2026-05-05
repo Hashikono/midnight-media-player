@@ -91,6 +91,20 @@ public class SongItem extends JPanel {
                         }
                     }
                     // var originalIcon = new ImageIcon(ImageUtils.bytesToImage(MediaFileHandler.extractCoverArt(data.path)));
+
+                    int songSeconds = (int)MediaFileHandler.getDuration(data.path);
+                    
+
+                    int seconds = songSeconds % 60;
+                    var secondText = "";
+
+                    if(seconds < 10)
+                        secondText = "0" + String.valueOf(seconds);
+                    else
+                        secondText = String.valueOf(seconds);
+                    
+                    var minutes = (songSeconds - seconds) / 60;
+                    songLength.setText(String.valueOf(minutes) + ":" + secondText);
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
@@ -111,7 +125,6 @@ public class SongItem extends JPanel {
                     e.printStackTrace();
                 }
             }
-            
         }.execute();
         
 
