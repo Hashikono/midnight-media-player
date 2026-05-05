@@ -214,7 +214,7 @@ public class App extends JFrame {
     public void OpenHomeMenu()
     {
         CloseCurrentMenu();
-        // homeButton.Select();
+        center.add(new JLabel("Sorry, not implemented yet"));
     }
 
     public void OpenMediaCollection()
@@ -240,24 +240,25 @@ public class App extends JFrame {
     public void OpenView()
     {
         CloseCurrentMenu();
-        // viewButton.Select();
+        center.add(new JLabel("Sorry, not implemented yet"));
     }
 
     public void OpenLogs()
     {
         CloseCurrentMenu();
-        // logsButton.Select();
+        center.add(new JLabel("Sorry, not implemented yet"));
     }
 
     public void OpenSettings()
     {
         CloseCurrentMenu();
-        // settingsButton.Select();
+        center.add(new JLabel("Sorry, not implemented yet"));
     }
     
     // ========== MAIN METHOD ==========
     public static void main(String[] args) { //Base was stolen from TestApp.java, so any parts we want back should come from there
         // Use SwingUtilities.invokeLater to ensure thread safety
+        System.setProperty("jna.library.path", "C:\\Program Files (x86)\\VideoLAN\\VLC");
         SwingUtilities.invokeLater(() -> {
             try {
                 // Set the look and feel to match the operating system
