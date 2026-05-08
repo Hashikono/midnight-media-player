@@ -9,16 +9,17 @@ import uk.co.caprica.vlcj.player.component.EmbeddedMediaListPlayerComponent;
 
 import uk.co.caprica.vlcj.factory.MediaPlayerFactory;
 import uk.co.caprica.vlcj.player.base.MediaPlayer;
+import uk.co.caprica.vlcj.player.base.MediaPlayerEventAdapter;
 
 public class MusicPlayer {
     private static boolean isPaused = false;    // Tracks if media is currently playing
     private static boolean isMuted = false;      // Tracks if audio is muted
     private static boolean isRepeating = false;  // Tracks if repeat mode is enabled
     private static boolean isShuffling = false;  // Tracks if shuffle mode is enabled
-    private static boolean playlistVisible = true; // Tracks playlist visibility
-    private static List<Media> currentPlaylist; // List of media files
+    // private static boolean playlistVisible = true; // Tracks playlist visibility
+    private static List<Media> currentPlaylist = new ArrayList<>(); // List of media files
     public static Media currentSong;
-    private static int currentTrackIndex = -1;   // Index of currently playing track (-1 = none) Only used if not shuffling
+    public static int currentTrackIndex = -1;   // Index of currently playing track (-1 = none) Only used if not shuffling
 
 
     public static MediaPlayerFactory factory;
@@ -33,6 +34,26 @@ public class MusicPlayer {
         player = factory.mediaPlayers().newMediaPlayer();
 
         // System.out.println(player.mediaPlayerInstance());
+
+        player.events().addMediaPlayerEventListener(new MediaPlayerEventAdapter() {
+            @Override
+            public void finished(MediaPlayer mediaPlayer) {
+                if(currentPlaylist != null)
+                    playNextTrack();
+            }
+
+            @Override
+            public void error(MediaPlayer mediaPlayer) {
+                System.out.println("had an error");
+            }
+
+            @Override
+            public void timeChanged(MediaPlayer mediaPlayer, long newTime) {
+                MediaControlBar.moveProgress((int)newTime / 1000);
+            }
+        });
+
+        
     }
 
     public static void togglePaused()
@@ -44,7 +65,7 @@ public class MusicPlayer {
 
 
     // Play next track in playlist
-    private static void playNextTrack() {
+    private static void playNextTrack() { //causing issues for some reason...
         if (currentPlaylist.isEmpty()) return;  // Nothing to play
         
         // Calculate next track index
@@ -53,9 +74,10 @@ public class MusicPlayer {
             currentTrackIndex = (int) (Math.random() * currentPlaylist.size());
         } else {
             // Next track in sequence, wrap around to beginning
-            currentTrackIndex = (currentTrackIndex + 1) % currentPlaylist.size();
-            playTrack(currentPlaylist.get(currentTrackIndex));  // Play the selected track
+            currentTrackIndex = (currentPlaylist.size() + currentTrackIndex + 1) % currentPlaylist.size();
         }
+
+        playTrack(currentPlaylist.get(currentTrackIndex));  // Play the selected track
         
     }
     
@@ -72,14 +94,6 @@ public class MusicPlayer {
     public static void setProgress(long time)
     {
         player.controls().setTime(time);
-    }
-    
-    
-    // Format seconds into MM:SS format
-    private static String formatTime(int seconds) {
-        int mins = seconds / 60;    // Calculate minutes
-        int secs = seconds % 60;    // Calculate remaining seconds
-        return String.format("%02d:%02d", mins, secs);  // Format as 00:00
     }
     
     // Get name of current track

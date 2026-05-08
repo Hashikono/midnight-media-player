@@ -152,6 +152,7 @@ public class MediaControlBar extends JPanel{
                 int width = musicProgress.getWidth();
 
                 moveProgress(mouseXpos * musicProgress.getMaximum() / width); // use the value to then set the music point (musicProgress.getValue())
+                MusicPlayer.setProgress((long)musicProgress.getValue() * 1000);
                 // musicProgress.setValue(mouseXpos * musicProgress.getMaximum() / width); // use the value to then set the music point (musicProgress.getValue())
 
                 //Some code to say this is being held down (so we can pause the music when you do so)
@@ -200,7 +201,6 @@ public class MediaControlBar extends JPanel{
     public static void setProgressCounter()
     {
         int newSpot = musicProgress.getValue();
-        MusicPlayer.setProgress((long)newSpot);
 
         int seconds = newSpot % 60;
         var secondText = "";

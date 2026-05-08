@@ -58,7 +58,7 @@ public class SongsMenu extends JPanel {
             for(Media song : allSongs)
             {
                 i++;
-                SongItem newListItem = new SongItem(song);
+                SongItem newListItem = new SongItem(song, i -1);
                 allListedMedia.add((SongItem) newListItem);
                 MusicListContainer.add(newListItem);
                 newListItem.setOpaque(false);

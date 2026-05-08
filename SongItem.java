@@ -42,6 +42,8 @@ public class SongItem extends JPanel {
     private JMenuItem removeFromPlaylist;
     private JMenuItem deleteMedia;
 
+    private int listIndex;
+
 
     private void OpenContextMenu(int heldIndex)
     {
@@ -58,13 +60,15 @@ public class SongItem extends JPanel {
     }
 
 
-    public SongItem(Media data) {
+    public SongItem(Media data, int index) {
         setLayout(new BoxLayout(this, BoxLayout.X_AXIS));
         mainSongDetails = new JPanel();
         mainSongDetails.setLayout(new FlowLayout(FlowLayout.LEADING, 3, 0));
         mainSongDetails.setBorder(new EmptyBorder(2, 0, 0, 0));
         setMaximumSize(new Dimension(Integer.MAX_VALUE, 45));
         // System.out.println(data.id);
+
+        listIndex = index;
         
         //Image part
         coverContainer = new JPanel();
@@ -79,6 +83,21 @@ public class SongItem extends JPanel {
             protected ImageIcon doInBackground() throws Exception {
                 try {
                     byte[] coverBytes = MediaFileHandler.extractCoverArt(data.path);
+                    
+
+                    int songSeconds = (int)MediaFileHandler.getDuration(data.path);
+
+                    int seconds = songSeconds % 60;
+                    var secondText = "";
+
+                    if(seconds < 10)
+                        secondText = "0" + String.valueOf(seconds);
+                    else
+                        secondText = String.valueOf(seconds);
+                    
+                    var minutes = (songSeconds - seconds) / 60;
+                    songLength.setText(String.valueOf(minutes) + ":" + secondText);
+
 
                     if(coverBytes != null)
                     {
@@ -92,19 +111,6 @@ public class SongItem extends JPanel {
                     }
                     // var originalIcon = new ImageIcon(ImageUtils.bytesToImage(MediaFileHandler.extractCoverArt(data.path)));
 
-                    int songSeconds = (int)MediaFileHandler.getDuration(data.path);
-                    
-
-                    int seconds = songSeconds % 60;
-                    var secondText = "";
-
-                    if(seconds < 10)
-                        secondText = "0" + String.valueOf(seconds);
-                    else
-                        secondText = String.valueOf(seconds);
-                    
-                    var minutes = (songSeconds - seconds) / 60;
-                    songLength.setText(String.valueOf(minutes) + ":" + secondText);
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
@@ -172,7 +178,7 @@ public class SongItem extends JPanel {
             }
         });
 
-        playButton.addActionListener(e -> plyaSong(data));
+        playButton.addActionListener(e -> playSong(data));
         
 
         songTitle = new JLabel(data.name);
@@ -262,10 +268,15 @@ public class SongItem extends JPanel {
         }
     }
 
-    public void plyaSong(Media media)
+    public void playSong(Media media)
     {
-        if(SongsMenu.heldPlaylist != null)
-            MusicPlayer.getPlaylist(SongsMenu.allSongs);
+        // if(SongsMenu.heldPlaylist == null)
+        //     MusicPlayer.getPlaylist(SongsMenu.allSongs);
+
+        MusicPlayer.currentTrackIndex = listIndex;
+
+        MusicPlayer.getPlaylist(SongsMenu.allSongs);
+
         
         MusicPlayer.playTrack(media);
     }
