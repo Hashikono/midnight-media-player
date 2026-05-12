@@ -39,7 +39,14 @@ public class MusicPlayer {
             @Override
             public void finished(MediaPlayer mediaPlayer) {
                 if(currentPlaylist != null)
-                    playNextTrack();
+                {
+                    new Thread(() -> {
+                        try {
+                            Thread.sleep(1); //Stops from starting another song when it thinks it's supposed to be finished
+                        } catch(Exception e) {} //idk why it needs a try catch statement, but oh well, lol
+                        playNextTrack();
+                    }).start();
+                }
             }
 
             @Override
@@ -77,8 +84,8 @@ public class MusicPlayer {
             currentTrackIndex = (currentPlaylist.size() + currentTrackIndex + 1) % currentPlaylist.size();
         }
 
+        // System.out.println(currentPlaylist.get(currentTrackIndex).path);
         playTrack(currentPlaylist.get(currentTrackIndex));  // Play the selected track
-        
     }
     
     // Play previous track in playlist
@@ -107,9 +114,11 @@ public class MusicPlayer {
     public static void playTrack(Media song)
     {
         currentSong = song;
+        
         try {
             MediaControlBar.setNewSong((int)MediaFileHandler.getDuration(song.path));
             player.media().play(song.path);
+
 
             // if(MediaVisuals.visualizer.getParent() != null)
             //     MediaVisuals.visualizer.mediaPlayer().media().play(song.path);
@@ -131,7 +140,7 @@ public class MusicPlayer {
         if(isShuffling)
             currentTrackIndex = -1;
 
-        playNextTrack();
+        // playNextTrack();
     }
 
     public static void detatchVisuals()
